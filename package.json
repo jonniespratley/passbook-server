@@ -7,7 +7,7 @@
     "passbook-server": "./bin/passbook-server"
   },
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "gulp"
   },
   "author": {
     "name": "Jonnie Spratley",
