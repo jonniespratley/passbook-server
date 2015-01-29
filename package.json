@@ -1,41 +1,34 @@
 {
   "name": "passbook-server",
-  "version": "0.0.0",
-  "description": "The best module ever.",
-
-  "author": {
-    "name": "",
-    "email": ""
-  },
-  "repository": "user/repo",
-  "license": "MIT",
-  "files": [
-    "index.js",
-    "cli.js"
-  ],
-  "keywords": [
-    "passbook-server",
-    ""
-  ],
-  "dependencies": {
-    "meow": "^2.0.0"
-  },
-  "devDependencies": {
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-nodeunit": "^0.4.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "load-grunt-tasks": "^1.0.0",
-    "time-grunt": "^1.0.0",
-    "grunt-mocha-cli": "^1.11.0",
-    "jshint-stylish": "^1.0.0",
-    "browserify": "^7.0.0"
+  "version": "0.0.1",
+  "description": "Passbook API server",
+  "private": true,
+  "bin": {
+    "passbook-server": "./bin/passbook-server"
   },
   "scripts": {
-    "test": "grunt",
-    "browser": "browserify index.js > browser.js"
+    "test": "mocha -R spec"
   },
-  "bin": {
-    "passbook-server": "cli.js"
+  "author": {
+    "name": "Jonnie Spratley",
+    "email": "jonniespratley@gmail.com",
+    "url": "https://github.com/jonniespratley/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonniespratley//passbook-server"
+  },
+  "license": "MIT",
+  "bugs": "https://github.com/jonniespratley//passbook-server/issues",
+  "dependencies": {
+    "commander": "~2.0.0",
+    "autocmdr": "~0.0.4"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "gulp": "^3.8.10",
+    "gulp-mocha": "^2.0.0",
+    "gulp-nodeunit-runner": "^0.2.2",
+    "gulp-util": "^3.0.2"
   }
 }

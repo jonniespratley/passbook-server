@@ -1,42 +1,26 @@
-#  [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-url]][daviddm-image]
+passbook-server
+=============
 
-> The best module ever.
+# Description
 
+Passbook API server
 
-## Install
+# Usage
 
-```sh
-$ npm install --save passbook-server
+To install passbook-server from npm, run:
+
+```
+$ npm install -g passbook-server
 ```
 
+```node ./bin/passbook-server --help```
 
-## Usage
+# License
 
-```js
-var passbook-server = require('passbook-server');
+Copyright (c) 2015 Jonnie Spratley
 
-passbook-server('Rainbow');
-```
+[MIT License](http://en.wikipedia.org/wiki/MIT_License)
 
-```sh
-$ npm install --global passbook-server
-$ passbook-server --help
-```
+# Acknowledgments
 
-```sh
-# creates a browser.js
-$ npm run browser
-```
-
-
-## License
-
-MIT © []()
-
-
-[npm-url]: https://npmjs.org/package/passbook-server
-[npm-image]: https://badge.fury.io/js/passbook-server.svg
-[travis-url]: https://travis-ci.org//passbook-server
-[travis-image]: https://travis-ci.org//passbook-server.svg?branch=master
-[daviddm-url]: https://david-dm.org//passbook-server.svg?theme=shields.io
-[daviddm-image]: https://david-dm.org//passbook-server
+Built using [generator-commader](https://github.com/Hypercubed/generator-commander).
