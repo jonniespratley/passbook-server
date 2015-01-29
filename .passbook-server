@@ -4,5 +4,8 @@
   "base": "api/v1",
   "database.name": "passbookmanager",
   "database.username": "admin",
-  "database.password": "admin"
+  "database.password": "admin",
+  "message": "Passbook",
+  "database.url": "mongodb://localhost:27017/passbookmanager",
+  "publicDir": "www/public"
 }
