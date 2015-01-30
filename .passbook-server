@@ -1,7 +1,7 @@
 {
   "host": "127.0.0.1",
   "port": "1333",
-  "base": "api/v1",
+  "baseUrl": "/api/v1",
   "database.name": "passbookmanager",
   "database.username": "admin",
   "database.password": "admin",
