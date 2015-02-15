@@ -15,27 +15,31 @@ module.exports = function(program, options) {
 		port: port,
 		host: host,
 		baseUrl: program.config.get('baseUrl'),
+		publicDir: program.config.get('publicDir'),
+		staticDir: program.config.get('staticDir'),
 		database: {
+			name: process.env.MONGODB_NAME || program.config.get('database.name'),
 			url: process.env.MONGODB_URL || program.config.get('database.url')
 		}
 	};
 
-	console.log('serve initialized', config);
+	program.log.debug('serve initialized', config);
 
 	program.command('serve')
 		.version('0.0.1')
 		.description('An express server for handling Passbook APIs')
-		.action(function() {
+		.action(function(args) {
 
 		//New app instance
 		app = express();
 
 		//Load routes
-		requireHelper('lib/jps-passbook-routes')( config, app );
+		requireHelper('lib/routes/jps-passbook-routes')( config, app );
+		//requireHelper('lib/routes/rest-resource-routes')( config, app );
 
 		//Start the server
 		app.listen(config.port, function() {
-			console.log(config.message + ' running @ ' + config.host + ':' + config.port);
+			program.log.info('Server running @ ' + config.host + ':' + config.port);
 		});
 
 	});

@@ -7,5 +7,6 @@
   "database.password": "admin",
   "message": "Passbook",
   "database.url": "mongodb://localhost:27017/passbookmanager",
-  "publicDir": "www/public"
+  "publicDir": "./www/public",
+  "staticDir": "./www/"
 }
