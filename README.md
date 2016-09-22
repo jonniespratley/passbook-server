@@ -1,5 +1,6 @@
 passbook-server
 =============
+[![Build Status](https://travis-ci.org/jonniespratley/passbook-server.svg?branch=master)](https://travis-ci.org/jonniespratley/passbook-server)
 
 # Description
 
@@ -13,11 +14,13 @@ To install passbook-server from npm, run:
 $ npm install -g passbook-server
 ```
 
-```node ./bin/passbook-server --help```
+```
+$ passbook-server --help
+```
 
 # License
 
-Copyright (c) 2015 Jonnie Spratley
+Copyright (c) 2016 Jonnie Spratley
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
 

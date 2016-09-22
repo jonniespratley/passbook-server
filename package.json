@@ -7,6 +7,7 @@
     "passbook-server": "./bin/passbook-server"
   },
   "scripts": {
+    "start": "node src/server",
     "test": "gulp"
   },
   "author": {

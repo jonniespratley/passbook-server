@@ -2,6 +2,6 @@
 npm-debug.log
 temp
 .idea
-data
+//data
 .DS_Store
 db.sqlite

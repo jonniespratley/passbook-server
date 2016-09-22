@@ -29,7 +29,7 @@ var mockIdentifer = mocks.mockIdentifer;
 var app;
 
 describe('routes', function() {
-	before(function(done){
+	before(function(done) {
 		app = express();
 		app.locals.program = program;
 		program.require('routes').Passes(app);
@@ -46,15 +46,15 @@ describe('routes', function() {
 
 
 
-	xdescribe('PassKit Web Service', function() {
+	describe('PassKit Web Service', function() {
 
 		beforeEach(function(done) {
 			console.log('Using Device', mockDevice);
 			console.log('Using Pass', mockPass);
 			request(app)
-			.post( '/api/v1/devices/'+'test'+ Date.now()+'/registrations/pass.jsapps.io/123456789')
-			.set('Authorization', mockDevice.authorization)
-			.expect(201, done);
+				.post('/api/v1/devices/' + 'test' + Date.now() + '/registrations/pass.jsapps.io/123456789')
+				.set('Authorization', mockDevice.authorization)
+				.expect(201, done);
 		});
 
 		describe('Devices', function() {
@@ -77,7 +77,9 @@ describe('routes', function() {
 			it(
 				'POST - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - return existing device for pass',
 				function(done) {
-					program.log('`/api/v1/devices/${mockDevice.deviceLibraryIdentifier}/registrations/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`')
+					program.log(
+						'`/api/v1/devices/${mockDevice.deviceLibraryIdentifier}/registrations/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`'
+					)
 					request(app)
 						.post(
 							//'/api/v1/devices/012345678987654321/registrations/pass.jsapps.io/012345678987654321'
@@ -180,8 +182,6 @@ describe('routes', function() {
 
 			});
 		});
-
-
 
 
 

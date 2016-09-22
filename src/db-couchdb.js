@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const utils = require('./utils');
 const request = require('request');
-
+//request.debug = true;
 module.exports = function(options) {
 	options = options || {};
 	var logger = utils.getLogger('couchdb');
@@ -19,20 +19,22 @@ module.exports = function(options) {
 		}
 	};
 
+	var log = require('npmlog');
 	var baseRequest = request.defaults(defaultOptions);
 
 	var sendRequest = function(options) {
 		options.url = `${BASE_URL}/${options.url}`;
 
-		logger('sendRequest', options);
+
 		let _response = {};
 		return new Promise(function(resolve, reject) {
 			_.defer(function() {
+				log.http(options.method, options.url);
 				request(options, function(err, resp, body) {
 					if (err) {
 						reject(err);
 					}
-					logger('response', body);
+					log.http(resp.statusCode, options.url);
 					_response.data = body;
 
 					if (!options.json) {
@@ -130,7 +132,7 @@ module.exports = function(options) {
 					resp.rows.forEach(function(row) {
 						docs.push(row.doc);
 					});
-					var filtered = _.findLast(docs, params);
+					var filtered = _.filter(docs, params);
 					resolve(filtered);
 
 				}, reject);
