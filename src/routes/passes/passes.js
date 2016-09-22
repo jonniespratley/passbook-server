@@ -1,5 +1,5 @@
 'use strict';
-const db = require('../../db').getInstance();
+
 const Pass = require('./pass');
 const utils = require('../../utils');
 const _ = require('lodash');
@@ -8,6 +8,7 @@ const logger = utils.getLogger('passes');
 
 
 var Passes = (function() {
+    const db = require('../../db').getInstance();
 	var _passes = null;
 	return {
 		save: function(p) {
@@ -35,9 +36,8 @@ var Passes = (function() {
 
 			return new Promise(function(resolve, reject) {
 				db.allDocs(params).then(function(resp) {
-					__passes = _.where(resp.rows, params);
+					__passes = _.filter(resp.rows, params);
 					resolve(__passes);
-
 				}).catch(reject);
 			});
 		},

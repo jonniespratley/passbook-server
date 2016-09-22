@@ -26,10 +26,10 @@ var GITHUB_CLIENT_SECRET = GITHUB_DEV_CLIENT_SECRET;
 var GITHUB_CALLBACK_URL = '/auth/provider/callback';
 
 var config = {
-	"name": "pass-manager",
+	"name": "passbook-server",
 	debug: true,
-	baseUrl: 'http://localhost:4987/passmanager',
-	"message": "Pass Manager API Server",
+	baseUrl: 'http://localhost:4987/passbook-server',
+	"message": "passbook-server api",
 	"dataPath": path.resolve(__dirname, "./data/"),
 	redis: {
 		hostname: '127.0.0.1',
@@ -42,7 +42,7 @@ var config = {
 		}
 	},
 	database: {
-		name: 'passmanager',
+		name: 'passbook-server',
 		"dataPath": path.resolve(__dirname, "./data")
 	},
 	"passkit": {
@@ -75,8 +75,8 @@ var config = {
 		"port": process.env.PORT || 5001
 	},
 	"db": {
-		"local": "passmanager",
-		"remote": "http://localhost:4987/passmanager"
+		"local": "passbook-server",
+		"remote": "http://localhost:4987/passbook-server"
 	},
 	"collections": [
 		"devices",

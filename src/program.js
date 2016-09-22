@@ -6,8 +6,12 @@ const path = require('path');
 const pkg = require(path.resolve(__dirname, '../package.json'));
 const defaultConfig = require(path.resolve(__dirname, '../config.js'));
 const DB = require('./db');
+const CouchDB = require('./db-couchdb');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
+var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
+var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
+var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
 
 /**
  * @class
@@ -21,16 +25,19 @@ class Program {
 
 		config = _.assign(defaultConfig, config);
 		var db = new DB.FileDataStore(config.dataPath);
-
+        
+        this.db = db;
 		this.pkg = pkg;
 		this.log = logger;
 		this.getLogger = utils.getLogger;
 		this.utils = utils;
-		
+		this.Device = Device;
+        this.Pass = Pass;
+        this.Passes = Passes;
 		this.config = {
 			defaults: config
 		};
-		this.db = db;
+
 		this.server = null;
 		this.modules = {
 			db: db
@@ -39,6 +46,11 @@ class Program {
 	require(name) {
 		return require(path.resolve(__dirname, name));
 	}
+
+    getDb(){
+        var db = new DB.FileDataStore(this.config.dataPath);
+        return db;
+    }
 }
 
 
