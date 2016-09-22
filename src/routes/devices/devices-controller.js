@@ -288,25 +288,23 @@ module.exports = function(program) {
 
 				log.info('get_device_passes', 'Make sure device is registered');
 				db.allDocs({
-					passTypeIdentifier: pass_type_id,
-					//authorization: authentication_token,
-					deviceLibraryIdentifier: device_id
-				}).then(function(devices) {
-					log.info('FOund', devices);
-					if (devices) {
-						serials = _.pluck(devices, 'serialNumber');
-						log.info('get_device_passes', 'get passes by pass_type_id');
-						log.info('get_device_passes', 'Return matching passes');
-						res.status(200).json({
-							lastUpdated: Date.now().toString(),
-							serialNumbers: serials
-						});
-					} else {
-						log.error('Did not find device and pass');
-						res.status(404).json({
-							error: 'Device not registered'
-						});
-					}
+					//docType: 'registration',
+                    pass_type_id: pass_type_id,
+                   // auth_token: authentication_token,
+                    deviceLibraryIdentifier: device_id
+				}).then(function(resp) {
+					log.info('FOund', resp);
+
+                     serials = _.map(resp.rows, (row)=>{
+                        return row.serial_number;
+                     });
+                    log.info('get_device_passes', 'get passes for ', pass_type_id, device_id);
+                    log.info('get_device_passes', 'Return matching passes', serials);
+                    res.status(200).json({
+                        lastUpdated: Date.now().toString(),
+                        serialNumbers: serials
+                    });
+
 				}).catch(function(err) {
 					log.error('no passes found for device');
 					res.status(404).json({

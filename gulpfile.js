@@ -1,7 +1,7 @@
 'use strict';
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
-
+const gulpSequence = require('gulp-sequence');
 
 
 
@@ -56,4 +56,4 @@ gulp.task('watch', function() {
 });
 
 
-gulp.task('default', ['test', 'docs']);
+gulp.task('default', gulpSequence('test', 'docs', 'coverage'));

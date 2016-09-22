@@ -4,6 +4,7 @@ const _ = require('lodash');
 const Passes = require('./passes');
 const Pass = require('./pass');
 const uuid = require('node-uuid');
+const log = require('npmlog');
 /*
  * Methods
  * to find the passes that a given device has registered for,
@@ -32,9 +33,9 @@ module.exports = function (program) {
                 time: Date.now().toString()
             };
             db.post(data, 'log').then(function (msg) {
-                res.status(200).send(msg);
+                res.status(201).json(msg);
             }, function (err) {
-                res.status(400).send(err);
+                res.status(400).json(err);
             });
         },
 
@@ -62,15 +63,18 @@ module.exports = function (program) {
 
             } else {
                 db.allDocs({
+                    docType: 'pass',
                     passTypeIdentifier: pass_type_id,
                     serialNumber: serial_number
                 }).then(function (resp) {
                     logger('get_passes:success');
-
-                    if (lastUpdated > resp.lastUpdated) {
+                    let pass = _(resp.rows).first();
+                    if (lastUpdated > pass.lastUpdated) {
+                        log.info('pass last updated check', lastUpdated, pass.lastUpdated);
                         res.status(204).json({});
                     } else {
-                        res.status(200).json(_(resp.rows).first());
+                        log.info('got passes', resp.rows);
+                        res.status(200).json(pass);
                     }
 
                 }).catch(function (err) {

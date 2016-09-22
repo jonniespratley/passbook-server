@@ -37,7 +37,7 @@ module.exports = function (program, app) {
     adminRouter.post('/passes', jsonParser, passController.post_pass);
     adminRouter.delete('/passes/:id', passController.delete_pass);
 
-    router.get('/:pass_type_id/:serial_number', passController.get_passes);
+    router.get('/:pass_type_id/:serial_number?', passController.get_passes);
 
 
     //Logging Endpoint
