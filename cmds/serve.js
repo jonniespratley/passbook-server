@@ -3,13 +3,16 @@
  */
 'use strict';
 
-var express = require('express'), requireHelper = require('../require_helper'), app = null, cloudServices = null, dbcreds = null, dbconn = null;
+var express = require('express'),
+requireHelper = require('../require_helper'),
+app = null,
+cloudServices = null, dbcreds = null, dbconn = null;
 
 
 module.exports = function(program, options) {
 
 	var port = process.env.PORT || program.config.get('port'),
-			host = process.env.VCAP_APP_HOST || program.config.get('host');
+        host = process.env.VCAP_APP_HOST || program.config.get('host');
 
 	var config = {
 		port: port,
@@ -23,8 +26,6 @@ module.exports = function(program, options) {
 		}
 	};
 
-	program.log.debug('serve initialized', config);
-
 	program.command('serve')
 		.version('0.0.1')
 		.description('An express server for handling Passbook APIs')
@@ -34,7 +35,7 @@ module.exports = function(program, options) {
 		app = express();
 
 		//Load routes
-		requireHelper('lib/routes/jps-passbook-routes')( config, app );
+		//requireHelper('lib/routes/jps-passbook-routes')( config, app );
 		//requireHelper('lib/routes/rest-resource-routes')( config, app );
 
 		//Start the server
