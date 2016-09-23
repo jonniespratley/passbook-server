@@ -4,31 +4,26 @@
  */
 var assert = require('assert'),
 	_ = require('lodash'),
-
 	path = require('path');
 
+const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
+const program = mocks.program;
 
-var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
-var program = mocks.program;
-
-var config = program.config.defaults;
-var CouchDB = program.require('db-couchdb') || require(path.resolve(__dirname, '../../lib/adapters/db-couchdb.js'));
+const config = program.config.defaults;
+const CouchDB = program.require('db-couchdb') || require(path.resolve(__dirname, '../../lib/adapters/db-couchdb.js'));
 
 var testDoc = {
 	_id: 'test-doc',
-
 	name: 'test'
 };
 
-var db = new CouchDB(config);
-
+var db;
 var mockDevice = mocks.mockDevice;
 var mockPass = _.assign({}, mocks.mockPass);
-
-var nock = require('nock');
 var scope;
 
 var mockServer = function() {
+	var nock = require('nock');
 	console.log('Mocking server', config.baseUrl);
 	console.dir(config);
 	scope = nock(config.baseUrl)
@@ -92,11 +87,11 @@ var mockServer = function() {
 }
 
 require('request').debug = true;
-xdescribe('CouchDB Adapter', function() {
+describe('CouchDB Adapter', function() {
 
 	before('should be defined - ' + config.baseUrl, function(done) {
-		mockServer();
-
+		//	mockServer();
+		db = new CouchDB(config.baseUrl);
 		done();
 	});
 	it('should be defined', function(done) {
@@ -207,6 +202,7 @@ xdescribe('CouchDB Adapter', function() {
 	it('db.allDocs - should return array of docs', function(done) {
 		db.allDocs().then(function(resp) {
 			assert(resp);
+			assert(resp.rows);
 			done();
 		}).catch(function(err) {
 			assert.fail(err);

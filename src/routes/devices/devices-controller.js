@@ -45,18 +45,18 @@ module.exports = function(program) {
 			let serial_number = req.params.serial_number;
 			let push_token = req.body.pushToken;
 			let authentication_token = req.get('Authorization');
-			let device = null;
-			let registration = null;
+
 			//Pass has an _id of the passTypeIdentifier + serial_number
 			let passId = (`${pass_type_id}-${serial_number}`).replace(/\./g, '-');
 			let pass = {
 				_id: passId
 			};
-			log.info('Finding pass with id', passId);
+			//	logger('Finding pass with id', passId);
+
+			logger('post_device_registration', device_id, pass_type_id, serial_number);
 			logger('post_device_registration', 'authentication =', authentication_token);
-			logger('post_device_registration', 'device_id =', device_id);
-			logger('post_device_registration', 'pass_type_id =', pass_type_id);
-			logger('post_device_registration', 'serial_number =', serial_number);
+			//	logger('post_device_registration', 'pass_type_id =', pass_type_id);
+			//	logger('post_device_registration', 'serial_number =', serial_number);
 			logger('post_device_registration', 'push_token =', push_token);
 
 			if (!authentication_token) {
@@ -70,26 +70,29 @@ module.exports = function(program) {
 
 			//1. Find passs
 			//2. Find device
-				//Not found insert
+			//Not found insert
 			//Found return
 
 
-			function findPass(id, cb){
-				log.info('findPass', id);
+			function findPass(id, cb) {
+				logger('findPass', id);
 				//Reject if pass not found
-				db.get(passId).then(function(resp){
+				db.get(passId).then(function(resp) {
 					pass = resp;
-					log.info('Found pass', resp._id);
+					logger('ok', resp._id);
 					cb(null, resp);
-				}).catch(function(err){
-					log.error('Did not find pass', id);
-					cb({status: 404, data: err});
+				}).catch(function(err) {
+					log.error('err', id);
+					cb({
+						status: 404,
+						data: err
+					});
 				});
 			}
 
-			function buildDevice(pass, cb){
-				device = new Device({
-					//_id: 'device-' + device_id,
+			function buildDevice(pass, cb) {
+				let device = new Device({
+					_id: 'device-' + device_id,
 					deviceLibraryIdentifier: device_id,
 					passTypeIdentifier: pass_type_id,
 					authorization: authentication_token,
@@ -99,7 +102,7 @@ module.exports = function(program) {
 				});
 
 
-				registration = new Registration({
+				let registration = new Registration({
 					pass_id: pass._id,
 					serial_number: serial_number,
 					pass_type_id: pass_type_id,
@@ -108,48 +111,72 @@ module.exports = function(program) {
 					deviceLibraryIdentifier: device_id,
 					push_token: push_token
 				});
-				log.info('buildDevice', device._id, registration._id);
-				cb(null, {device: device, registration: registration});
+				logger('device', device._id);
+				cb(null, device, registration);
 			}
 
-			function findOrCreateDevice(obj, cb){
+			function findOrCreateDevice(device, registration, cb) {
 				//# The device has already registered for updates on this pass
-				db.get(obj.registration._id).then(function(reg) {
-					log.info('post_device_registration', 'found', reg._id);
-					cb(null, {status: 200, data: reg});
-				}).catch(function(err) {
-					console.log('Error', 'device not found', registration);
-					db.saveAll([obj.device, obj.registration]).then(function(resp) {
-						log.info('post_device_registration', 'inserted', resp);
-						cb(null, {status: 201, data: resp});
-					}).catch(function(err) {
-						log.error('post_device_registration', 'error', err);
-						err = {
-							error_message: 'Device already registered'
-						};
-						cb({status: 400, data: err});
+				db.get(registration._id).then(function(reg) {
+					logger('get', 'found', reg._id);
+					cb(null, {
+						status: 200,
+						data: reg
 					});
+				}).catch(function(err) {
+					logger('get', 'not found', registration._id);
+					logger('save', 'device', resp._id);
+					db.saveSync(device);
+					db.saveSync(registration);
+					cb(null, {
+						status: 201,
+						data: {
+							device: device,
+							registration: registration
+						}
+					});
+
+					/*
+										db.bulkDocs([
+											device, registration
+										]).then(function(resp) {
+											logger('save', 201, resp);
+											cb(null, {
+												status: 201,
+												data: resp
+											});
+										}).catch(function(err) {
+											logger('save', err);
+											err = {
+												error_message: 'Device already registered'
+											};
+											cb({
+												status: 400,
+												data: err
+											});
+										});
+										*/
 				});
 
+
 			}
 
-			function createOrReturnDevice(req){
+			function createOrReturnDevice(req) {
 
 			}
 
 			async.waterfall([
-			    async.apply(findPass, passId),
-			    buildDevice,
-			    findOrCreateDevice,
-			], function (err, result) {
+				async.apply(findPass, passId),
+				buildDevice,
+				findOrCreateDevice,
+			], function(err, result) {
 				log.error('error', err);
-			    if(err){
+				if (err) {
 					return res.status(err.status).json(err.data);
 				} else {
 					return res.status(result.status).json(result.data);
 				}
 			});
-
 
 
 
@@ -274,11 +301,11 @@ module.exports = function(program) {
 			assert(device_id, 'has device id');
 			assert(pass_type_id, 'has pass type id');
 
-			log.info('get_device_passes', 'authentication_token', authentication_token);
-			log.info('get_device_passes', req.method, req.url);
+			logger('get_device_passes', 'Authorization', authentication_token);
+			//	logger('get_device_passes', req.method, req.url);
 
 			if (!authentication_token) {
-				log.error('no authentication_token', authentication_token);
+				log.error('no Authorization', authentication_token);
 
 				res.status(401).json({
 					error: 'Unauthorized'
@@ -286,27 +313,28 @@ module.exports = function(program) {
 
 			} else {
 
-				log.info('get_device_passes', 'Make sure device is registered');
+				logger('get_device_passes', device_id, pass_type_id, authentication_token);
+
 				db.allDocs({
 					//docType: 'registration',
-                    pass_type_id: pass_type_id,
-                   // auth_token: authentication_token,
-                    deviceLibraryIdentifier: device_id
+					pass_type_id: pass_type_id,
+					auth_token: authentication_token,
+					deviceLibraryIdentifier: device_id
 				}).then(function(resp) {
-					log.info('FOund', resp);
 
-                     serials = _.map(resp.rows, (row)=>{
-                        return row.serial_number;
-                     });
-                    log.info('get_device_passes', 'get passes for ', pass_type_id, device_id);
-                    log.info('get_device_passes', 'Return matching passes', serials);
-                    res.status(200).json({
-                        lastUpdated: Date.now().toString(),
-                        serialNumbers: serials
-                    });
+
+					serials = _.map(resp.rows, (row) => {
+						return row.serial_number;
+					});
+					//logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
+					logger('get_device_passes', 'serials', serials);
+					res.status(200).json({
+						lastUpdated: Date.now().toString(),
+						serialNumbers: serials
+					});
 
 				}).catch(function(err) {
-					log.error('no passes found for device');
+					logger('ERROR', 'no passes found for device', err);
 					res.status(404).json({
 						error_message: `No passTypeIdentifier ${pass_type_id} found for device ${device_id}`
 					});

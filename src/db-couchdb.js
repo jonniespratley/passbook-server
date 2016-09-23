@@ -1,86 +1,95 @@
 'use strict';
 
 const _ = require('lodash');
+const assert = require('assert');
 const utils = require('./utils');
 const request = require('request');
-//request.debug = true;
-module.exports = function(options) {
-	options = options || {};
+const log = require('npmlog');
+
+module.exports = function(url, options) {
+	log.heading = 'couchdb';
+	assert(url, 'must have base url')
 	var logger = utils.getLogger('couchdb');
-	const BASE_URL = options.baseUrl || 'http://localhost:4987/passbook-server';
+	const BASE_URL = url || 'http://localhost:4987/passbook-server';
 
 	var defaultOptions = {
+		baseUrl: BASE_URL,
 		method: 'GET',
-		//json: true,
+		json: true,
 		headers: {
-			//'Accept': 'application/json',
+			'Accept': 'application/json',
 			'Content-Type': 'application/json',
 			'x-token': 'my-token'
 		}
 	};
+	options = _.extend(defaultOptions, options);
 
-	var log = require('npmlog');
-	var baseRequest = request.defaults(defaultOptions);
+	if (options.debug) {
+		//////request.debug = true;
+	}
 
+
+	var baseRequest = request.defaults(options);
 	var sendRequest = function(options) {
-		options.url = `${BASE_URL}/${options.url}`;
-
-
-		let _response = {};
+		log.http(options.method, options.url);
 		return new Promise(function(resolve, reject) {
-			_.defer(function() {
-				log.http(options.method, options.url);
-				request(options, function(err, resp, body) {
-					if (err) {
-						reject(err);
-					}
+			baseRequest(options, function(err, resp, body) {
+				if (!err) {
 					log.http(resp.statusCode, options.url);
-					_response.data = body;
-
-					if (!options.json) {
-						try {
-							_response.data = JSON.parse(body);
-							resolve(_response.data);
-						} catch (e) {
-							resolve(_response.data);
-							logger('ERROR', options.url, 'Could not parse json', e);
-						}
-					} else {
-						resolve(_response.data);
-					}
-
-				});
+					resp.data = body;
+					resolve(resp.data);
+				} else {
+					log.error(options.url, err);
+					reject(err);
+				}
 			});
 		});
 	};
 
 	var api = {
 		get: function(id) {
-			logger('get', id);
+			log.http('get', id);
 			return new Promise(function(resolve, reject) {
 				sendRequest({
 					method: 'GET',
 					url: `${id}`
-				}).then(resolve, reject);
+				}).then((resp) => {
+					resolve(resp);
+				}, reject);
 			});
 		},
 		remove: function(id, rev) {
-			logger('remove', id);
-			return new Promise(function(resolve, reject) {
-				sendRequest({
-					url: `${id}?rev=${rev}`,
-					method: 'DELETE'
-				}).then(resolve, reject);
+			return new Promise((resolve, reject) => {
+				log.http('remove', id);
+
+				if (!rev) {
+					this.get(id).then((resp) => {
+						let oldDoc = resp;
+						sendRequest({
+							url: `${oldDoc._id}?rev=${oldDoc._rev}`,
+							method: 'DELETE'
+						}).then(resolve).catch(reject);
+					}).catch(reject);
+				} else {
+					sendRequest({
+						url: `${id}?rev=${rev}`,
+						method: 'DELETE'
+					}).then(resolve).catch(reject);
+				}
 			});
 		},
 		put: function(doc) {
-			logger('put', doc);
+			log.info('put', doc._id, doc._rev);
 			return new Promise(function(resolve, reject) {
 				if (!doc._rev) {
 					api.get(doc._id).then(function(resp) {
+						log.info('put', doc._id, resp._rev);
 						doc._rev = resp._rev;
 						sendRequest({
-							url: `${doc._id}`,
+							url: `${doc._id}?rev=${resp._rev}`,
+							headers: {
+								//	'If-Match': resp._rev
+							},
 							method: 'PUT',
 							json: true,
 							body: doc
@@ -97,15 +106,23 @@ module.exports = function(options) {
 			});
 		},
 		saveAll: function(docs) {
-			return new Promise(function(resolve, reject) {
+			return new Promise((resolve, reject) => {
+				let _saves = [];
+				docs.forEach((doc) => {
+					log.info('save', doc);
+					_saves.push(this.put(doc));
+				});
+				Promise.all(_saves).then(resolve, reject);
+
+				/*
 				sendRequest({
-					url: `_bulk_docs`,
+					url: `/_bulk_docs`,
 					method: 'PUT',
 					json: true,
 					body: {
 						docs: docs
 					}
-				}).then(resolve, reject);
+				}).then(resolve, reject);*/
 			});
 		},
 		post: function(doc) {
@@ -116,46 +133,31 @@ module.exports = function(options) {
 					method: 'PUT',
 					json: true,
 					body: doc
-
 				}).then(resolve, reject);
 			});
 		},
 		find: function(params) {
-			return new Promise(function(resolve, reject) {
-				sendRequest({
-					method: 'GET',
-					url: '_all_docs?include_docs=true',
-					json: false
-				}).then(function(resp) {
-
-					var docs = [];
-					resp.rows.forEach(function(row) {
-						docs.push(row.doc);
-					});
-					var filtered = _.filter(docs, params);
-					resolve(filtered);
-
-				}, reject);
-			});
+			return this.allDocs(params);
 		},
 		allDocs: function(params) {
 			return new Promise(function(resolve, reject) {
 				sendRequest({
 					url: '_all_docs?include_docs=true',
-					method: 'GET',
-					json: false
+					method: 'GET'
 				}).then(function(resp) {
 					var docs = resp.rows.filter(function(row) {
 						return row.doc;
 					});
-
-					logger('allDocs', docs);
-
-					resolve(_.filter(docs, params));
+					log.info('allDocs', docs.length);
+					resolve({
+						rows: docs
+					});
 				}, reject);
 			});
 		}
 	};
+
+	api.bulkDocs = api.saveAll;
 
 	return api;
 };

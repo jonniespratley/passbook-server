@@ -23,7 +23,8 @@ var GITHUB_CLIENT_SECRET = GITHUB_DEV_CLIENT_SECRET;
 
 var GITHUB_CALLBACK_URL = '/auth/provider/callback';
 module.exports = {
-	baseUrl: '/api/v1',
+	debug: true,
+	baseUrl: 'http://localhost:4987/passbook-server',
 	name: 'passbookmanager',
 	message: 'Passbook Manager API Server',
 	"passkit": {

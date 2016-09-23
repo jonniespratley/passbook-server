@@ -3,7 +3,6 @@ var assert = require('assert');
 
 
 
-
 var p;
 
 var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
@@ -13,12 +12,8 @@ var config = program.config.defaults;
 
 var mocks = require('../helpers/mocks');
 describe('Passes', function() {
-	before('create passes', function(done) {
-		program.db.bulkDocs(mocks.mockPasses).then(function(){
-            done();
-        });
 
-	});
+
 	it('should be defined', function(done) {
 		assert(Passes);
 		done();
