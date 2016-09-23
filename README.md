@@ -2,6 +2,8 @@ passbook-server
 =============
 [![Build Status](https://travis-ci.org/jonniespratley/passbook-server.svg?branch=master)](https://travis-ci.org/jonniespratley/passbook-server)
 
+[![Coverage Status](https://coveralls.io/repos/github/jonniespratley/passbook-server/badge.svg?branch=master)](https://coveralls.io/github/jonniespratley/passbook-server?branch=master)
+
 # Description
 
 Passbook API server
