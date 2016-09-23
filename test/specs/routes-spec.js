@@ -34,14 +34,15 @@ describe('passbook-server routes', function() {
     app.locals.program = program;
     program.require('routes').Passes(app);
     program.require('routes').Devices(app);
-    //done();
+    //  done();
     //request(app);
     program.db.bulkDocs(mocks.mockPasses).then(function(resp) {
       console.log('insterted', resp);
-      //mockPass = resp[0];
+      mockPass = resp[0];
       mockDevice.authorization = 'ApplePass ' + mockPass.authenticationToken;
       done();
     }).catch(done);
+
   });
 
   it('GET - /api/v1 - should return api', function(done) {
@@ -136,7 +137,8 @@ describe('passbook-server routes', function() {
             .delete(
               `/api/v1/devices/${mockDevice.deviceLibraryIdentifier}/registrations/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`
             )
-            .set('Authorization', mockDevice.authorization)
+
+          .set('Authorization', mockDevice.authorization)
             //.expect('Content-Type', /json/)
             .expect(200, done);
         });

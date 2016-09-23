@@ -2,14 +2,14 @@
 var path = require('path');
 //var config = require(path.resolve(__dirname, '../../config.js'));
 var config = require(path.resolve(__dirname, '../test-config.js'));
-
 var CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
 
 var adapter = new CouchDB('http://localhost:4987/passbook-server');
 var program = require(path.resolve(__dirname, '../../src/program.js'))({
-	//dataPath: path.resolve(__dirname, '../temp')
-	adapter: adapter
+	dataPath: path.resolve(__dirname, '../temp'),
+	adapter: process.env.USE_ADAPTER ? adapter : null
 });
+
 
 
 var Pass = require(path.resolve(__dirname, '../../src/routes/passes/pass.js'));

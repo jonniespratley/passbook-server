@@ -93,7 +93,10 @@ module.exports = function(url, options) {
 							method: 'PUT',
 							json: true,
 							body: doc
-						}).then(resolve, reject);
+						}).then((_doc) => {
+							doc._rev = _doc.rev;
+							resolve(doc);
+						}, reject);
 					}).catch(function(err) {
 						sendRequest({
 							url: `${doc._id}`,
