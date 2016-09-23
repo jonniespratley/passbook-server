@@ -5,3 +5,8 @@ temp
 data
 .DS_Store
 db.sqlite
+esdoc
+store
+docs
+mochawesome-reports
+coverage

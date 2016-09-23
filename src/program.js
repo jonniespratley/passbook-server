@@ -9,6 +9,9 @@ const DB = require('./db');
 const CouchDB = require('./db-couchdb');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
+
+const log = require('npmlog');
+
 var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
 var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
@@ -18,14 +21,18 @@ var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
  */
 class Program {
 	constructor(config) {
-
+        log.heading = 'passbook-server';
 		if (!config) {
 			config = defaultConfig;
 		}
 
 		config = _.assign(defaultConfig, config);
-		var db = new DB.FileDataStore(config.dataPath);
+
+
+        log.info('config', config);
         
+		var db = new DB(config.dataPath);
+
         this.db = db;
 		this.pkg = pkg;
 		this.log = logger;

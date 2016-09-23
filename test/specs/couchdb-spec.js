@@ -92,10 +92,10 @@ var mockServer = function() {
 }
 
 require('request').debug = true;
-describe('CouchDB Adapter', function() {
+xdescribe('CouchDB Adapter', function() {
 
 	before('should be defined - ' + config.baseUrl, function(done) {
-		//mockServer();
+		mockServer();
 
 		done();
 	});

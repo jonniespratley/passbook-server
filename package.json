@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "node src/server",
+    "docs": "./node_modules/.bin/esdoc -c esdoc.json",
     "test": "gulp"
   },
   "author": {
@@ -22,6 +23,7 @@
   "license": "MIT",
   "bugs": "https://github.com/jonniespratley//passbook-server/issues",
   "dependencies": {
+    "async": "^2.0.1",
     "autocmdr": "~0.0.4",
     "body-parser": "^1.10.2",
     "chalk": "^0.5.1",
@@ -35,6 +37,7 @@
     "method-override": "^2.3.1",
     "node-uuid": "^1.4.7",
     "npmlog": "^4.0.0",
+    "pshell": "^1.0.2",
     "q": "^1.1.2",
     "request": "^2.51.0",
     "serve-index": "^1.6.0",
@@ -43,10 +46,14 @@
   "devDependencies": {
     "chai": "^1.10.0",
     "gulp": "^3.8.10",
+    "gulp-coveralls": "^0.1.4",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-jsdoc3": "^0.3.0",
     "gulp-mocha": "^2.0.0",
-    "gulp-nodeunit-runner": "^0.2.2",
+    "gulp-sequence": "^0.4.6",
     "gulp-util": "^3.0.2",
     "mocha": "^2.1.0",
+    "mochawesome": "^1.5.2",
     "nock": "^8.0.0",
     "supertest": "^0.15.0"
   }
