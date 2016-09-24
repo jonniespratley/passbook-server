@@ -42,7 +42,10 @@ class Program {
 		this.Pass = Pass;
 		this.Passes = Passes;
 		this.config = {
-			defaults: config
+			defaults: config,
+            get: (name)=>{
+                return this.config.defaults[name];
+            }
 		};
 
 		this.server = null;

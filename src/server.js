@@ -15,22 +15,14 @@ var program = require('./program')(config);
 var logger = program.getLogger('server');
 
 
-
-// configure Express
 var app = express();
-
-
 app.locals.program = program;
 app.locals.config = config;
-//app.set('views', __dirname + '/views');
-//app.set('view engine', 'ejs');
-//app.engine('html', require('ejs').renderFile);
+
 
 program.app = app;
 
 var middleware = [
-	//path.resolve(__dirname, './routes/jps-middleware-auth'),
-	//path.resolve(__dirname, './routes/jps-passbook-routes'),
 	path.resolve(__dirname, './routes/devices'),
 	path.resolve(__dirname, './routes/passes')
 ];
@@ -43,3 +35,34 @@ middleware.forEach(function(m) {
 app.listen(port, host, function() {
 	logger('listening on', host + ':' + port);
 });
+
+
+const log = require('npmlog');
+const debug = require('debug')('server');
+class Server {
+    constructor(middleware) {
+        debug('Server', middleware);
+        var app = express();
+        this.app = app;
+    }
+    getExpressApp() {
+        return this.app;
+    }
+
+    setExpressLocals(name, value) {
+        debug('Server', 'setExpressLocals', name, value);
+        this.app.locals[name] = value;
+        return this.app;
+    }
+
+    startExpressServer(port, done) {
+        this.app.listen(port, host, function(err) {
+            log.info('listening on', host + ':' + port);
+
+            done(err, this.app);
+        });
+    }
+}
+
+
+module.exports = Server;

@@ -1,14 +1,14 @@
 'use strict';
 const _ = require('lodash');
 const assert = require('assert');
-const async = require('async');
 const Registration = require('./registration');
 const Device = require('./device');
 const Passes = require('../passes/passes');
+const Pass = require('../passes/pass');
 
 const log = require('npmlog');
 module.exports = function(program) {
-	const db = program.db;
+    const db = program.db;
 	//log.heading = 'devices-controller';
 	var logger = program.getLogger('controller:devices');
 	return {
@@ -45,141 +45,76 @@ module.exports = function(program) {
 			let serial_number = req.params.serial_number;
 			let push_token = req.body.pushToken;
 			let authentication_token = req.get('Authorization');
+			let device = null;
+			let registration = null;
 
-			//Pass has an _id of the passTypeIdentifier + serial_number
-			let passId = (`${pass_type_id}-${serial_number}`).replace(/\./g, '-');
-			let pass = {
-				_id: passId
-			};
-			//	logger('Finding pass with id', passId);
-
-			logger('post_device_registration', device_id, pass_type_id, serial_number);
 			logger('post_device_registration', 'authentication =', authentication_token);
-			//	logger('post_device_registration', 'pass_type_id =', pass_type_id);
-			//	logger('post_device_registration', 'serial_number =', serial_number);
+			logger('post_device_registration', 'device_id =', device_id);
+			logger('post_device_registration', 'pass_type_id =', pass_type_id);
+			logger('post_device_registration', 'serial_number =', serial_number);
 			logger('post_device_registration', 'push_token =', push_token);
+            let pass = new Pass({
+                serialNumber: serial_number,
+                passTypeIdentifier: pass_type_id
+            });
+
+
+
 
 			if (!authentication_token) {
-				return res.status(401).json({
+				res.status(401).json({
 					error: 'Unauthorized'
 				});
-			}
+			} else {
 
-
-			// TODO: Steps for registering a new device/
-
-			//1. Find passs
-			//2. Find device
-			//Not found insert
-			//Found return
-
-
-			function findPass(id, cb) {
-				logger('findPass', id);
-				//Reject if pass not found
-				db.get(passId).then(function(resp) {
-					pass = resp;
-					logger('ok', resp._id);
-					cb(null, resp);
-				}).catch(function(err) {
-					log.error('err', id);
-					cb({
-						status: 404,
-						data: err
-					});
-				});
-			}
-
-			function buildDevice(pass, cb) {
-				let device = new Device({
-					_id: 'device-' + device_id,
-					deviceLibraryIdentifier: device_id,
-					passTypeIdentifier: pass_type_id,
-					authorization: authentication_token,
-					pushToken: push_token,
-					serialNumber: serial_number,
-					pass_id: pass._id
-				});
-
-
-				let registration = new Registration({
-					pass_id: pass._id,
-					serial_number: serial_number,
-					pass_type_id: pass_type_id,
-					device_id: device._id,
-					auth_token: authentication_token,
-					deviceLibraryIdentifier: device_id,
-					push_token: push_token
-				});
-				logger('device', device._id);
-				cb(null, device, registration);
-			}
-
-			function findOrCreateDevice(device, registration, cb) {
-				//# The device has already registered for updates on this pass
-				db.get(registration._id).then(function(reg) {
-					logger('get', 'found', reg._id);
-					cb(null, {
-						status: 200,
-						data: reg
-					});
-				}).catch(function(err) {
-					logger('get', 'not found', registration._id);
-					logger('save', 'device', resp._id);
-					db.saveSync(device);
-					db.saveSync(registration);
-					cb(null, {
-						status: 201,
-						data: {
-							device: device,
-							registration: registration
-						}
+				try {
+					device = new Device({
+						//_id: 'device-' + device_id,
+						deviceLibraryIdentifier: device_id,
+						passTypeIdentifier: pass_type_id,
+						authorization: authentication_token,
+						pushToken: push_token,
+						serialNumber: serial_number
 					});
 
-					/*
-										db.bulkDocs([
-											device, registration
-										]).then(function(resp) {
-											logger('save', 201, resp);
-											cb(null, {
-												status: 201,
-												data: resp
-											});
-										}).catch(function(err) {
-											logger('save', err);
-											err = {
-												error_message: 'Device already registered'
-											};
-											cb({
-												status: 400,
-												data: err
-											});
-										});
-										*/
-				});
+					registration = new Registration({
+						pass_id: pass._id,
+						serial_number: serial_number,
+						pass_type_id: pass_type_id,
+						device_id: device._id,
+						auth_token: authentication_token,
+						deviceLibraryIdentifier: device_id,
+						push_token: push_token
+					});
+
+					//# The device has already registered for updates on this pass
+					db.get(registration._id).then(function(reg) {
+						log.info('Found device registration', device._id);
+
+                        logger('post_device_registration', 'found', registration._id);
+						logger('post_device_registration', 'returning 200');
+						res.status(200).json(reg);
+					}).catch(function(err) {
+						console.log('Error', 'device not found', registration);
+						db.saveAll([device, registration]).then(function(resp) {
+							logger('post_device_registration', 'inserted', resp);
+							logger('post_device_registration', 'returning 201');
+							res.status(201).json(resp);
+						}).catch(function(err) {
+							logger('post_device_registration', 'error', err);
+							res.status(400).json(err);
+						});
+					});
 
 
-			}
-
-			function createOrReturnDevice(req) {
-
-			}
-
-			async.waterfall([
-				async.apply(findPass, passId),
-				buildDevice,
-				findOrCreateDevice,
-			], function(err, result) {
-				log.error('error', err);
-				if (err) {
-					return res.status(err.status).json(err.data);
-				} else {
-					return res.status(result.status).json(result.data);
+				} catch (e) {
+					logger('post_device_registration', 'error', e);
+					//	program.db.saveSync(registration);
+					//	program.db.saveSync(device);
+					res.status(400).json(e);
 				}
-			});
 
-
-
+			}
 		},
 		/**
 		 * # Unregister

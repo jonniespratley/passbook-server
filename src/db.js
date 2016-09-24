@@ -5,7 +5,7 @@ const _ = require('lodash');
 const assert = require('assert');
 const Store = require('jfs');
 
-
+const log = require('npmlog');
 
 var db = null;
 /**
@@ -20,9 +20,9 @@ class Db {
   constructor(name, options) {
       options = _.extend({
         saveId: '_id',
-        type: 'single'
-          //pretty: true
-      }, options)
+        //type: 'single'
+          pretty: true
+      }, options);
       db = new Store(name, options);
       this.db = db;
 
@@ -58,7 +58,10 @@ class Db {
         let _out, _docs = [];
 
         self.allDocs(params).then(function(resp) {
-          _out = _.filter(resp.rows, params);
+          _docs = resp.rows.map((row)=>{
+            return row.doc;
+          });
+          _out = _.filter(_docs, params);
 
           if (_out && _out.length > 0) {
             logger('find.success', _out.length);
@@ -90,11 +93,14 @@ class Db {
               reject(err);
             }
             for (_obj in objs) {
-              _docs.push(objs[_obj]);
+              _docs.push({
+                id: objs[_obj]._id,
+                rev: objs[_obj]._rev,
+                doc: objs[_obj]
+              });
             }
-            if (params) {
-              _docs = _.filter(_docs, params);
-            }
+
+
             resolve({
               rows: _docs
             });
@@ -134,6 +140,8 @@ class Db {
      */
   post(doc, prefix) {
       doc._id = this.getUUID(prefix);
+      doc._rev = 0;
+      doc._rev++;
       return new Promise(function(resolve, reject) {
 
         logger('post', doc);
@@ -143,7 +151,8 @@ class Db {
               logger('post.error', err);
               reject(err);
             } else {
-              doc.id = doc._id;
+              doc._id = doc._id;
+              doc._rev = doc._rev;
               logger('post.success', doc._id);
               resolve(doc);
             }
@@ -210,11 +219,14 @@ class Db {
 
         _.forEach(docs, function(doc) {
           doc._id = doc._id || self.getUUID();
+          doc._rev = doc._rev || 0;
           self.put(doc).then(function(resp) {
             saves.push(resp);
             _done();
           }).catch(function(err) {
             _done(err);
+            reject(err);
+
           });
         });
       });
@@ -228,7 +240,13 @@ class Db {
     return this.saveAll(docs);
   }
   findOne(params) {
-    return this.findBy(params);
+    return new Promise((resolve, reject)=>{
+      this.find(params).then((resp)=>{
+        let out = _(resp).first();
+        log.info('findOne', out);
+        resolve(out);
+      }).catch(reject);
+    });
   }
   getUUID(prefix) {
     let _prefix = prefix || 'doc';

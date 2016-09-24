@@ -2,12 +2,19 @@
 var path = require('path');
 //var config = require(path.resolve(__dirname, '../../config.js'));
 var config = require(path.resolve(__dirname, '../test-config.js'));
-var CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+var PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+var CouchDB = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
+exports.config = config;
+const dbpath = path.resolve(__dirname, config.db.name);
 
-var adapter = new CouchDB('http://localhost:4987/passbook-server');
+//var adapter = new CouchDB('http://localhost:4987/passbook-server');
+//var adapter = new PouchDB(dbpath);
+var adapter = new PouchDBAdapter(dbpath);
+
 var program = require(path.resolve(__dirname, '../../src/program.js'))({
+    config: config,
 	dataPath: path.resolve(__dirname, '../temp'),
-	adapter: process.env.USE_ADAPTER ? adapter : null
+//	adapter:adapter
 });
 
 

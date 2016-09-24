@@ -5,100 +5,117 @@ const utils = require('../../utils');
 const _ = require('lodash');
 const async = require('async');
 const logger = utils.getLogger('passes');
+const log = require('npmlog');
+
+var db;
 
 
-module.exports = function(program) {
-  var db = program.db;
-  //  const db = require('../../db').getInstance();
-  var _passes = null;
-  return {
-    save: function(p) {
-      return db.put(new Pass(p));
-    },
-    add: function(p) {
-      return db.put(new Pass(p));
-    },
-    get: function(p) {
-      return db.get(p);
-    },
-    remove: function(p) {
-      return db.remove(p);
-    },
-    /**
-     * Get all passes
-     * @param params
-     * @returns {*}
-     */
-    getPasses: function(params) {
-      let __passes = [];
-      params = _.assign({
-        docType: 'pass'
-      }, params);
 
-      return new Promise(function(resolve, reject) {
-        db.allDocs(params).then(function(resp) {
-          __passes = _.filter(resp.rows, params);
-          resolve(__passes);
-        }).catch(reject);
-      });
-    },
-    /**
-     * Find pass by params
-     * @param params
-     * @returns {*}
-     */
-    find: function(params) {
-      var self = this,
-        pass = null;
+module.exports = function(program){
+    class Passes {
+        constructor(program) {
+            log.info('Passes required');
 
-      logger('find', params);
+            db = program.db;
+            this.db = db;
 
-      return new Promise(function(resolve, reject) {
-        _.defer(function() {
-          async.waterfall([
-            function _getPasses(callback) {
-              self.getPasses(params).then(function(resp) {
-                callback(null, resp);
-              }).catch(function(err) {
-                callback(err, null);
-              });
-            },
-            function _findPass(passes, callback) {
-              pass = _.find(passes, params);
-              if (pass) {
-                callback(null, pass);
-              } else {
-                callback('No pass', null);
-              }
+        }
+        save(p) {
+            return new Promise((resolve, reject) => {
+                if(!p._id){
+                    this.create(p).then(resolve, reject);
+                } else {
+                    this.update(p).then(resolve, reject);
+                }
+            });
+        }
+        create(p) {
+            return new Promise((resolve, reject) => {
+                this.db.post(p).then((resp) => {
+                    resolve(resp);
+                }).catch(reject);
+            });
+        }
+        update(p) {
+            return new Promise((resolve, reject) => {
+                this.db.put(p).then((resp) => {
+                    resolve(resp);
+                }).catch(reject);
+            });
+        }
+        get(p) {
+            return this.db.get(p);
+        }
+        remove(p) {
+            return new Promise((resolve, reject) => {
+                this.db.remove(p).then((resp) => {
+                    resolve(resp);
+                }).catch(reject);
+            });
+        }
+
+        parseResponse(resp){
+
+        }
+
+        find(params){
+            return this.getPasses(params);
+        }
+        findOne(params){
+          return this.db.findOne(params);
+        }
+
+        query(fun, params) {
+          return this.db.query(fun, params);
+        }
+
+        _parseResponse(resp) {
+            log.info('_parseResponse', resp._id);
+                return resp.map((row) => {
+                    if(row.doc){
+                        return row.doc;
+                    } else {
+                        return row;
+                    }
+                });
             }
-          ], function(err, result) {
-            if (err) {
-              reject({
-                error: 'Pass not found',
-                query: params
-              });
-            } else {
-              resolve(result);
-            }
-            console.log('find', result);
-          });
+            /**
+             * Get all passes
+             * @param params
+             * @returns {*}
+             */
+        getPasses(params) {
+            let _passes = [];
+            params = _.assign({
+                docType: 'pass'
+            }, params);
+            return new Promise((resolve, reject) => {
+                log.info('getPasses', params);
+                this.db.find({
+                    docType: 'pass'
+                }).then(this._parseResponse).then((resp) => {
+                    log.info('getPasses', resp);
+                    resolve(resp);
+                }).catch(reject);
+            });
+        }
+        registerDeviceWithPass(device, pass) {
 
-        });
+        }
+        findPassesForDevice(device) {
 
-      });
-    },
-    registerDeviceWithPass: function(device, pass) {
-
-    },
-    findPassesForDevice: function(device) {
-
-    },
-    findPassBySerial: function(serial) {
-      logger('findPassBySerial', serial);
-      return this.find({
-        docType: 'pass',
-        serialNumber: serial
-      });
+        }
+        findPassBySerial(serial) {
+            logger('findPassBySerial', serial);
+            return this.findOne({
+                docType: 'pass',
+                serialNumber: serial
+            });
+        }
+        bulk(docs){
+            return this.db.bulkDocs(docs);
+        }
     }
-  };
-}
+
+    return new Passes(program);
+};

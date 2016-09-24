@@ -86,9 +86,9 @@ module.exports = function(url, options) {
 						log.info('put', doc._id, resp._rev);
 						doc._rev = resp._rev;
 						sendRequest({
-							url: `${doc._id}?rev=${resp._rev}`,
+							url: `${doc._id}?rev=${doc._rev}`,
 							headers: {
-								//	'If-Match': resp._rev
+								'If-Match': doc._rev
 							},
 							method: 'PUT',
 							json: true,
@@ -97,7 +97,9 @@ module.exports = function(url, options) {
 							doc._rev = _doc.rev;
 							resolve(doc);
 						}, reject);
+
 					}).catch(function(err) {
+                        log.error('creating document', doc._id);
 						sendRequest({
 							url: `${doc._id}`,
 							method: 'PUT',
@@ -129,11 +131,14 @@ module.exports = function(url, options) {
 			});
 		},
 		post: function(doc) {
-			doc._id = require('node-uuid').v4();
+
 			return new Promise(function(resolve, reject) {
+				if(!doc._id){
+					doc._id = require('node-uuid').v4();
+				}
 				sendRequest({
 					url: `${doc._id}`,
-					method: 'PUT',
+					method: 'POST',
 					json: true,
 					body: doc
 				}).then(resolve, reject);
