@@ -1,8 +1,7 @@
 'use strict';
 const assert = require('assert');
 const _ = require('lodash');
-const Passes = require('./passes');
-const Pass = require('./pass');
+
 const uuid = require('node-uuid');
 const log = require('npmlog');
 /*
@@ -13,6 +12,9 @@ const log = require('npmlog');
  *  Registration is a many-to-many relationship: a single device can register for updates to multiple passes,
  *  and a single pass can be registered by multiple devices.*/
 module.exports = function(program) {
+  const Passes = require('./passes')(program);
+  const Pass = require('./pass');
+
   var db = program.db;
   var logger = program.getLogger('controller:passes');
 
@@ -62,13 +64,11 @@ module.exports = function(program) {
         });
 
       } else {
-        db.allDocs({
-          docType: 'pass',
+        Passes.findOne({
           passTypeIdentifier: pass_type_id,
           serialNumber: serial_number
         }).then(function(resp) {
-
-          let pass = _(resp.rows).first();
+          let pass = resp;
           logger('get_passes:success', pass._id);
           if (lastUpdated > pass.lastUpdated) {
             logger('last-updated', lastUpdated, pass.lastUpdated);
@@ -76,7 +76,6 @@ module.exports = function(program) {
           } else {
             res.status(200).json(pass);
           }
-
         }).catch(function(err) {
           logger('get_passes:error', err);
           res.status(404).json(err);
@@ -104,7 +103,7 @@ module.exports = function(program) {
           error_message: 'Must provide an ID!'
         });
       }
-      db.put(p).then(function(resp) {
+      Passes.save(p).then(function(resp) {
         logger('put_pass', resp._id);
         res.status(200).json(resp);
       }).catch(function(err) {
@@ -114,7 +113,7 @@ module.exports = function(program) {
     get_all_passes: function(req, res) {
       //req.query.docType = 'pass';
 
-      db.allDocs(req.query).then(function(resp) {
+      Passes.getPasses(req.query).then(function(resp) {
         res.status(200).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);
@@ -129,7 +128,7 @@ module.exports = function(program) {
         });
       }
 
-      db.get(id).then(function(resp) {
+      Passes.findById(id).then(function(resp) {
         res.status(200).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);
@@ -144,7 +143,7 @@ module.exports = function(program) {
           error_message: 'Must provide an ID!'
         });
       }
-      db.remove(id).then(function(resp) {
+      Passes.remove(id).then(function(resp) {
         res.status(200).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);

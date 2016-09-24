@@ -171,10 +171,11 @@ describe('passbook-server routes', function() {
 
       });
 
-      it('GET - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(done) {
+      xit('GET - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(done) {
+        var prevTimestamp = new Date();
+
         request(app)
-          .get(`/api/v1/passes/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}?updatedSince=` +
-            Date.now())
+          .get(`/api/v1/passes/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}?updatedSince=${prevTimestamp}` )
           .set('Authorization', mockDevice.authorization)
           //.expect('Content-Type', /application\/vnd.apple.pkpass/)
           .expect(204, done);

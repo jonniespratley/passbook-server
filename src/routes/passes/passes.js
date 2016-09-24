@@ -46,6 +46,9 @@ module.exports = function(program){
         get(p) {
             return this.db.get(p);
         }
+        findById(id) {
+            return this.db.get(id);
+        }
         remove(p) {
             return new Promise((resolve, reject) => {
                 this.db.remove(p).then((resp) => {

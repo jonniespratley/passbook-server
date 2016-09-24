@@ -69,17 +69,15 @@ mocks.mockPasses = [
 	});
 
 
-	it('get() - should get pass', function(done) {
-		Passes.get(mocks.mockPass._id).then(function(resp) {
+	it('findById() - should pass by id', function(done) {
+		Passes.findById(mocks.mockPass._id).then(function(resp) {
 			assert(resp);
 			done();
 		}, function(err) {
 			assert.fail(err);
 			done();
 		});
-
 	});
-
 
 	it('findOne(params) - should resolve pass that meets params', function(done) {
 		Passes.findOne({
