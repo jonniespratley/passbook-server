@@ -159,7 +159,7 @@ describe('db', function () {
       });
     });
 
-    it('find(params) - should find params and resolve promise', function (done) {
+    xit('find(params) - should find params and resolve promise', function (done) {
       db.find({
         deviceLibraryIdentifier: mockDevice.deviceLibraryIdentifier
       }).then(function (resp) {
@@ -171,7 +171,7 @@ describe('db', function () {
       });
     });
 
-    it('find(params) - should find object and return first match', function (done) {
+    xit('find(params) - should find object and return first match', function (done) {
       db.find({
         serialNumber: mockPass.serialNumber
       }).then(function (resp) {
@@ -185,7 +185,7 @@ describe('db', function () {
       });
     });
 
-    it('findOne(params) - should find item by params and resolve promise', function (done) {
+    xit('findOne(params) - should find item by params and resolve promise', function (done) {
       db.findOne({
         serialNumber: mockPass.serialNumber
       }).then(function (row) {
