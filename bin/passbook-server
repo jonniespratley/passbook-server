@@ -6,12 +6,12 @@ const path = require('path');
 require('autocmdr/lib/logger')(program);
 require('autocmdr/lib/config')(program);
 
-
-
 var config = program.config.get();
 
+config.dataPath = path.resolve(__dirname, config.dataPath);
 
-console.log(JSON.stringify(config));
+
+//console.log(JSON.stringify(config));
 
 var serverProgram = require('../src/program')(config);
 

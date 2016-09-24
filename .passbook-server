@@ -3,7 +3,7 @@
 	"debug": true,
 	"baseUrl": "http://localhost:4987/passbook-server",
 	"message": "passbook-server api",
-	"dataPath": "/Users/212400520/Github/passbook-server/data",
+	"dataPath": "./data",
 	"redis": {
 		"hostname": "127.0.0.1",
 		"port": 6379
