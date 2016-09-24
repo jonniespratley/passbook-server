@@ -10,3 +10,7 @@ store
 docs
 mochawesome-reports
 coverage
+pouchdb
+tempdb
+mydb
+temp.json

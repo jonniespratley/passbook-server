@@ -21,7 +21,7 @@ var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
  */
 class Program {
 	constructor(config) {
-        log.heading = 'passbook-server';
+		log.heading = pkg.name;
 		if (!config) {
 			config = defaultConfig;
 		}
@@ -29,20 +29,23 @@ class Program {
 		config = _.assign(defaultConfig, config);
 
 
-        log.info('config', config);
-        
-		var db = new DB(config.dataPath);
+		log.info('config', 'db', config.dataPath);
 
-        this.db = db;
+		var db = config.adapter || new DB(config.dataPath);
+
+		this.db = db;
 		this.pkg = pkg;
-		this.log = logger;
+		this.log = log;
 		this.getLogger = utils.getLogger;
 		this.utils = utils;
 		this.Device = Device;
-        this.Pass = Pass;
-        this.Passes = Passes;
+		this.Pass = Pass;
+		this.Passes = Passes;
 		this.config = {
-			defaults: config
+			defaults: config,
+			get: (name) => {
+				return this.config.defaults[name];
+			}
 		};
 
 		this.server = null;
@@ -54,10 +57,10 @@ class Program {
 		return require(path.resolve(__dirname, name));
 	}
 
-    getDb(){
-        var db = new DB.FileDataStore(this.config.dataPath);
-        return db;
-    }
+	getDb() {
+		var db = new DB.FileDataStore(this.config.dataPath);
+		return db;
+	}
 }
 
 

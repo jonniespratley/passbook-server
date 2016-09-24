@@ -12,22 +12,22 @@ module.exports = function (obj) {
     let id = passTypeId + '-' + uuid;
     var pass = _.assign(this, {
             _id:id,
-            docType: "pass",
+            docType: 'pass',
             type: type,
 
             // TODO: Standard keys - Information that is required for all passes.
             lastUpdated: _.now(),
-            "logoText": "Passbook Manager",
-            "description": "This is the default pass description.",
+            'logoText': 'Passbook Manager',
+            'description': 'This is the default pass description.',
             formatVersion: 1,
-            "organizationName": "Passbook Manager",
-            "passTypeIdentifier": obj.passTypeIdentifier || config.passkit.passTypeIdentifier,
+            'organizationName': 'Passbook Manager',
+            'passTypeIdentifier': obj.passTypeIdentifier || config.passkit.passTypeIdentifier,
             serialNumber: uuid,
-            "teamIdentifier": obj.teamIdentifier || config.passkit.teamIdentifier,
+            'teamIdentifier': obj.teamIdentifier || config.passkit.teamIdentifier,
 
             //web service keys
-            "authenticationToken": uuid,
-            "webServiceURL": obj.webServiceURL || config.passkit.webServiceURL,
+            'authenticationToken': uuid,
+            'webServiceURL': obj.webServiceURL || config.passkit.webServiceURL,
 
             // TODO: expiration keys - Information about when a pass expires and whether it is still valid.
             /*expirationDate: null,
@@ -41,10 +41,10 @@ module.exports = function (obj) {
             			encryptionPublicKey: ''
             		}
             	],*/
-            "barcode": {
-                "message": "123456789",
-                "format": "PKBarcodeFormatQR",
-                "messageEncoding": "iso-8859-1"
+            'barcode': {
+                'message': '123456789',
+                'format': 'PKBarcodeFormatQR',
+                'messageEncoding': 'iso-8859-1'
             },
 
             // TODO: Relevance keys
@@ -58,8 +58,8 @@ module.exports = function (obj) {
             ],
 
             locations: [{
-                "longitude": -122.00,
-                "latitude": 37.00,
+                'longitude': -122.00,
+                'latitude': 37.00,
                 //	altitude: null,
                 relevantText: 'Nearby'
             }],
@@ -76,8 +76,8 @@ module.exports = function (obj) {
             //groupingIdentifier: '',
 
             labelColor: 'rgb(0, 0, 0)',
-            foregroundColor: "rgb(72, 72, 72)",
-            backgroundColor: "rgb(183, 180, 183)",
+            foregroundColor: 'rgb(72, 72, 72)',
+            backgroundColor: 'rgb(183, 180, 183)',
             suppressStripShine: false,
 
             //File locations
@@ -89,12 +89,12 @@ module.exports = function (obj) {
         passType,
         obj
         /*{
-        	"passTypeIdentifier": config.passkit.passTypeIdentifier,
-        	"teamIdentifier": config.passkit.teamIdentifier,
-        	"webServiceURL": config.passkit.webServiceURL
+        	'passTypeIdentifier': config.passkit.passTypeIdentifier,
+        	'teamIdentifier': config.passkit.teamIdentifier,
+        	'webServiceURL': config.passkit.webServiceURL
         }*/
     );
 
-    console.log('ID', pass._id);
+    //console.log('ID', pass._id);
     return pass;
 };

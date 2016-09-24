@@ -23,30 +23,24 @@ var GITHUB_CLIENT_SECRET = GITHUB_DEV_CLIENT_SECRET;
 
 var GITHUB_CALLBACK_URL = '/auth/provider/callback';
 module.exports = {
-	baseUrl: '/api/v1',
-	name: 'passbookmanager',
+	debug: true,
+	baseUrl: '/api',
+	name: 'passbook-server',
+
 	message: 'Passbook Manager API Server',
+    version: 'v1',
 	"passkit": {
 		"version": "v1",
 		"teamIdentifier": APPLE_TEAM_IDENTIFIER,
 		"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
 		"webServiceURL": APPLE_WEB_SERVICE_URL
 	},
-	version: 'v1',
 	security: {
 		salt: 'a58e325c6df628d07a18b673a3420986'
 	},
-	server: {
-		host: 'localhost',
-		port: 4141
-	},
 	db: {
-		username: 'demouser',
-		password: 'demopassword',
-		host: 'ds031611.mongolab.com',
-		port: 31611,
-
-		url: 'mongodb://localhost:27017/passbookmanager'
+    name: 'temp/test-db',
+		url: 'http://localhost:4987/passbook-server'
 	},
 	collections: ['devices', 'passes', 'notifications', 'settings'],
 	staticDir: './app',

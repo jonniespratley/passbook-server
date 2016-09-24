@@ -1,5 +1,6 @@
 'use strict';
 const path = require('path');
+const pkg = require('./package.json');
 
 //TODO - Change to your values
 const APPLE_TEAM_IDENTIFIER = 'USE9YUYDFH';
@@ -28,13 +29,8 @@ var GITHUB_CALLBACK_URL = '/auth/provider/callback';
 var config = {
 	"name": "passbook-server",
 	debug: true,
-	baseUrl: 'http://localhost:4987/passbook-server',
+	baseUrl: '/api',
 	"message": "passbook-server api",
-	"dataPath": path.resolve(__dirname, "./data/"),
-	redis: {
-		hostname: '127.0.0.1',
-		port: 6379
-	},
 	"version": "v1",
 	session: {
 		user: {
@@ -42,8 +38,9 @@ var config = {
 		}
 	},
 	database: {
-		name: 'passbook-server',
-		"dataPath": path.resolve(__dirname, "./data")
+		"local": "passbook-server",
+		"remote": "http://localhost:4987/passbook-server",
+		"dataPath": path.resolve(require('user-home'), `./.${pkg.name}`)
 	},
 	"passkit": {
 		"version": "v1",
@@ -74,17 +71,8 @@ var config = {
 		"host": process.env.VCAP_APP_HOST || process.env.IP || "127.0.0.1",
 		"port": process.env.PORT || 5001
 	},
-	"db": {
-		"local": "passbook-server",
-		"remote": "http://localhost:4987/passbook-server"
-	},
-	"collections": [
-		"devices",
-		"passes",
-		"registrations",
-		"notifications",
-		"settings"
-	],
+
+
 	"staticDir": "./app",
 	"publicDir": "./public"
 };
