@@ -7,13 +7,13 @@
     "passbook-server": "./bin/passbook-server"
   },
   "scripts": {
-    "start": "node src/server",
     "docs": "./node_modules/.bin/esdoc -c esdoc.json",
+    "start": "node src/server",
     "test": "gulp"
   },
   "author": {
-    "name": "Jonnie Spratley",
     "email": "jonniespratley@gmail.com",
+    "name": "Jonnie Spratley",
     "url": "https://github.com/jonniespratley/"
   },
   "repository": {
@@ -43,7 +43,8 @@
     "q": "^1.1.2",
     "request": "^2.51.0",
     "serve-index": "^1.6.0",
-    "serve-static": "^1.8.1"
+    "serve-static": "^1.8.1",
+    "user-home": "^2.0.0"
   },
   "devDependencies": {
     "chai": "^1.10.0",

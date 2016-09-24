@@ -3,19 +3,11 @@
 	"debug": true,
 	"baseUrl": "http://localhost:4987/passbook-server",
 	"message": "passbook-server api",
-	"dataPath": "./data",
-	"redis": {
-		"hostname": "127.0.0.1",
-		"port": 6379
-	},
+	"dataPath": "./.passbook-server-db",
 	"version": "v1",
-	"session": {
-		"user": {
-			"username": "jonniespratley"
-		}
-	},
 	"database": {
-		"name": "passbook-server",
+		"local": "passbook-server",
+		"remote": "http://localhost:4987/passbook-server",
 		"dataPath": "/Users/212400520/Github/passbook-server/data"
 	},
 	"passkit": {
@@ -42,16 +34,5 @@
 	},
 	"security": {
 		"salt": "a58e325c6df628d07a18b673a3420986"
-	},
-	"server": {
-		"host": "127.0.0.1",
-		"port": 5001
-	},
-	"db": {
-		"local": "passbook-server",
-		"remote": "http://localhost:4987/passbook-server"
-	},
-	"collections": ["devices", "passes", "registrations", "notifications", "settings"],
-	"staticDir": "./app",
-	"publicDir": "./public"
+	}
 }

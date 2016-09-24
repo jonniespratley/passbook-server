@@ -3,31 +3,23 @@
  */
 'use strict';
 const yaml = require('node-yaml');
-module.exports = function (program) {
+module.exports = function(program) {
 
   program
     .command('passes')
     .version('0.0.1')
     .description('Simple actions on a pass.')
-    .option('-p, --peppers', 'Add peppers')
-    .option('-P, --pineapple', 'Add pineapple')
-    .option('-b, --bbq-sauce', 'Add bbq sauce')
-    .option('-c, --cheese [type]', 'Add the specified type of cheese [marble]', 'marble')
-    .action(function (args) {
+    .option('-t, --type', 'Filter by type')
+    //.option('-c, --cheese [type]', 'Add the specified type of cheese [marble]', 'marble')
+    .action(function(args) {
 
-  //    console.log(program.global);
+      //    console.log(program.global);
 
       // Your code goes here
-      var o = {
-        pizza:{
-          peppers: args.peppers,
-          cheese: args.cheese,
-          bbqSauce: args.bbqSauce
-        }
-      }
+      program.global.db.allDocs().then((resp) => {
+        console.log(yaml.dump(resp))
+      });
 
-      console.log('you ordered:\n');
-      console.log(yaml.dump(o))
 
 
     });

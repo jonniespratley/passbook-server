@@ -43,9 +43,9 @@ class Program {
 		this.Passes = Passes;
 		this.config = {
 			defaults: config,
-            get: (name)=>{
-                return this.config.defaults[name];
-            }
+			get: (name) => {
+				return this.config.defaults[name];
+			}
 		};
 
 		this.server = null;

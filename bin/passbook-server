@@ -1,19 +1,23 @@
 #!/usr/bin/env node
+
 'use strict';
-var program  = require('commander');
+var program = require('commander');
+const userHome = require('user-home');
 const path = require('path');
 
 require('autocmdr/lib/logger')(program);
 require('autocmdr/lib/config')(program);
 
-var config = program.config.get();
+const config = program.config.get();
+config.dataPath = path.resolve(userHome, config.dataPath);
 
-config.dataPath = path.resolve(__dirname, config.dataPath);
+
+var serverProgram = require('../src/program')(config);
 
 
 //console.log(JSON.stringify(config));
 
-var serverProgram = require('../src/program')(config);
+//var serverProgram = require('../src/program')(config);
 
 program.global = {
   config: config,
@@ -29,10 +33,10 @@ require('autocmdr/lib/package')(program);
 require('autocmdr/lib/help')(program);
 
 program
-	.parse(process.argv);
+  .parse(process.argv);
 
-if (program.args.length < 1 ) {
-	console.log('No command specified. See \'passbook-server --help\':');
-	program.outputHelp();
-	process.exit(1);
+if (program.args.length < 1) {
+  console.log('No command specified. See \'passbook-server --help\':');
+  program.outputHelp();
+  process.exit(1);
 }
