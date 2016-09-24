@@ -1,12 +1,57 @@
 {
-  "host": "127.0.0.1",
-  "port": "1333",
-  "baseUrl": "/api/v1",
-  "database.name": "passbookmanager",
-  "database.username": "admin",
-  "database.password": "admin",
-  "message": "Passbook",
-  "database.url": "mongodb://localhost:27017/passbookmanager",
-  "publicDir": "./www/public",
-  "staticDir": "./www/"
+	"name": "passbook-server",
+	"debug": true,
+	"baseUrl": "http://localhost:4987/passbook-server",
+	"message": "passbook-server api",
+	"dataPath": "/Users/212400520/Github/passbook-server/data",
+	"redis": {
+		"hostname": "127.0.0.1",
+		"port": 6379
+	},
+	"version": "v1",
+	"session": {
+		"user": {
+			"username": "jonniespratley"
+		}
+	},
+	"database": {
+		"name": "passbook-server",
+		"dataPath": "/Users/212400520/Github/passbook-server/data"
+	},
+	"passkit": {
+		"version": "v1",
+		"teamIdentifier": "USE9YUYDFH",
+		"passTypeIdentifier": "pass.io.jsapps.walletmanager",
+		"webServiceURL": "https://passbook-manager.run.aws-usw02-pr.ice.predix.io/api"
+	},
+	"passport": {
+		"development": {
+			"github": {
+				"clientID": "7171ef010ffc067de767",
+				"clientSecret": "387c9cd85b4c48abcaa7547bf2865aaf922e4ac2",
+				"callbackURL": "http://127.0.0.1:5001/auth/provider/callback"
+			}
+		},
+		"production": {
+			"github": {
+				"clientID": "96943ce4c9b4f09bf98f",
+				"clientSecret": "f9809160c20f1f57876924c015aa68283f1c4a4b",
+				"callbackURL": "https://passbook-manager.run.aws-usw02-pr.ice.predix.io/auth/provider/callback"
+			}
+		}
+	},
+	"security": {
+		"salt": "a58e325c6df628d07a18b673a3420986"
+	},
+	"server": {
+		"host": "127.0.0.1",
+		"port": 5001
+	},
+	"db": {
+		"local": "passbook-server",
+		"remote": "http://localhost:4987/passbook-server"
+	},
+	"collections": ["devices", "passes", "registrations", "notifications", "settings"],
+	"staticDir": "./app",
+	"publicDir": "./public"
 }

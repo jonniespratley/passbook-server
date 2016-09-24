@@ -33,10 +33,10 @@
     "fs-extra": "^0.16.3",
     "fs-utils": "^0.6.0",
     "jfs": "^0.2.6",
-
     "lodash": "^4.16.1",
     "method-override": "^2.3.1",
     "node-uuid": "^1.4.7",
+    "node-yaml": "^3.0.2",
     "npmlog": "^4.0.0",
     "pouchdb": "^6.0.5",
     "pshell": "^1.0.2",
