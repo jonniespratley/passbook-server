@@ -4,20 +4,35 @@
  */
 'use strict';
 const express = require('express');
+const pug = require('pug');
+const util = require('util');
 const path = require('path');
 const serveStatic = require('serve-static');
 const log = require('npmlog');
 
+var NotFound = (msg) => {
+	this.name = 'NotFound';
+	Error.call(this, msg);
+	Error.captureStackTrace(this, arguments.callee);
+};
+//util.inherits(NotFound, Error);
 
 class Server {
 	constructor(app) {
 		if (!app) {
 			app = express();
 		}
+
+
+
 		this.app = app;
 	}
 
+
 	setExpressMiddleware(middleware) {
+		if (!middleware) {
+			return this;
+		}
 		middleware.forEach((m) => {
 			log.info('Server', 'setExpressMiddleware', m);
 			try {

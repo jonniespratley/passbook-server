@@ -17,40 +17,41 @@ var mockPass = mocks.mockPass;
 
 
 var db;
-function cleanTestDocs(done){
-  var _done = _.after(testDocs.length, function () {
+
+function cleanTestDocs(done) {
+  var _done = _.after(testDocs.length, function() {
     console.log('removed all docs', testDocs.length);
     done();
   });
   for (var i = 0; i < testDocs.length; i++) {
-    db.remove(testDocs[i]).then(function (res) {
+    console.log('remove', testDocs[i]._id);
+    db.remove(testDocs[i]._id, testDocs[i]._rev).then(function(res) {
       console.log('removed', res);
       _done();
     });
   }
-  console.log('REMOVE ALL TEST DOCS', testDocs);
 }
 /* global describe, before, after, it, xit */
 
-describe('db', function () {
+describe('db adapters', function() {
 
-  describe('file system', function () {
-    before(function (done) {
+  describe('file system', function() {
+    before(function(done) {
       db = new DB(path.resolve(__dirname, '../temp/tempdb'));
       done();
     });
 
-    after(function (done) {
-      //cleanTestDocs(done);
+    after(function(done) {
+      cleanTestDocs(done);
       done();
     });
 
-    it('should be defined', function (done) {
+    it('should be defined', function(done) {
       assert(db);
       done();
     });
 
-    it('should have allDocs, get, remove, put methods', function (done) {
+    it('should have allDocs, get, remove, put methods', function(done) {
       assert(db.allDocs, 'should have allDocs');
       assert(db.remove);
       assert(db.put);
@@ -62,10 +63,10 @@ describe('db', function () {
       done();
     });
 
-    it('bulkDocs(array) - should save array of docs', function (done) {
+    it('bulkDocs(array) - should save array of docs', function(done) {
       var docs = mocks.mockPasses;
       docs.push(mockDevice);
-      db.bulkDocs(docs).then(function (resp) {
+      db.bulkDocs(docs).then(function(resp) {
         assert(resp, 'returns response');
         for (var i = 0; i < resp.length; i++) {
           testDocs.push(resp[i]);
@@ -74,136 +75,139 @@ describe('db', function () {
       });
     });
 
-    xit('put(obj) - should create file with id', function (done) {
+    it('put(obj) - should create file with id', function(done) {
       db.put({
         _id: 'test-file',
         name: 'test',
+
         docType: 'pass'
-      }).then(function (resp) {
+      }).then(function(resp) {
         testDocs.push(resp);
         assert(resp);
         done();
       }).catch(done);
     });
 
-    it('post(obj) - should create doc with generated id', function (done) {
+    it('post(obj) - should create doc with generated id', function(done) {
       db.post({
         name: 'test2',
         docType: 'pass'
-      }).then(function (resp) {
+      }).then(function(resp) {
         testDocs.push(resp);
         testId = resp._id;
         assert(resp);
         assert(resp._id);
         assert(resp._rev);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
 
-    it('post(obj) - should create doc with generated prefixed id', function (done) {
+    it('post(obj) - should create doc with generated prefixed id', function(done) {
       db.post({
         name: 'test log with prefixed id',
         docType: 'log'
-      }, 'log').then(function (resp) {
+      }, 'log').then(function(resp) {
         testId = resp._id;
         testDocs.push(resp);
         assert(resp);
         assert(resp._id);
         assert(resp._rev);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
 
-    xit('get(id) - should get doc with id and resolve promise', function (done) {
-      db.get(testId).then(function (resp) {
+    it('get(id) - should get doc with id and resolve promise', function(done) {
+      db.get('test-file').then(function(resp) {
         assert(resp);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
 
-    it('get(id) - should get doc with id and reject on error', function (done) {
-      db.get('unknown-file').then(function (resp) {
+    it('get(id) - should get doc with id and reject on error', function(done) {
+      db.get('unknown-file').then(function(resp) {
         assert(!resp);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert(err);
         done();
       });
     });
 
-    xit('remove(id) - should remove doc with id and resolve promise', function (done) {
-      db.remove(testId).then(function (resp) {
+    it('remove(id) - should remove doc with id and resolve promise', function(done) {
+      db.remove('test-file').then(function(resp) {
         assert(resp);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
-    it('remove(id) - should not remove doc with invalid id and reject promise', function (done) {
-      db.remove('not-a-test-file').then(function (resp) {
+
+    it('remove(id) - should not remove doc with invalid id and reject promise', function(done) {
+      db.remove('not-a-test-file').then(function(resp) {
         assert.fail(resp);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert(err);
         done();
       });
     });
 
-    xit('find(params) - should find params and resolve promise', function (done) {
+    it('find(params) - should find params and resolve promise', function(done) {
       db.find({
         deviceLibraryIdentifier: mockDevice.deviceLibraryIdentifier
-      }).then(function (resp) {
+      }).then(function(resp) {
         assert(resp);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
 
-    xit('find(params) - should find object and return first match', function (done) {
+    it('find(params) - should find object and return first match', function(done) {
       db.find({
-        serialNumber: mockPass.serialNumber
-      }).then(function (resp) {
+        docType: 'pass'
+      }).then(function(resp) {
         assert(resp);
-        assert(resp.length, 'returns flat array');
         ///assert(resp.name === 'test-file');
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
 
-    xit('findOne(params) - should find item by params and resolve promise', function (done) {
-      db.findOne({
-        serialNumber: mockPass.serialNumber
-      }).then(function (row) {
-        assert.equal(row.serialNumber, mockPass.serialNumber, 'match');
+    it('find(params) - should find item by params and resolve promise', function(done) {
+      db.find({
+        serialNumber: mocks.mockPasses[0].serialNumber,
+        docType: 'pass'
+      }).then(function(row) {
+        console.log(row)
+        assert(row);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert.fail(err);
         done();
       });
     });
 
-    xit('findOne(params) - should not find item by non-matching params and reject promise', function (done) {
+    it('findOne(params) - should not find item by non-matching params and reject promise', function(done) {
       db.findOne({
         someKey: 'someValue'
-      }).then(function (row) {
+      }).then(function(row) {
         assert.fail(row);
         done();
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert(err);
         done();
       });

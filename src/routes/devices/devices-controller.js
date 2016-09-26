@@ -13,6 +13,7 @@ module.exports = function(program) {
   var logger = program.getLogger('controller:devices');
   return {
     use: function(req, res, next) {
+
       var auth = req.get('Authorization');
       if (auth) {
         auth = auth.split(' ')[1];
@@ -93,21 +94,21 @@ module.exports = function(program) {
             serial_number: serial_number,
             pass_type_id: pass_type_id,
             device_id: device._id,
-            //	auth_token: authentication_token,
-            ///deviceLibraryIdentifier: device_id,
+            auth_token: authentication_token,
+            deviceLibraryIdentifier: device_id,
             push_token: push_token
           });
 
           //# The device has already registered for updates on this pass
-          db.get(registration._id).then(function(reg) {
+          req.app.locals.db.get(registration._id).then(function(reg) {
             log.info('Found device registration', device._id);
-
             logger('post_device_registration', 'found', registration._id);
             logger('post_device_registration', 'returning 200');
+
             res.status(200).json(reg);
           }).catch(function(err) {
             console.log('Error', 'device not found', registration);
-            db.saveAll([device, registration]).then(function(resp) {
+            db.bulkDocs([device, registration]).then(function(resp) {
               logger('post_device_registration', 'inserted', resp);
               logger('post_device_registration', 'returning 201');
               res.status(201).json(resp);
@@ -179,7 +180,7 @@ module.exports = function(program) {
 
         logger('delete_device_registration', 'Finding registration', registration._id);
 
-        program.db.get(registration._id).then(function(reg) {
+        db.get(registration._id).then(function(reg) {
           tokensMatch = (authentication_token === reg.auth_token);
 
           logger('delete_device_registration', 'found', reg._id);
@@ -192,7 +193,7 @@ module.exports = function(program) {
             logger('delete_device_registration', 'Pass and authentication token match.');
 
 
-            program.db.remove(reg._id).then(function(resp) {
+            db.remove(reg._id, reg._rev).then(function(resp) {
               res.status(200).json(resp);
 
             }).catch(function(err) {
@@ -258,33 +259,44 @@ module.exports = function(program) {
         });
 
       } else {
-
+        let updated = Date.now().toString();
         logger('get_device_passes', device_id, pass_type_id, authentication_token);
 
-        db.allDocs({
-          //docType: 'registration',
-          pass_type_id: pass_type_id,
-          auth_token: authentication_token,
-          deviceLibraryIdentifier: device_id
-        }).then(function(resp) {
+        db.find({
+            //docType: 'registration',
+            pass_type_id: pass_type_id,
+            auth_token: authentication_token,
+            deviceLibraryIdentifier: device_id
+          })
+          .then(function(resp) {
+            console.log('parse response', resp);
+            return _.map(resp.rows, (row) => {
+              return row.doc || row;
+            });
+          })
+          .then(function(resp) {
+            console.log('get_device passes', resp);
+            serials = _.map(resp, (row) => {
+              return row.serial_number || row.serialNumber;
+            });
 
+            //logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
+            if (serials && serials.length > 0) {
+              logger('get_device_passes', 'serials', serials);
 
-          serials = _.map(resp.rows, (row) => {
-            return row.serial_number;
-          });
-          //logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
-          logger('get_device_passes', 'serials', serials);
-          res.status(200).json({
-            lastUpdated: Date.now().toString(),
-            serialNumbers: serials
-          });
+              res.status(200).json({
+                lastUpdated: updated,
+                serialNumbers: serials
+              });
 
-        }).catch(function(err) {
-          logger('ERROR', 'no passes found for device', err);
-          res.status(404).json({
-            error_message: `No passTypeIdentifier ${pass_type_id} found for device ${device_id}`
+            }
+
+          }).catch(function(err) {
+            logger('ERROR', 'no passes found for device', err);
+            res.status(404).json({
+              error_message: `No passTypeIdentifier ${pass_type_id} found for device ${device_id}`
+            });
           });
-        });
       }
     }
   };

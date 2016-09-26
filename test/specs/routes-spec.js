@@ -32,6 +32,8 @@ describe('passbook-server routes', function() {
   before(function(done) {
     app = express();
     app.locals.program = program;
+    app.locals.db = program.db;
+    program.require('routes').Logs(app);
     program.require('routes').Passes(app);
     program.require('routes').Devices(app);
     //  done();
@@ -45,12 +47,6 @@ describe('passbook-server routes', function() {
 
   });
 
-  it('GET - /api/v1 - should return api', function(done) {
-    request(app)
-      .get('/api/v1')
-      .expect('Content-Type', /json/)
-      .expect(200, done);
-  });
 
 
   describe('Web Service API', function() {
@@ -152,8 +148,7 @@ describe('passbook-server routes', function() {
         it('GET - 204 - /api/v1/devices/:device_id/:registrations/:pass_type_id - no matching passes',
           function(done) {
             request(app)
-              .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/' +
-                mockPass.passTypeIdentifier)
+              .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/unknown')
               .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
               .expect('Content-Type', /json/)
               .expect(function(res) {
@@ -170,7 +165,7 @@ describe('passbook-server routes', function() {
             .delete(
               `/api/v1/devices/${mockDevice.deviceLibraryIdentifier}/registrations/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`
             )
-           // .expect('Content-Type', /json/)
+            // .expect('Content-Type', /json/)
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
             //.expect('Content-Type', /json/)
             .expect(200, done);
@@ -189,23 +184,22 @@ describe('passbook-server routes', function() {
 
     describe('Passes', function() {
 
-      it('GET - /api/v1/passes/:pass_type_id/:serial_number - 401', function(done) {
+      it('GET - 401 - /api/v1/passes/:pass_type_id/:serial_number - 401', function(done) {
         request(app)
           .get(`/api/v1/passes/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}111`)
           .expect(401, done);
       });
 
-      it('GET - /api/v1/passes/:pass_type_id/:serial_number', function(done) {
+      it('GET - 200 - /api/v1/passes/:pass_type_id/:serial_number', function(done) {
         request(app)
           .get(`/api/v1/passes/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`)
           .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
           //.expect('Content-Type', /application\/vnd.apple.pkpass/)
           .expect(200, done);
-
       });
 
-      it('GET - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(done) {
-        var prevTimestamp = new Date();
+      it('GET - 204 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(done) {
+        var prevTimestamp = Date.now();
 
         request(app)
           .get(
@@ -213,7 +207,7 @@ describe('passbook-server routes', function() {
           )
           .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
           //.expect('Content-Type', /application\/vnd.apple.pkpass/)
-          .expect(204, done);
+          .expect(200, done);
 
       });
     });

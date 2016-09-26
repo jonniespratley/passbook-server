@@ -11,36 +11,7 @@ module.exports = function(app) {
   var adminController = new AdminController(program);
   var adminRouter = new Router();
   const adminPrefix = `/api/${program.config.get('version')}/admin`;
-  // Error handling
-  function NotFound(msg) {
-    this.name = 'NotFound';
-    Error.call(this, msg);
-    Error.captureStackTrace(this, arguments.callee);
-  }
 
-  util.inherits(NotFound, Error);
-
-  app.get('/404', function(req, res) {
-    throw new NotFound;
-  });
-
-  app.get('/500', function(req, res) {
-    throw new Error('An expected error');
-  });
-
-  app.get('/bad', function(req, res) {
-    unknownMethod();
-  });
-
-  app.use(function(err, req, res, next) {
-    if (err instanceof NotFound) {
-      res.render('404.jade', {
-        status: 404
-      });
-    } else {
-      next(err);
-    }
-  });
   adminRouter.param('id', function(req, res, next, id) {
     req.id = id;
     console.log('CALLED ONLY ONCE', id);

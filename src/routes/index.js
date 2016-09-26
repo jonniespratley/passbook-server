@@ -1,6 +1,6 @@
 module.exports = {
   Admin: require('./admin'),
   Devices: require('./devices'),
-  Log: require('./log'),
+  Logs: require('./logs'),
   Passes: require('./passes')
 };

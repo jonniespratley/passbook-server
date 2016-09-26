@@ -5,8 +5,8 @@ const assert = require('assert');
 const path = require('path');
 const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 var testId = 'test-doc';
-
-var config = mocks.config.get();
+var program = mocks.program();
+var config = mocks.config;
 var mockDevice = mocks.mockDevice;
 var mockPass = mocks.mockPass;
 

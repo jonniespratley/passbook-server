@@ -7,36 +7,21 @@ const async = require('async');
 const logger = utils.getLogger('passes');
 const log = require('npmlog');
 
-var db;
 
 module.exports = function(program) {
+
   class Passes {
     constructor(program) {
-      db = program.db;
-      this.db = db;
+      this.db = program.get('db');
     }
     save(p) {
-      return new Promise((resolve, reject) => {
-        if (!p._id) {
-          this.create(p).then(resolve, reject);
-        } else {
-          this.update(p).then(resolve, reject);
-        }
-      });
+      return this.db.put(p);
     }
     create(p) {
-      return new Promise((resolve, reject) => {
-        this.db.post(p).then((resp) => {
-          resolve(resp);
-        }).catch(reject);
-      });
+      return this.db.post(p);
     }
     update(p) {
-      return new Promise((resolve, reject) => {
-        this.db.put(p).then((resp) => {
-          resolve(resp);
-        }).catch(reject);
-      });
+      return this.db.put(p);
     }
     get(p) {
       return this.db.get(p);
@@ -45,11 +30,7 @@ module.exports = function(program) {
       return this.db.get(id);
     }
     remove(p) {
-      return new Promise((resolve, reject) => {
-        this.db.remove(p).then((resp) => {
-          resolve(resp);
-        }).catch(reject);
-      });
+      return this.db.remove(p._id, p._rev);
     }
 
     parseResponse(resp) {
@@ -57,10 +38,13 @@ module.exports = function(program) {
     }
 
     find(params) {
-      return this.getPasses(params);
+      return this.db.find(params);
     }
     findOne(params) {
-      return this.db.findOne(params);
+      return this.getPasses(params).then((resp) => {
+        //log.info('findOne', _.filter(resp, params));
+        return _(resp).filter(params).first();
+      });
     }
 
     query(fun, params) {
@@ -68,12 +52,12 @@ module.exports = function(program) {
     }
 
     _parseResponse(resp) {
-        log.info('_parseResponse', resp._id);
-        return resp.map((row) => {
+        log.info('_parseResponse', resp);
+        resp.map((row) => {
           if (row.doc) {
-            return row.doc;
+            return new Pass(row.doc);
           } else {
-            return row;
+            return new Pass(row);
           }
         });
       }
@@ -89,11 +73,12 @@ module.exports = function(program) {
       }, params);
       return new Promise((resolve, reject) => {
         log.info('getPasses', params);
-        this.db.find({
-          docType: 'pass'
-        }).then(this._parseResponse).then((resp) => {
-          log.info('getPasses', resp);
-          resolve(resp);
+        this.db.allDocs(params).then((resp) => {
+          _passes = resp.rows.map((row) => {
+            return new Pass(row.doc || row);
+          });
+          //log.info('getPasses', _passes);
+          resolve(_passes);
         }).catch(reject);
       });
     }
@@ -105,7 +90,7 @@ module.exports = function(program) {
     }
     findPassBySerial(serial) {
       logger('findPassBySerial', serial);
-      return this.findOne({
+      return this.db.find({
         docType: 'pass',
         serialNumber: serial
       });

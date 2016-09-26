@@ -71,7 +71,12 @@ var config = {
 		"host": process.env.VCAP_APP_HOST || process.env.IP || "127.0.0.1",
 		"port": process.env.PORT || 5001
 	},
-
+	middleware: [
+		'./routes/admin',
+		'./routes/logs',
+		'./routes/devices',
+		'./routes/passes'
+	],
 
 	"staticDir": "./app",
 	"publicDir": "./public"

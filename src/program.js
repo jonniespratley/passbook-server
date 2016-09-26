@@ -24,9 +24,7 @@ class Program {
 		log.heading = pkg.name;
 
 		this.config = {
-			defaults: _.assign({
-				version: 'v1'
-			}, config),
+			defaults: _.assign(defaultConfig, config),
 			get: (name) => {
 				if (name) {
 					return this.config.defaults[name];
@@ -37,7 +35,9 @@ class Program {
 
 		log.info('config', this.config);
 
-		var db = this.config.adapter || new DB(this.config.dataPath);
+		var db = this.config.adapter || new DB(this.config.dataPath, {
+			type: 'single'
+		});
 
 		this.db = db;
 		this.pkg = pkg;
@@ -54,7 +54,6 @@ class Program {
 		this.set('utils', utils);
 		this.log = this.get('log');
 		this.server = null;
-
 	}
 	require(name) {
 		return require(path.resolve(__dirname, name));
@@ -67,7 +66,9 @@ class Program {
 
 	set(name, module) {
 		log.info('set', name);
-		this.modules[name] = module;
+		if (!this.modules[name]) {
+			this.modules[name] = module;
+		}
 		return this;
 	}
 

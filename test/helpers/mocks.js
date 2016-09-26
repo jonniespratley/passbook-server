@@ -2,13 +2,12 @@
 var path = require('path');
 //var config = require(path.resolve(__dirname, '../../config.js'));
 var config = require(path.resolve(__dirname, '../test-config.js'));
-var PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
-var CouchDB = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
 
-const dbpath = path.resolve(__dirname, config.db.name);
 
-//var adapter = new CouchDB('http://localhost:4987/passbook-server');
-//var adapter = new PouchDB(dbpath);
+const dbpath = path.resolve(__dirname, '../temp/', config.db.name);
+
+
+
 exports.mockIdentifer = {
   teamIdentifier: process.env.TEAM_IDENTIFIER || config.passkit.teamIdentifier,
   passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.passkit.passTypeIdentifier,
@@ -16,19 +15,21 @@ exports.mockIdentifer = {
   passphrase: 'fred'
 };
 
+
 config.get = function(name) {
-  if (config[name]) {
-    return config[name];
-  }
-  return config;
+  return config[name];
 };
 exports.config = config;
+
 exports.program = function() {
-  //var adapter = new PouchDBAdapter(dbpath);
+  var PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
+  var CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+  //var adapter = new CouchDB('http://localhost:4987/passbook-server');
+  var adapter = new PouchDBAdapter(dbpath);
   var _program = require(path.resolve(__dirname, '../../src/program.js'))({
     config: config,
-    dataPath: path.resolve(__dirname, '../temp'),
-    //  adapter: adapter
+    //  dataPath: dbPath,
+    adapter: adapter
   });
   return _program;
 };
