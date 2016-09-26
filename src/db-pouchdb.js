@@ -5,7 +5,7 @@ const _ = require('lodash');
 const assert = require('assert');
 const PouchDB = require('pouchdb');
 const log = require('npmlog');
-PouchDB.debug.enable('*');
+//PouchDB.debug.enable('*');
 var db = null;
 /**
  * @class PouchDBAdapter
@@ -17,17 +17,17 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    options = _.extend({
+    this.options = _.extend({
       prefix: ''
     }, options)
-    this.options = options;
-    db = this.getAdapter(name, options);
+    log.info('PouchDBAdapter', name);
+    db = this.getAdapter(name, this.options);
     this.db = db;
     instance = this;
   }
 
   getAdapter(name, options) {
-
+      log.info('getAdapter', name, options);
       return new PouchDB(name, options);
     }
     /**
@@ -49,10 +49,10 @@ class PouchDBAdapter {
   find(params) {
       let self = this;
       logger('find', params);
-      return new Promise(function (resolve, reject) {
+      return new Promise(function(resolve, reject) {
         let _out, _docs = [];
 
-        self.allDocs(params).then(function (resp) {
+        self.allDocs(params).then(function(resp) {
           _out = _.filter(resp.rows, params);
 
           if (_out && _out.length > 0) {
@@ -147,6 +147,7 @@ class PouchDBAdapter {
         logger('remove', doc);
         this.db.remove(doc).then(resolve, reject);
       });
+      return db.remove(doc).then(resolve, reject);
     }
     /**
      * Get document in store by id.

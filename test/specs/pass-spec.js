@@ -3,10 +3,13 @@ var assert = require('assert');
 var Pass = require(path.resolve(__dirname, '../../src/routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, '../../src/routes/passes/passes.js'));
 var Device = require(path.resolve(__dirname, '../../src/routes/devices/device.js'));
-
+const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 var p;
-var program = require(path.resolve(__dirname, '../../src/program.js'))();
-var config = program.config.defaults;
+
+const program = mocks.program();
+
+const config = mocks.config;
+
 
 describe('Pass', function() {
 	it('should create default generic Pass', function(done) {

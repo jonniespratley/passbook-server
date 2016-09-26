@@ -1,8 +1,11 @@
+'use strict';
 var path = require('path');
 var assert = require('assert');
-var program = require(path.resolve(__dirname, '../../src/program.js'))();
-var config = program.config.defaults;
+const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
+//const program = mocks.program();
 
+const config = mocks.config;
+var program = require(path.resolve(__dirname, '../../src/program.js'))(config);
 describe('program', function() {
 	it('should defined', function(done) {
 		assert(program);

@@ -26,20 +26,7 @@ module.exports = function(program) {
    Store the mapping between the pass (by pass type identifier and serial number) and the device library identifier in the registrations table.
    */
   var PassesController = {
-    post_log: function(req, res) {
-      var data = {
-        body: JSON.stringify(req.body),
-        params: req.params,
-        url: req.path,
-        type: 'log',
-        time: Date.now().toString()
-      };
-      db.post(data, 'log').then(function(msg) {
-        res.status(201).json(msg);
-      }, function(err) {
-        res.status(400).json(err);
-      });
-    },
+
 
     get_passes: function(req, res) {
       var self = this;

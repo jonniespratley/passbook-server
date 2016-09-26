@@ -2,27 +2,19 @@
 
 'use strict';
 var program = require('commander');
-const userHome = require('user-home');
+
 const path = require('path');
 
 require('autocmdr/lib/logger')(program);
 require('autocmdr/lib/config')(program);
-
+const userHome = require('user-home');
 const config = program.config.get();
 config.dataPath = path.resolve(userHome, config.dataPath);
 
 
-var serverProgram = require('../src/program')(config);
-
-
-//console.log(JSON.stringify(config));
-
-//var serverProgram = require('../src/program')(config);
-
 program.global = {
   config: config,
-  program: serverProgram,
-  db: serverProgram.db
+  program: require('../src/program')
 };
 
 require('autocmdr/lib/loader')(program);
