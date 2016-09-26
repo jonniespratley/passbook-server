@@ -4,26 +4,44 @@
  */
 'use strict';
 const express = require('express');
+const pug = require('pug');
+const util = require('util');
 const path = require('path');
 const serveStatic = require('serve-static');
 const log = require('npmlog');
 
+var NotFound = (msg) => {
+	this.name = 'NotFound';
+	Error.call(this, msg);
+	Error.captureStackTrace(this, arguments.callee);
+};
+//util.inherits(NotFound, Error);
 
 class Server {
-	constructor() {
-		var app = express();
+	constructor(app) {
+		if (!app) {
+			app = express();
+		}
+
+
+
 		this.app = app;
 	}
 
+
 	setExpressMiddleware(middleware) {
-		try {
-			middleware.forEach((m) => {
-				log.info('use middleware', m);
-				require(m)(this.app);
-			});
-		} catch (e) {
-			log.error('mount', 'could not mount', m);
+		if (!middleware) {
+			return this;
 		}
+		middleware.forEach((m) => {
+			log.info('Server', 'setExpressMiddleware', m);
+			try {
+				require(m)(this.app);
+			} catch (e) {
+				log.error('setExpressMiddleware', 'could not mount', m);
+				log.error('setExpressMiddleware', e);
+			}
+		});
 		return this;
 	}
 
@@ -32,14 +50,14 @@ class Server {
 	}
 
 	setExpressLocals(name, value) {
-		log.info('Server', 'setExpressLocals', name, value);
+		log.info('Server', 'setExpressLocals', name);
 		this.app.locals[name] = value;
 		return this;
 	}
 
 	startExpressServer(port, done) {
 		this.app.listen(port, function(err) {
-			log.info('listening on', host + ':' + port);
+			log.info('Server', 'listening on', host + ':' + port);
 			done(err, this.app);
 		});
 	}

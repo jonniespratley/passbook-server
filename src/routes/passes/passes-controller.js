@@ -26,20 +26,7 @@ module.exports = function(program) {
    Store the mapping between the pass (by pass type identifier and serial number) and the device library identifier in the registrations table.
    */
   var PassesController = {
-    post_log: function(req, res) {
-      var data = {
-        body: JSON.stringify(req.body),
-        params: req.params,
-        url: req.path,
-        type: 'log',
-        time: Date.now().toString()
-      };
-      db.post(data, 'log').then(function(msg) {
-        res.status(201).json(msg);
-      }, function(err) {
-        res.status(400).json(err);
-      });
-    },
+
 
     get_passes: function(req, res) {
       var self = this;
@@ -65,10 +52,11 @@ module.exports = function(program) {
 
       } else {
         Passes.findOne({
+          docType: 'pass',
           passTypeIdentifier: pass_type_id,
           serialNumber: serial_number
         }).then(function(resp) {
-          let pass = resp;
+          let pass = new  Pass(resp);
           logger('get_passes:success', pass._id);
           if (lastUpdated > pass.lastUpdated) {
             logger('last-updated', lastUpdated, pass.lastUpdated);
@@ -86,7 +74,7 @@ module.exports = function(program) {
     post_pass: function(req, res) {
       var p = new Pass(req.body);
       logger('post_pass', p._id);
-      Passes.save(p).then(function(resp) {
+      Passes.post(p).then(function(resp) {
         res.status(201).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);
@@ -94,7 +82,7 @@ module.exports = function(program) {
 
     },
     put_pass: function(req, res) {
-      var p = new Pass(req.body);
+
       var id = req.params.id
         //p._id = id;
       logger('put_pass', id);
@@ -103,7 +91,7 @@ module.exports = function(program) {
           error_message: 'Must provide an ID!'
         });
       }
-      Passes.save(p).then(function(resp) {
+      Passes.save(req.body).then(function(resp) {
         logger('put_pass', resp._id);
         res.status(200).json(resp);
       }).catch(function(err) {
@@ -113,7 +101,7 @@ module.exports = function(program) {
     get_all_passes: function(req, res) {
       //req.query.docType = 'pass';
 
-      Passes.getPasses(req.query).then(function(resp) {
+      Passes.getPasses().then(function(resp) {
         res.status(200).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);

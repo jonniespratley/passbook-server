@@ -11,10 +11,10 @@ function Registration(obj) {
     docType: 'registration',
     device_id: device_id,
     pass_id: pass_id,
-    auth_token: null,
-    push_token: null,
-    created_at: _.now(),
-    updated_at: _.now()
+    //auth_token: null,
+   // push_token: null,
+    created: _.now(),
+    updated: _.now()
   }, obj);
 }
 

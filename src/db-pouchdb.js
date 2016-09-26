@@ -5,7 +5,7 @@ const _ = require('lodash');
 const assert = require('assert');
 const PouchDB = require('pouchdb');
 const log = require('npmlog');
-PouchDB.debug.enable('*');
+//PouchDB.debug.enable('*');
 var db = null;
 /**
  * @class PouchDBAdapter
@@ -17,18 +17,29 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    options = _.extend({
+    this.options = _.extend({
       prefix: ''
     }, options)
-    this.options = options;
-    db = this.getAdapter(name, options);
-    this.db = db;
+    log.info('PouchDBAdapter', name);
+
+    this.db = this.getAdapter(name, this.options);
     instance = this;
   }
 
-  getAdapter(name, options) {
+  static getInstance() {
+    if (instance) {
+      return instance;
+    } else {
+      return new PouchDBAdapter('data');
+    }
+  }
 
-      return new PouchDB(name, options);
+  getAdapter(name, options) {
+      log.info('getAdapter', name, options);
+      if (!db) {
+        db = new PouchDB(name, options);
+      }
+      return db;
     }
     /**
      * Find first document in store.
@@ -49,10 +60,10 @@ class PouchDBAdapter {
   find(params) {
       let self = this;
       logger('find', params);
-      return new Promise(function (resolve, reject) {
+      return new Promise(function(resolve, reject) {
         let _out, _docs = [];
 
-        self.allDocs(params).then(function (resp) {
+        self.allDocs(params).then(function(resp) {
           _out = _.filter(resp.rows, params);
 
           if (_out && _out.length > 0) {
@@ -147,6 +158,7 @@ class PouchDBAdapter {
         logger('remove', doc);
         this.db.remove(doc).then(resolve, reject);
       });
+      return db.remove(doc).then(resolve, reject);
     }
     /**
      * Get document in store by id.
@@ -202,6 +214,7 @@ class PouchDBAdapter {
   }
 
   putAttachment(id, attachmentId, rev, attachment, contentType) {
+    log.info('putAttachment', id, attachmentId);
     return new Promise((resolve, reject) => {
       this.db.putAttachment(id, attachmentId, rev, attachment, contentType, (err, res) => {
         if (err) {
@@ -213,6 +226,7 @@ class PouchDBAdapter {
   }
 
   getAttachment(id, attachmentId) {
+    log.info('getAttachment', id, attachmentId);
     return new Promise((resolve, reject) => {
       this.db.getAttachment(id, attachmentId, (err, res) => {
         if (err) {
@@ -239,21 +253,16 @@ class PouchDBAdapter {
   }
 
   findOne(params) {
-    return this.findBy(params);
+    return this.find(params).then((resp) => {
+      //log.info('findOne', _.filter(resp, params));
+      return _(resp).filter(params).first();
+    });
   }
 
   getUUID(prefix) {
     let _prefix = prefix || 'doc';
     let uuid = require('node-uuid').v4();
     return `${_prefix}-${uuid}`;
-  }
-
-  static getInstance() {
-    if (instance) {
-      return instance;
-    } else {
-      return new Db();
-    }
   }
 }
 

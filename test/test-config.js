@@ -28,8 +28,9 @@ module.exports = {
 	name: 'passbook-server',
 
 	message: 'Passbook Manager API Server',
-    version: 'v1',
+	version: 'v1',
 	"passkit": {
+		passTypeIdentifierP12: '',
 		"version": "v1",
 		"teamIdentifier": APPLE_TEAM_IDENTIFIER,
 		"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
@@ -39,7 +40,7 @@ module.exports = {
 		salt: 'a58e325c6df628d07a18b673a3420986'
 	},
 	db: {
-    name: 'temp/test-db',
+		name: 'temp/test-db',
 		url: 'http://localhost:4987/passbook-server'
 	},
 	collections: ['devices', 'passes', 'notifications', 'settings'],

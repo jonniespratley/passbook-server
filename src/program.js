@@ -15,50 +15,63 @@ const log = require('npmlog');
 var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
 var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
-
+var db;
 /**
  * @class
  */
 class Program {
 	constructor(config) {
 		log.heading = pkg.name;
-		if (!config) {
-			config = defaultConfig;
-		}
 
-		config = _.assign(defaultConfig, config);
-
-
-		log.info('config', 'db', config.dataPath);
-
-		var db = config.adapter || new DB(config.dataPath);
-
-		this.db = db;
-		this.pkg = pkg;
-		this.log = log;
-		this.getLogger = utils.getLogger;
-		this.utils = utils;
-		this.Device = Device;
-		this.Pass = Pass;
-		this.Passes = Passes;
 		this.config = {
-			defaults: config,
+			defaults: _.assign(defaultConfig, config),
 			get: (name) => {
-				return this.config.defaults[name];
+				if (name) {
+					return this.config.defaults[name];
+				}
+				return this.config;
 			}
 		};
 
+		log.info('config', this.config);
+
+		db = config.adapter || new DB(this.config.dataPath, {
+			//type: 'single'
+		});
+
+		this.db = db;
+		this.pkg = pkg;
+
+		this.getLogger = utils.getLogger;
+
+		this.modules = {};
+		this.set('Device', Device);
+		this.set('Pass', Pass);
+		this.set('Passes', Passes);
+		this.set('db', db);
+		this.set('config', this.config);
+		this.set('log', log);
+		this.set('utils', utils);
+
+		this.log = log;
 		this.server = null;
-		this.modules = {
-			db: db
-		};
 	}
 	require(name) {
 		return require(path.resolve(__dirname, name));
 	}
 
+	get(name) {
+		log.info('get', name);
+		return this.modules[name];
+	}
+
+	set(name, module) {
+		log.info('set', name);
+		this.modules[name] = module;
+		return this;
+	}
+
 	getDb() {
-		var db = new DB.FileDataStore(this.config.dataPath);
 		return db;
 	}
 }

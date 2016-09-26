@@ -21,7 +21,7 @@ class Db {
       options = _.extend({
         saveId: '_id',
         //type: 'single'
-          pretty: true
+        //pretty: true
       }, options);
       db = new Store(name, options);
       this.db = db;
@@ -41,10 +41,15 @@ class Db {
      * @returns {*}
      */
   findBy(params) {
-      logger('findBy', params);
-      return this.allDocs(params).then(function(resp) {
-        return _(resp.rows).first();
-      });
+    logger('findBy', params);
+    return this.find(params).then(function(resp) {
+
+      logger('findBy', resp);
+      return _(resp).find(params);
+    });
+  }
+  findOne(params) {
+      return this.findBy(params);
     }
     /**
      * Query documents in store.
@@ -54,27 +59,15 @@ class Db {
   find(params) {
       let self = this;
       logger('find', params);
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         let _out, _docs = [];
-
-        self.allDocs(params).then(function(resp) {
-          _docs = resp.rows.map((row)=>{
+        this.allDocs(params).then((resp) => {
+          _docs = resp.rows.map((row) => {
             return row.doc;
           });
-          _out = _.filter(_docs, params);
 
-          if (_out && _out.length > 0) {
-            logger('find.success', _out.length);
-            resolve(_out);
-          } else {
-            /*TODO - Never reject, just return empty */
-            reject({
-              error: 'No match found',
-              params: params
-            });
-          }
-
-        });
+          resolve(_.filter(_docs, params));
+        }).catch(reject);
       });
     }
     /**
@@ -99,8 +92,6 @@ class Db {
                 doc: objs[_obj]
               });
             }
-
-
             resolve({
               rows: _docs
             });
@@ -165,20 +156,22 @@ class Db {
      * @param id
      * @returns {Promise}
      */
-  remove(id) {
+  remove(id, rev) {
       return new Promise(function(resolve, reject) {
+        id = id._id || id;
         logger('remove', id);
-        _.defer(function() {
-          db.delete(id, function(err) {
-            if (err) {
-              logger('remove.error', err);
-              reject(err);
-            } else {
-              logger('remove.success', id);
-              resolve(id);
-            }
+        try {
+          db.delete(id);
+          resolve({
+            ok: true,
+            rev: rev,
+            id: id
           });
-        });
+        } catch (e) {
+          //logger('remove.success', id);
+          log.error('remove', e);
+          reject(e);
+        }
       });
     }
     /**
@@ -239,20 +232,26 @@ class Db {
   bulkDocs(docs) {
     return this.saveAll(docs);
   }
-  findOne(params) {
-    return new Promise((resolve, reject)=>{
-      this.find(params).then((resp)=>{
-        let out = _(resp).first();
-        log.info('findOne', out);
-        resolve(out);
-      }).catch(reject);
-    });
-  }
+
   getUUID(prefix) {
     let _prefix = prefix || 'doc';
     let uuid = require('node-uuid').v4();
     return `${_prefix}-${uuid}`;
   }
+
+  putAttachment() {
+
+  }
+  getAttachment() {
+
+  }
+  removeAttachment() {
+
+  }
+  query(fun, options) {
+    return this.allDocs().map(fun);
+  }
+
   static getInstance() {
     if (instance) {
       return instance;

@@ -1,57 +1,33 @@
 'use strict';
 var express = require('express'),
-    bodyParser = require('body-parser'),
-    Router = express.Router,
-    jsonParser = bodyParser.json();
+  bodyParser = require('body-parser'),
+  Router = express.Router,
+  jsonParser = bodyParser.json();
+
+
 const expressListRoutes = require('express-list-routes');
 const PassController = require('./passes-controller');
 
-module.exports = function (program, app) {
-    var logger = program.getLogger('router:passes');
-    var config = program.config.defaults;
+module.exports = function(app) {
+  const program = app.locals.program;
+  var logger = program.getLogger('router:passes');
+  var config = program.config.get();
 
-    const prefix = `/api/${config.version}/passes`;
-    const adminPrefix = `/api/${config.version}/admin`;
-    const logPrefix = `/api/${config.version}/log`;
-
-    var passController = new PassController(program);
-    var router = new Router();
-
-    var logRouter = new Router();
-    var adminRouter = new Router();
+  const prefix = `/api/${program.config.defaults.version}/passes`;
 
 
-    app.get(`/api/${config.version}`, function (req, res) {
-        res.status(200).json({
-            message: 'welcome'
-        });
-    });
-    adminRouter.get('/', function (req, res) {
-        res.status(200).json({
-            message: 'welcome'
-        });
-    });
-    adminRouter.get('/passes?', passController.get_all_passes);
-    adminRouter.get('/passes/:id?', passController.get_pass);
-    adminRouter.put('/passes/:id', jsonParser, passController.put_pass);
-    adminRouter.post('/passes', jsonParser, passController.post_pass);
-    adminRouter.delete('/passes/:id', passController.delete_pass);
-
-    router.get('/:pass_type_id/:serial_number?', passController.get_passes);
+  var passController = new PassController(program);
+  var router = new Router();
 
 
-    //Logging Endpoint
-    logRouter.post('/', jsonParser, passController.post_log);
+  router.get('/:pass_type_id/:serial_number?', passController.get_passes);
+
+  app.use(prefix, router);
+
+  expressListRoutes({
+    prefix: prefix
+  }, 'API:', router);
 
 
-    app.use(prefix, router);
-    app.use(adminPrefix, adminRouter);
-    app.use(logPrefix, logRouter);
-
-    expressListRoutes({prefix: adminPrefix}, 'API:', adminRouter);
-    expressListRoutes({prefix: logPrefix}, 'API:', logRouter);
-    expressListRoutes({prefix: prefix}, 'API:', router);
-
-
-    return router;
+  return router;
 };

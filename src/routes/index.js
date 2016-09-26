@@ -1,4 +1,6 @@
 module.exports = {
-    Devices: require('./devices'),
-    Passes: require('./passes')
+  Admin: require('./admin'),
+  Devices: require('./devices'),
+  Logs: require('./logs'),
+  Passes: require('./passes')
 };

@@ -5,13 +5,15 @@ var express = require('express'),
 
 const DevicesController = require('./devices-controller');
 
-module.exports = function(program, app) {
-
+module.exports = function(app) {
+	var program = app.locals.program;
 	var logger = program.getLogger('router:devices');
 	var config = program.config.defaults;
 	var router = new Router();
-    const prefix = `/api/${config.version}/devices`;
+	const prefix = `/api/${config.version}/devices`;
 	var devicesController = new DevicesController(program);
+
+	//	router.use(devicesController.use);
 
 	router.get('/:device_id/push/:token', function(req, res) {
 		logger('Push to device ' + req.params.token);
@@ -25,7 +27,9 @@ module.exports = function(program, app) {
 	router.delete('/:device_id/registrations/:pass_type_id/:serial_number', devicesController.delete_device_registration);
 	app.use(prefix, router);
 
-    require('express-list-routes')({ prefix: prefix }, 'API:', router );
+	require('express-list-routes')({
+		prefix: prefix
+	}, 'API:', router);
 
-    return router;
+	return router;
 };
