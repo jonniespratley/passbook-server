@@ -53,12 +53,8 @@ module.exports = function(program) {
 
     _parseResponse(resp) {
         log.info('_parseResponse', resp);
-        resp.map((row) => {
-          if (row.doc) {
-            return new Pass(row.doc);
-          } else {
-            return new Pass(row);
-          }
+        return resp.map((row) => {
+          return (row.doc || row);
         });
       }
       /**
@@ -68,16 +64,20 @@ module.exports = function(program) {
        */
     getPasses(params) {
       let _passes = [];
-      params = _.assign({
+      params = _.extend({
         docType: 'pass'
       }, params);
       return new Promise((resolve, reject) => {
         log.info('getPasses', params);
         this.db.allDocs(params).then((resp) => {
           _passes = resp.rows.map((row) => {
-            return new Pass(row.doc || row);
+            return row.doc;
           });
-          //log.info('getPasses', _passes);
+          _passes = _passes.filter((p) => {
+            return p.docType === 'pass';
+          })
+
+          //  log.info('getPasses', _passes);
           resolve(_passes);
         }).catch(reject);
       });

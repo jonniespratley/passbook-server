@@ -3,98 +3,112 @@ const path = require('path');
 const _ = require('lodash');
 const config = require(path.resolve(__dirname, '../../../config.js'));
 
-module.exports = function (obj) {
-    obj = obj || {};
-    let type = obj.type || 'generic';
-    let passType = require(path.resolve(__dirname, './templates/schemas/' + type + '.json'));
-    let uuid = obj.serialNumber || require('node-uuid').v4();
-    let passTypeId = (obj.passTypeIdentifier || config.passkit.passTypeIdentifier).replace(/\./g, '-');
-    let id = passTypeId + '-' + uuid;
-    var pass = _.assign(this, {
-            _id:id,
-            docType: 'pass',
-            type: type,
+module.exports = function(obj) {
 
-            // TODO: Standard keys - Information that is required for all passes.
-            lastUpdated: _.now(),
-            'logoText': 'Passbook Manager',
-            'description': 'This is the default pass description.',
-            formatVersion: 1,
-            'organizationName': 'Passbook Manager',
-            'passTypeIdentifier': obj.passTypeIdentifier || config.passkit.passTypeIdentifier,
-            serialNumber: uuid,
-            'teamIdentifier': obj.teamIdentifier || config.passkit.teamIdentifier,
+  obj = obj || {
+    docType: 'pass'
+  };
+  if (obj.docType !== 'pass') {
+    //  return obj;
+  }
+  let type = obj.type || 'generic';
+  let passType = {};
+  try {
+    if (type) {
+      passType = require(path.resolve(__dirname, './templates/schemas/' + type + '.json'));
+    }
 
-            //web service keys
-            'authenticationToken': uuid,
-            'webServiceURL': obj.webServiceURL || config.passkit.webServiceURL,
+  } catch (e) {
+    console.log('Error loading schema');
+  }
+  let uuid = obj.serialNumber || require('node-uuid').v4();
+  let passTypeId = (obj.passTypeIdentifier || config.passkit.passTypeIdentifier).replace(/\./g, '-');
+  let id = passTypeId + '-' + uuid;
+  var pass = _.assign(this, {
+      _id: id,
+      docType: 'pass',
+      type: type,
 
-            // TODO: expiration keys - Information about when a pass expires and whether it is still valid.
-            /*expirationDate: null,
-             */
-            voided: false,
+      // TODO: Standard keys - Information that is required for all passes.
+      lastUpdated: _.now(),
+      'logoText': 'Passbook Manager',
+      'description': 'This is the default pass description.',
+      formatVersion: 1,
+      'organizationName': 'Passbook Manager',
+      'passTypeIdentifier': obj.passTypeIdentifier || config.passkit.passTypeIdentifier,
+      serialNumber: uuid,
+      'teamIdentifier': obj.teamIdentifier || config.passkit.teamIdentifier,
 
-            //Apple pay keys
-            /*	nfc: [
-            		{
-            			message: '',
-            			encryptionPublicKey: ''
-            		}
-            	],*/
-            'barcode': {
-                'message': '123456789',
-                'format': 'PKBarcodeFormatQR',
-                'messageEncoding': 'iso-8859-1'
-            },
+      //web service keys
+      'authenticationToken': uuid,
+      'webServiceURL': obj.webServiceURL || config.passkit.webServiceURL,
 
-            // TODO: Relevance keys
-            beacons: [
-                /* [{
-                				major: null,
-                				minor: null,
-                				proximityUUID: '',
-                				relevantText: ''
-                			}]*/
-            ],
+      // TODO: expiration keys - Information about when a pass expires and whether it is still valid.
+      /*expirationDate: null,
+       */
+      voided: false,
 
-            locations: [{
-                'longitude': -122.00,
-                'latitude': 37.00,
-                //	altitude: null,
-                relevantText: 'Nearby'
-            }],
+      //Apple pay keys
+      /*	nfc: [
+      		{
+      			message: '',
+      			encryptionPublicKey: ''
+      		}
+      	],*/
+      'barcode': {
+        'message': '123456789',
+        'format': 'PKBarcodeFormatQR',
+        'messageEncoding': 'iso-8859-1'
+      },
 
-            maxDistance: 0,
-            /*
+      // TODO: Relevance keys
+      beacons: [
+        /* [{
+        				major: null,
+        				minor: null,
+        				proximityUUID: '',
+        				relevantText: ''
+        			}]*/
+      ],
+
+      locations: [{
+        'longitude': -122.00,
+        'latitude': 37.00,
+        //	altitude: null,
+        relevantText: 'Nearby'
+      }],
+
+      maxDistance: 0,
+      /*
 			relevantDate: '',
 		w3c date string*/
 
-            //Visual apperance
-            barcodes: [],
+      //Visual apperance
+      barcodes: [],
 
-            //Only for eventTicket and boardingPass
-            //groupingIdentifier: '',
+      //Only for eventTicket and boardingPass
+      //groupingIdentifier: '',
 
-            labelColor: 'rgb(0, 0, 0)',
-            foregroundColor: 'rgb(72, 72, 72)',
-            backgroundColor: 'rgb(183, 180, 183)',
-            suppressStripShine: false,
+      labelColor: 'rgb(0, 0, 0)',
+      foregroundColor: 'rgb(72, 72, 72)',
+      backgroundColor: 'rgb(183, 180, 183)',
+      suppressStripShine: false,
 
-            //File locations
-            filename: null,
-            pkpassFilename: null,
-            rawFilename: null
+      //File locations
+      filename: null,
+      pkpassFilename: null,
+      rawFilename: null
 
-        },
-        passType,
-        obj
-        /*{
-        	'passTypeIdentifier': config.passkit.passTypeIdentifier,
-        	'teamIdentifier': config.passkit.teamIdentifier,
-        	'webServiceURL': config.passkit.webServiceURL
-        }*/
-    );
+    },
+    passType,
+    obj
+    /*{
+    	'passTypeIdentifier': config.passkit.passTypeIdentifier,
+    	'teamIdentifier': config.passkit.teamIdentifier,
+    	'webServiceURL': config.passkit.webServiceURL
+    }*/
+  );
 
-    //console.log('ID', pass._id);
-    return pass;
+  //console.log('ID', pass._id);
+  return pass;
 };

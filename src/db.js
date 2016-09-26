@@ -238,6 +238,20 @@ class Db {
     let uuid = require('node-uuid').v4();
     return `${_prefix}-${uuid}`;
   }
+
+  putAttachment() {
+
+  }
+  getAttachment() {
+
+  }
+  removeAttachment() {
+
+  }
+  query(fun, options) {
+    return this.allDocs().map(fun);
+  }
+
   static getInstance() {
     if (instance) {
       return instance;

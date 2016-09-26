@@ -73,7 +73,7 @@ module.exports = function(program) {
     post_pass: function(req, res) {
       var p = new Pass(req.body);
       logger('post_pass', p._id);
-      Passes.save(p).then(function(resp) {
+      Passes.post(p).then(function(resp) {
         res.status(201).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);
@@ -81,7 +81,7 @@ module.exports = function(program) {
 
     },
     put_pass: function(req, res) {
-      var p = new Pass(req.body);
+
       var id = req.params.id
         //p._id = id;
       logger('put_pass', id);
@@ -90,7 +90,7 @@ module.exports = function(program) {
           error_message: 'Must provide an ID!'
         });
       }
-      Passes.save(p).then(function(resp) {
+      Passes.save(req.body).then(function(resp) {
         logger('put_pass', resp._id);
         res.status(200).json(resp);
       }).catch(function(err) {
@@ -100,7 +100,7 @@ module.exports = function(program) {
     get_all_passes: function(req, res) {
       //req.query.docType = 'pass';
 
-      Passes.getPasses(req.query).then(function(resp) {
+      Passes.getPasses().then(function(resp) {
         res.status(200).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);

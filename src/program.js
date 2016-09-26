@@ -15,7 +15,7 @@ const log = require('npmlog');
 var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
 var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
-
+var db;
 /**
  * @class
  */
@@ -35,8 +35,8 @@ class Program {
 
 		log.info('config', this.config);
 
-		var db = this.config.adapter || new DB(this.config.dataPath, {
-			type: 'single'
+		db = config.adapter || new DB(this.config.dataPath, {
+			//type: 'single'
 		});
 
 		this.db = db;
@@ -52,7 +52,8 @@ class Program {
 		this.set('config', this.config);
 		this.set('log', log);
 		this.set('utils', utils);
-		this.log = this.get('log');
+
+		this.log = log;
 		this.server = null;
 	}
 	require(name) {
@@ -66,14 +67,11 @@ class Program {
 
 	set(name, module) {
 		log.info('set', name);
-		if (!this.modules[name]) {
-			this.modules[name] = module;
-		}
+		this.modules[name] = module;
 		return this;
 	}
 
 	getDb() {
-		var db = new DB.FileDataStore(this.config.dataPath);
 		return db;
 	}
 }

@@ -12,7 +12,7 @@ var Pass = program.require('routes/passes/pass');
 var instance;
 var mocks = require('../helpers/mocks');
 
-``
+
 describe('Passes', function() {
   var mockPass = new Pass({
     serialNumber: 'mock',
@@ -21,16 +21,16 @@ describe('Passes', function() {
   });
   var mockPasses = [
     new Pass({
-      //  _id: 'mock-generic',
+      _id: 'mock-generic',
       description: 'Example Generic',
-      //  serialNumber: '111111',
+      serialNumber: '111111',
       authenticationToken: '111111',
 
       type: 'generic'
     }),
 
     new Pass({
-      //  serialNumber: '222222',
+      serialNumber: '222222',
       description: 'Example Boarding Pass',
       authenticationToken: '111111',
       type: 'boardingPass'

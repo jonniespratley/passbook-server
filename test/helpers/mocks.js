@@ -4,7 +4,7 @@ var path = require('path');
 var config = require(path.resolve(__dirname, '../test-config.js'));
 
 
-const dbpath = path.resolve(__dirname, '../temp/', config.db.name);
+const dbPath = path.resolve(__dirname, '../temp/', config.db.name);
 
 
 
@@ -22,15 +22,16 @@ config.get = function(name) {
 exports.config = config;
 
 exports.program = function() {
-  var PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
-  var CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+  //  var PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
+  //var CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
   //var adapter = new CouchDB('http://localhost:4987/passbook-server');
-  var adapter = new PouchDBAdapter(dbpath);
+  //  var adapter = new PouchDBAdapter(dbPath);
   var _program = require(path.resolve(__dirname, '../../src/program.js'))({
     config: config,
-    //  dataPath: dbPath,
-    adapter: adapter
+    dataPath: dbPath,
+    //  adapter: adapter
   });
+  //adapter.bulkDocs(exports.mockPasses);
   return _program;
 };
 
@@ -39,7 +40,9 @@ var Pass = require(path.resolve(__dirname, '../../src/routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, '../../src/routes/passes/passes.js'));
 var Device = require(path.resolve(__dirname, '../../src/routes/devices/device.js'));
 
-
+exports.Pass = Pass;
+exports.Passes = Passes;
+exports.Device = Device;
 
 exports.mockPasses = [
 
@@ -77,6 +80,7 @@ exports.mockPasses = [
   })
 ];
 
+
 exports.mockPass = exports.mockPasses[0];
 
 ///api/v1/v1/devices/a53ae770f6bd12d04c572e653888c6c6/registrations/pass.passbookmanager.io/25df3392-f37d-48c3-a0a1-20e9edc95f8b
@@ -84,5 +88,5 @@ exports.mockDevice = new Device({
   //"_id": "device-123456789",
   pushToken: '123456',
   "deviceLibraryIdentifier": "0000-0000-0000-0000-" + Date.now(),
-  "authorization": "ApplePass " + exports.mockPass.authenticationToken
+  "authorization": exports.mockPass.authenticationToken
 });

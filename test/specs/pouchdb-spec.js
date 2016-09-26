@@ -28,7 +28,7 @@ describe('db adapters', function() {
 
   before(function(done) {
     //fs.mkdirSync('../temp');
-    pouchdb = new PouchDB(config.db.url);
+    pouchdb = new PouchDB('pouchdb');
     //  pouchdb = new PouchDBAdapter(path.resolve(__dirname, '../temp/pouchdb'));
     done();
   });
@@ -101,14 +101,15 @@ describe('db adapters', function() {
       pouchdb.putAttachment(testDoc._id, 'text', testDoc._rev, attachment, 'text/plain').then(function(res) {
         testDoc._rev = res.rev;
         assert(res);
-        console.log('attachment resp', res);
+        assert.ok(res.rev);
+        //  console.log('attachment resp', res);
         done();
       }).catch(done);
     });
 
     it('getAttachment() - should get attachment', function(done) {
       pouchdb.getAttachment(testDoc._id, 'text').then(function(res) {
-        console.log('attachment resp', res);
+
 
         assert(res);
         done();

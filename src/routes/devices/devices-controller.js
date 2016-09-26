@@ -262,8 +262,8 @@ module.exports = function(program) {
         let updated = Date.now().toString();
         logger('get_device_passes', device_id, pass_type_id, authentication_token);
 
-        db.find({
-            //docType: 'registration',
+        db.allDocs({
+            docType: 'registration',
             pass_type_id: pass_type_id,
             auth_token: authentication_token,
             deviceLibraryIdentifier: device_id
@@ -289,6 +289,11 @@ module.exports = function(program) {
                 serialNumbers: serials
               });
 
+            } else {
+              res.status(204).json({
+                lastUpdated: updated,
+                serialNumbers: serials
+              });
             }
 
           }).catch(function(err) {
