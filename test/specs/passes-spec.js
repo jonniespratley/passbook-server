@@ -122,7 +122,7 @@ describe('Passes', function() {
   });
 
   it('remove() - should remove pass', function(done) {
-    Passes.remove(mockPass).then(function(resp) {
+    Passes.remove(mockPasses[0]).then(function(resp) {
       assert.ok(resp);
       done();
     }, function(err) {

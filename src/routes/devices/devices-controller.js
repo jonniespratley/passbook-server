@@ -262,7 +262,7 @@ module.exports = function(program) {
         let updated = Date.now().toString();
         logger('get_device_passes', device_id, pass_type_id, authentication_token);
 
-        db.allDocs({
+        db.find({
             docType: 'registration',
             pass_type_id: pass_type_id,
             auth_token: authentication_token,
@@ -270,15 +270,18 @@ module.exports = function(program) {
           })
           .then(function(resp) {
             console.log('parse response', resp);
-            return _.map(resp.rows, (row) => {
-              return row.doc || row;
-            });
+            return resp;
           })
           .then(function(resp) {
             console.log('get_device passes', resp);
             serials = _.map(resp, (row) => {
               return row.serial_number || row.serialNumber;
             });
+
+            if(resp.length === 0){
+               res.status(204).json({lastUpdated: Date.now()});
+            }
+
 
             //logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
             if (serials && serials.length > 0) {
@@ -289,11 +292,6 @@ module.exports = function(program) {
                 serialNumbers: serials
               });
 
-            } else {
-              res.status(204).json({
-                lastUpdated: updated,
-                serialNumbers: serials
-              });
             }
 
           }).catch(function(err) {

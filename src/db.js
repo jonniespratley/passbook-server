@@ -43,9 +43,9 @@ class Db {
   findBy(params) {
     logger('findBy', params);
     return this.find(params).then(function(resp) {
+
       logger('findBy', resp);
-      return _(resp.rows).find(params);
-      //  return resp.rows[0];
+      return _(resp).find(params);
     });
   }
   findOne(params) {
@@ -61,12 +61,12 @@ class Db {
       logger('find', params);
       return new Promise((resolve, reject) => {
         let _out, _docs = [];
-
         this.allDocs(params).then((resp) => {
           _docs = resp.rows.map((row) => {
             return row.doc;
           });
-          resolve(_.find(_docs, params));
+
+          resolve(_.filter(_docs, params));
         }).catch(reject);
       });
     }

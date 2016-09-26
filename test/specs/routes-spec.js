@@ -158,15 +158,13 @@ describe('passbook-server routes', function() {
           })
           .expect(200, done);
       });
+
       it('GET - 204 - /api/v1/devices/:device_id/:registrations/:pass_type_id - no matching passes',
         function(done) {
           request(app)
             .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/unknown')
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
-            .expect('Content-Type', /json/)
-            .expect(function(res) {
-              assert.ok(res.body.serialNumbers);
-            })
+  
             .expect(204, done);
         });
 
@@ -197,7 +195,7 @@ describe('passbook-server routes', function() {
             .expect(200, done);
         });
 
-        it('GET - 204 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(
+        it('GET - 200 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(
           done) {
           var prevTimestamp = Date.now();
 
@@ -207,7 +205,7 @@ describe('passbook-server routes', function() {
             )
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
             //.expect('Content-Type', /application\/vnd.apple.pkpass/)
-            .expect(204, done);
+            .expect(200, done);
 
         });
       });

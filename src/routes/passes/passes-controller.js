@@ -52,10 +52,11 @@ module.exports = function(program) {
 
       } else {
         Passes.findOne({
+          docType: 'pass',
           passTypeIdentifier: pass_type_id,
           serialNumber: serial_number
         }).then(function(resp) {
-          let pass = resp;
+          let pass = new  Pass(resp);
           logger('get_passes:success', pass._id);
           if (lastUpdated > pass.lastUpdated) {
             logger('last-updated', lastUpdated, pass.lastUpdated);
