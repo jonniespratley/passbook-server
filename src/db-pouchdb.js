@@ -136,11 +136,11 @@ class PouchDBAdapter {
       doc._id = this.getUUID(prefix);
       return new Promise((resolve, reject) => {
         log.info('post', doc);
-        this.db.put(doc).then((resp) => {
+        this.db.post(doc).then((resp) => {
           log.info('post.success', resp);
           doc._id = resp.id;
           doc._rev = resp.rev;
-          resolve(doc);
+          resolve(resp);
         }).catch((err) => {
           logger('post.error', err);
           reject(err);

@@ -5,20 +5,31 @@ const crypto = require('crypto');
 const pkg = require(path.resolve(__dirname, '../package.json'));
 const debug = require('debug');
 
-var utils = {};
-utils.getLogger = function(name) {
-	return debug(pkg.name + ':' + name);
-};
+class Utils {
+  constructor(){
+  }
 
-var logger = utils.getLogger('utils');
+  index(obj, is, value) {
+    if (typeof is === 'string') {
+      return this.index(obj, is.split('.'), value);
+    } else if (is.length === 1 && value !== undefined) {
+      obj[is[0]] = value;
+      return obj;
+    } else if (is.length === 0) {
+      return obj;
+    } else {
+      return this.index(obj[is[0]], is.slice(1), value);
+    }
+  }
 
-
-function checksum(str, algorithm, encoding) {
-	return crypto
-		.createHash(algorithm || 'md5')
-		.update(str, 'utf8')
-		.digest(encoding || 'hex')
+  checksum(str, algorithm, encoding) {
+  	return crypto
+  		.createHash(algorithm || 'md5')
+  		.update(str, 'utf8')
+  		.digest(encoding || 'hex')
+  }
+  getLogger(name) {
+  	return debug(pkg.name + ':' + name);
+  }
 }
-utils.checksum = checksum;
-
-module.exports = utils;
+module.exports = new Utils();
