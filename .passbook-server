@@ -1,20 +1,21 @@
 {
 	"name": "passbook-server",
 	"debug": true,
-	"baseUrl": "http://localhost:4987/passbook-server",
+	"baseUrl": "/api",
 	"message": "passbook-server api",
-	"dataPath": "./.passbook-server-db",
 	"version": "v1",
+	"teamIdentifier": "USE9YUYDFH",
+	"passTypeIdentifier": "pass.io.passbook-manager.test",
+	"webServiceURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/api",
+	"session": {
+		"user": {
+			"username": "jonniespratley"
+		}
+	},
 	"database": {
 		"local": "passbook-server",
 		"remote": "http://localhost:4987/passbook-server",
-		"dataPath": "/Users/212400520/Github/passbook-server/data"
-	},
-	"passkit": {
-		"version": "v1",
-		"teamIdentifier": "USE9YUYDFH",
-		"passTypeIdentifier": "pass.io.jsapps.walletmanager",
-		"webServiceURL": "https://passbook-manager.run.aws-usw02-pr.ice.predix.io/api"
+		"dataPath": "/Users/212400520/.passbook-server/db"
 	},
 	"passport": {
 		"development": {
@@ -28,11 +29,17 @@
 			"github": {
 				"clientID": "96943ce4c9b4f09bf98f",
 				"clientSecret": "f9809160c20f1f57876924c015aa68283f1c4a4b",
-				"callbackURL": "https://passbook-manager.run.aws-usw02-pr.ice.predix.io/auth/provider/callback"
+				"callbackURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/auth/provider/callback"
 			}
 		}
 	},
 	"security": {
 		"salt": "a58e325c6df628d07a18b673a3420986"
-	}
+	},
+	"server": {
+		"host": "127.0.0.1",
+		"port": 5001
+	},
+	"middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
+	"publicDir": "./public"
 }

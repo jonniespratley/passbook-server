@@ -1,6 +1,6 @@
 'use strict';
 const gulp = require('gulp');
-const mocha = require('gulp-mocha');
+
 const gulpSequence = require('gulp-sequence');
 
 
@@ -37,14 +37,21 @@ gulp.task('pre-test', function() {
     }))
     .pipe(istanbul.hookRequire());
 });
+const mocha = require('gulp-spawn-mocha');
 
-gulp.task('test', ['pre-test'], function() {
+gulp.task('test', function() {
   return gulp.src(config.specs)
     .pipe(mocha({
       read: false,
-      reporter: 'mochawesome'
+      reporter: 'mochawesome',
+      istanbul: true,
+      env: {
+        'PASSBOOK_SERVER_TEAM_IDENTIFIER': '123456',
+        'PASSBOOK_SERVER_PASS_TYPE_IDENTIFIER': 'pass-io-passbook-server-test',
+        'PASSBOOK_SERVER_WEB_SERVICE_URL': 'https://passbook-server.run.aws-usw02-pr.ice.predix.io/api'
+      }
     }))
-    .pipe(istanbul.writeReports())
+  //  .pipe(istanbul.writeReports())
     .once('error', function() {
       process.exit(1);
     })

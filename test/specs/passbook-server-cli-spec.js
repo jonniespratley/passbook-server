@@ -45,7 +45,7 @@ describe('passbook-server bin', function () {
         });
     });
 
-    it('--help should run without errors', function (done) {
+    xit('--help should run without errors', function (done) {
         execCmd('--help').then((res) => {
             assert(res);
             done();
