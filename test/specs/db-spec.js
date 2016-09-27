@@ -163,12 +163,11 @@ describe('db adapters', function () {
       });
     });
 
-
     it('findOne(params) - should find first object by params and resolve promise', function (done) {
       db.findOne({
         _id: testDocs[0]._id
       }).then(function (resp) {
-        assert(resp);
+        assert(resp._id);
         //assert(resp.deviceLibraryIdentifier === mockDevice.deviceLibraryIdentifier);
         done();
       }).catch(function (err) {
@@ -177,14 +176,13 @@ describe('db adapters', function () {
       });
     });
 
-
     it('find(params) - should find item by params and resolve promise', function (done) {
       db.find({
         docType: 'file'
       }).then(function (resp) {
         console.log(resp);
-
         assert(resp);
+        assert(resp.length);
         done();
       }).catch(function (err) {
         assert.fail(err);
@@ -203,7 +201,6 @@ describe('db adapters', function () {
         done();
       });
     });
-
 
     it('remove(id) - should remove doc with id and resolve promise', function (done) {
       db.remove('test-file').then(function (resp) {

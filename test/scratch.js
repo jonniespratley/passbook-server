@@ -3,7 +3,7 @@
 const _ = require("lodash");
 const log = require("npmlog");
 const request = require("request");
-request.debug = true;
+
 
 var data = null;
 
@@ -21,8 +21,7 @@ var remoteDb;
 
 const baseRequest = request.defaults({
 	method: 'GET',
-	baseUrl: BASE_URL,
-  json: true
+	baseUrl: BASE_URL
 });
 
 function $http(options) {
@@ -54,13 +53,19 @@ function cleanDocs(rows) {
   		Promise.all(_docs).then(resolve, reject);
   	});
   	_.forEach(rows, function(row) {
-  		_docs.push(removeDoc(row._id));
-  		_done();
+      if(row.docType !== 'pass'){
+        removeDoc(row._id).then((resp) =>{
+          _done();
+        });
+      }
+
   	});
   });
 }
 
-$http({url: '/api/v1/admin/db'}).then(cleanDocs).then((resp) =>{
+$http({
+  json: true,
+  url: '/api/v1/admin/db'}).then(cleanDocs).then((resp) =>{
   log.info('resp', resp);
 }).catch((err) =>{
   log.error(err);

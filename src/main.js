@@ -64,6 +64,21 @@ module.exports = (function(userConfig) {
     });
   });
 
+  app.get('/_browse', function(req, res) {
+    var passes = [];
+    program.get('db').allDocs({docType: 'pass'}).then((resp) =>{
+      passes = resp;
+      console.log('Got passes', resp);
+      res.render('browse', {
+        title: config.name,
+        passes: passes
+      });
+    });
+
+
+
+  });
+
   app.get('/bad', function(req, res) {
     unknownMethod();
   });

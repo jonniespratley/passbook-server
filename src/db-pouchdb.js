@@ -17,9 +17,7 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    this.options = _.extend({
-      prefix: ''
-    }, options)
+    this.options = Object.create(options);
     log.info('PouchDBAdapter', name);
 
     this.db = this.getAdapter(name, this.options);

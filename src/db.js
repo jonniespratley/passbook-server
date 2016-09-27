@@ -1,13 +1,13 @@
 'use strict';
 const logger = require('debug')('passbook-server:db');
-var instance = null;
+
 const _ = require('lodash');
 const assert = require('assert');
 const Store = require('jfs');
-
 const log = require('npmlog');
 
-var db = null;
+let instance = null;
+let db = null;
 /**
  * @class Db
  * Simple file store adapter
@@ -15,52 +15,54 @@ var db = null;
 class Db {
   /**
    * @param {String} name The path to the data store.
+   * @param {String} options Options to apply
    * @constructor
    */
   constructor(name, options) {
       options = _.extend({
         saveId: '_id',
         //type: 'single'
-        //pretty: true
+        pretty: true
       }, options);
+
       db = new Store(name, options);
       this.db = db;
-
-      this.saveSync = db.saveSync;
-      this.allSync = db.allSync;
-      this.getSync = db.getSync;
-
-      //this.bulkDocs = _ds.saveAll;
-      //this.findOne = _ds.findBy;
-
       instance = this;
+      return this;
     }
     /**
-     * Find first document in store.
+     * Find document in store.
      * @param {Object} params Parameters to query with
      * @returns {*}
      */
   findBy(params) {
     logger('findBy', params);
     return this.find(params).then(function(resp) {
-
       logger('findBy', resp);
       return _(resp).find(params);
     });
   }
+  /**
+   * Find first document in store.
+   * @param {Object} params Parameters to query with
+   * @returns {*}
+   */
   findOne(params) {
-      return this.findBy(params);
-    }
+    logger('findBy', params);
+    return this.find(params).then(function(resp) {
+      logger('findBy', resp);
+      return _(resp).filter(params).first();
+    });
+  }
     /**
      * Query documents in store.
      * @param {Object} params Parameters to query with
      * @returns {Promise}
      */
   find(params) {
-      let self = this;
       logger('find', params);
       return new Promise((resolve, reject) => {
-        let _out, _docs = [];
+        let _docs = [];
         this.allDocs(params).then((resp) => {
           _docs = resp.rows.map((row) => {
             return row.doc;
@@ -100,7 +102,7 @@ class Db {
       });
     }
     /**
-     * Update doc in store.
+     * Update document in store.
      * @param {Object} doc Document object to store
      * @param {String} id The id of the document
      * @returns {Promise}
@@ -124,7 +126,7 @@ class Db {
       });
     }
     /**
-     * Create doc in store.
+     * Create document in store.
      * @param {Object} doc Document object to store
      * @param {String} prefix Prefix to prepend to generated id
      * @returns {Promise}
@@ -200,7 +202,7 @@ class Db {
      * @param {Array} docs Array of documents
      * @returns {Promise}
      */
-  saveAll(docs) {
+  bulkDocs(docs) {
       let self = this;
       return new Promise(function(resolve, reject) {
         logger('saveAll', docs.length);
@@ -224,13 +226,13 @@ class Db {
         });
       });
     }
-    /**
-     * Save array of documents in store.
-     * @param {Array} docs Array of documents
-     * @returns {Promise}
-     */
-  bulkDocs(docs) {
-    return this.saveAll(docs);
+  /**
+   * Save array of documents in store.
+   * @param {Array} docs Array of documents
+   * @returns {Promise}
+   */
+  saveAll(docs) {
+    return this.bulkDocs(docs);
   }
 
   getUUID(prefix) {
@@ -240,16 +242,16 @@ class Db {
   }
 
   putAttachment() {
-
+    log.error('putAttachment', 'not implemented');
   }
   getAttachment() {
-
+    log.error('getAttachment', 'not implemented');
   }
   removeAttachment() {
-
+    log.error('removeAttachment', 'not implemented');
   }
   query(fun, options) {
-    return this.allDocs().map(fun);
+    return this.allDocs(options).map(fun);
   }
 
   static getInstance() {

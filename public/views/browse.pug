@@ -1,0 +1,15 @@
+extends ./includes/layout.pug
+
+block content
+  .jumbotron.jumbotron-fluid
+    .container
+      h1.display-3 Browse
+      p.lead
+        | Here is all the available passes.
+  .row
+    .col-12
+      ul.list-group
+        each pass in passes.rows
+          li.list-group-item
+            h5=pass.doc._id
+            span=pass.doc.type

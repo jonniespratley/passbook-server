@@ -32,6 +32,7 @@ var config = {
 	baseUrl: '/api',
 	"message": "passbook-server api",
 	"version": "v1",
+  "dataPath": path.resolve(require('user-home'), `./.${pkg.name}`),
 	session: {
 		user: {
 			username: 'jonniespratley'
@@ -39,8 +40,7 @@ var config = {
 	},
 	database: {
 		"local": "passbook-server",
-		"remote": "http://localhost:4987/passbook-server",
-		"dataPath": path.resolve(require('user-home'), `./.${pkg.name}`)
+		"remote": "http://localhost:4987/passbook-server"
 	},
 	"passkit": {
 		"version": "v1",
