@@ -33,7 +33,7 @@ class Program {
 			}
 		};
 
-		log.info('config', this.config);
+		logger('config', this.config);
 
 		db = config.adapter || new DB(this.config.dataPath, {
 			//type: 'single'
@@ -61,12 +61,12 @@ class Program {
 	}
 
 	get(name) {
-		log.info('get', name);
+		logger('get', name);
 		return this.modules[name];
 	}
 
 	set(name, module) {
-		log.info('set', name);
+		logger('set', name);
 		this.modules[name] = module;
 		return this;
 	}
