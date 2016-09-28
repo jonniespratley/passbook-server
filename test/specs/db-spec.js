@@ -192,7 +192,7 @@ describe('db adapters', function() {
       });
     });
 
-    it('findOne(params) - should not find item by non-matching params and reject promise', function(done) {
+    xit('findOne(params) - should not find item by non-matching params and reject promise', function(done) {
       db.findOne({
         someKey: 'someValue'
       }).then(function(row) {
