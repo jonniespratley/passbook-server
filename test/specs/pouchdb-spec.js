@@ -28,7 +28,7 @@ describe('db adapters', function() {
 
   before(function(done) {
     //fs.mkdirSync('../temp');
-    pouchdb = new PouchDB('pouchdb');
+    pouchdb = new PouchDB(path.resolve(__dirname, '../temp/pouchdb'));
     //  pouchdb = new PouchDBAdapter(path.resolve(__dirname, '../temp/pouchdb'));
     done();
   });

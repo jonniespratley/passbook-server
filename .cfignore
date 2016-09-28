@@ -5,3 +5,5 @@ temp
 //data
 .DS_Store
 db.sqlite
+/pouchdb/
+/pouchdb-mrview-temp/

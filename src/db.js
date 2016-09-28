@@ -112,13 +112,18 @@ class Db {
       return new Promise(function(resolve, reject) {
         logger('put', doc._id);
         _.defer(function() {
+          doc._rev = '0-0000';
           db.save(doc._id || id, doc, function(err) {
             if (err) {
               logger('put.error', err);
               reject(err);
             } else {
               logger('put.success', doc._id);
-              resolve(doc);
+              resolve({
+                ok: true,
+                id: doc._id,
+                rev: doc._rev
+              });
             }
 
           });
@@ -147,7 +152,11 @@ class Db {
               doc._id = doc._id;
               doc._rev = doc._rev;
               logger('post.success', doc._id);
-              resolve(doc);
+              resolve({
+                ok: true,
+                id: doc._id,
+                rev: doc._rev
+              });
             }
           });
         });
