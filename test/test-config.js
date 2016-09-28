@@ -26,26 +26,20 @@ module.exports = {
 	debug: true,
 	baseUrl: '/api',
 	name: 'passbook-server',
-
-	message: 'Passbook Manager API Server',
-	version: 'v1',
-	"passkit": {
-		passTypeIdentifierP12: '',
-		"version": "v1",
-		"teamIdentifier": APPLE_TEAM_IDENTIFIER,
-		"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
-		"webServiceURL": APPLE_WEB_SERVICE_URL
-	},
+  "message": "passbook-server api",
+	"version": "v1",
+	"teamIdentifier": "USE9YUYDFH",
+	"passTypeIdentifier": "pass.io.passbook-manager.test",
+	"webServiceURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/api",
 	security: {
 		salt: 'a58e325c6df628d07a18b673a3420986'
 	},
-	db: {
-		name: 'temp/test-db',
-		url: 'http://localhost:4987/passbook-server'
-	},
-	collections: ['devices', 'passes', 'notifications', 'settings'],
-	staticDir: './app',
-	publicDir: __dirname + path.sep + 'www/public',
-	uploadsTmpDir: __dirname + path.sep + '.tmp',
-	uploadsDestDir: __dirname + path.sep + 'www/public'
+  "middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
+	"publicDir": "./public",
+  "database": {
+		"name": "passbook-server",
+		"local": "passbook-server",
+		"url": "http://localhost:4987/passbook-server",
+		"dataPath": "/Users/212400520/.passbook-server/db"
+	}
 };

@@ -216,27 +216,20 @@ module.exports = function(program) {
         });
       }
     },
-    /**
-     *
 
-     # Updatable passes
-     #
-     # get all serial #s associated with a device for passes that need an update
-     # Optionally with a query limiter to scope the last update since
-     #
-     # GET /v1/devices/<deviceID>/registrations/<typeID>
-     # GET /v1/devices/<deviceID>/registrations/<typeID>?passesUpdatedSince=<tag>
-     #
-     # server action: figure out which passes associated with this device have been modified since the supplied tag (if no tag provided, all associated serial #s)
-     # server response:
-     # --> if there are matching passes: 200, with JSON payload: { "lastUpdated" : <new tag>, "serialNumbers" : [ <array of serial #s> ] }
-     # --> if there are no matching passes: 204
-     # --> if unknown device identifier: 404
-     #
-     #
-     * @param req
-     * @param res
-     * @param next
+    /**
+     * get_device_passes - Get all serial #s associated with a device for passes that need an update.
+     *
+     * ```
+     * GET /v1/devices/<deviceID>/registrations/<typeID>
+       GET /v1/devices/<deviceID>/registrations/<typeID>?passesUpdatedSince=<tag>
+     * { "lastUpdated" : <new tag>, "serialNumbers" : [ <array of serial #s> ] }
+     * ```
+     *
+     * @param  {type} req  description
+     * @param  {type} res  description
+     * @param  {type} next description
+     * @return {type}      description
      */
     get_device_passes: function(req, res, next) {
       let authentication_token = req.get('Authorization');
@@ -244,7 +237,7 @@ module.exports = function(program) {
       let pass_type_id = req.params.pass_type_id;
       let serials = [];
       let serial_number = req.params.serial_number;
-
+      let updated = Date.now().toString();
       assert(device_id, 'has device id');
       assert(pass_type_id, 'has pass type id');
 
@@ -253,18 +246,17 @@ module.exports = function(program) {
 
       if (!authentication_token) {
         log.error('no Authorization', authentication_token);
-
-        res.status(401).json({
+        return res.status(401).json({
           error: 'Unauthorized'
         });
 
       } else {
-        let updated = Date.now().toString();
+
         logger('get_device_passes', device_id, pass_type_id, authentication_token);
 
         db.find({
             docType: 'registration',
-            pass_type_id: pass_type_id,
+
             auth_token: authentication_token,
             deviceLibraryIdentifier: device_id
           })
@@ -278,12 +270,11 @@ module.exports = function(program) {
               return row.serial_number || row.serialNumber;
             });
 
-            if(resp.length === 0){
+            if(!_.find(resp, {pass_type_id: pass_type_id}) ){
                res.status(204).json({lastUpdated: Date.now()});
             }
 
-
-            //logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
+            logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
             if (serials && serials.length > 0) {
               logger('get_device_passes', 'serials', serials);
 
@@ -295,7 +286,7 @@ module.exports = function(program) {
             }
 
           }).catch(function(err) {
-            logger('ERROR', 'no passes found for device', err);
+            logger('ERROR', 'Device is not registered for pass', err);
             res.status(404).json({
               error_message: `No passTypeIdentifier ${pass_type_id} found for device ${device_id}`
             });

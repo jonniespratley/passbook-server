@@ -22,7 +22,7 @@ module.exports = function(obj) {
     console.log('Error loading schema');
   }
   let uuid = obj.serialNumber || require('node-uuid').v4();
-  let passTypeId = (obj.passTypeIdentifier || config.passkit.passTypeIdentifier).replace(/\./g, '-');
+  let passTypeId = (obj.passTypeIdentifier || config.passTypeIdentifier).replace(/\./g, '-');
   let id = passTypeId + '-' + uuid;
   var pass = _.assign(this, {
       _id: id,
@@ -35,13 +35,13 @@ module.exports = function(obj) {
       'description': 'This is the default pass description.',
       formatVersion: 1,
       'organizationName': 'Passbook Manager',
-      'passTypeIdentifier': obj.passTypeIdentifier || config.passkit.passTypeIdentifier,
+      'passTypeIdentifier': obj.passTypeIdentifier || config.passTypeIdentifier,
       serialNumber: uuid,
-      'teamIdentifier': obj.teamIdentifier || config.passkit.teamIdentifier,
+      'teamIdentifier': obj.teamIdentifier || config.teamIdentifier,
 
       //web service keys
       'authenticationToken': uuid,
-      'webServiceURL': obj.webServiceURL || config.passkit.webServiceURL,
+      'webServiceURL': obj.webServiceURL || config.webServiceURL,
 
       // TODO: expiration keys - Information about when a pass expires and whether it is still valid.
       /*expirationDate: null,

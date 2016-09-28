@@ -17,7 +17,7 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    this.options = Object.create(options);
+    this.options = Object.assign(options || {});
     log.info('PouchDBAdapter', name);
 
     this.db = this.getAdapter(name, this.options);
@@ -62,7 +62,15 @@ class PouchDBAdapter {
         let _out, _docs = [];
 
         self.allDocs(params).then(function(resp) {
-          _out = _.filter(resp.rows, params);
+          _docs = _.map(resp.rows, function(row){
+            return row.doc;
+          });
+          if(params){
+            _out = _.filter(_docs, params);
+          } else {
+            _out = _docs;
+          }
+
 
           if (_out && _out.length > 0) {
             logger('find.success', _out.length);
@@ -94,15 +102,7 @@ class PouchDBAdapter {
           if (err) {
             reject(err);
           }
-          _docs = res.rows.map((row) => {
-            return row.doc;
-          });
-          if (params) {
-            _docs = _.filter(_docs, params);
-          }
-          resolve({
-            rows: _docs
-          });
+          resolve(res);
         });
       });
     }
@@ -114,7 +114,7 @@ class PouchDBAdapter {
      */
   put(doc) {
       assert(doc._id, 'document must have _id');
-      assert(doc._rev, 'document must have _rev');
+      //assert(doc._rev, 'document must have _rev');
       return new Promise((resolve, reject) => {
         logger('put', doc._id);
         this.db.put(doc).then((res) => {

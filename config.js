@@ -28,39 +28,36 @@ var GITHUB_CALLBACK_URL = '/auth/provider/callback';
 
 var config = {
 	"name": "passbook-server",
-	debug: true,
-	baseUrl: '/api',
+	"debug": true,
+	"baseUrl": "/api",
 	"message": "passbook-server api",
 	"version": "v1",
-  "dataPath": path.resolve(require('user-home'), `./.${pkg.name}`),
-	session: {
-		user: {
-			username: 'jonniespratley'
+	"teamIdentifier": "USE9YUYDFH",
+	"passTypeIdentifier": "pass.io.passbook-manager.test",
+	"webServiceURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/api",
+	"session": {
+		"user": {
+			"username": "jonniespratley"
 		}
 	},
-	database: {
-		"local": "passbook-server",
-		"remote": "http://localhost:4987/passbook-server"
+	"database": {
+		"name": "passbook-server",
+		"url": "http://localhost:4987/passbook-server",
+		"dataPath": "/Users/212400520/.passbook-server/db"
 	},
-	"passkit": {
-		"version": "v1",
-		"teamIdentifier": APPLE_TEAM_IDENTIFIER,
-		"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
-		"webServiceURL": APPLE_WEB_SERVICE_URL
-	},
-	passport: {
-		development: {
-			github: {
-				clientID: GITHUB_DEV_CLIENT_ID,
-				clientSecret: GITHUB_DEV_CLIENT_SECRET,
-				callbackURL: GITHUB_DEV_CALLBACK_URL
+	"passport": {
+		"development": {
+			"github": {
+				"clientID": "7171ef010ffc067de767",
+				"clientSecret": "387c9cd85b4c48abcaa7547bf2865aaf922e4ac2",
+				"callbackURL": "http://127.0.0.1:5001/auth/provider/callback"
 			}
 		},
-		production: {
-			github: {
-				clientID: GITHUB_PRODUCTION_CLIENT_ID,
-				clientSecret: GITHUB_PRODUCTION_CLIENT_SECRET,
-				callbackURL: GITHUB_PRODUCTION_CALLBACK_URL
+		"production": {
+			"github": {
+				"clientID": "96943ce4c9b4f09bf98f",
+				"clientSecret": "f9809160c20f1f57876924c015aa68283f1c4a4b",
+				"callbackURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/auth/provider/callback"
 			}
 		}
 	},
@@ -68,17 +65,10 @@ var config = {
 		"salt": "a58e325c6df628d07a18b673a3420986"
 	},
 	"server": {
-		"host": process.env.VCAP_APP_HOST || process.env.IP || "127.0.0.1",
-		"port": process.env.PORT || 5001
+		"host": "127.0.0.1",
+		"port": 5001
 	},
-	middleware: [
-		'./routes/admin',
-		'./routes/logs',
-		'./routes/devices',
-		'./routes/passes'
-	],
-
-	"staticDir": "./app",
+	"middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
 	"publicDir": "./public"
 };
 

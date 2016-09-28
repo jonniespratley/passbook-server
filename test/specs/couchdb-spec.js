@@ -91,9 +91,9 @@ var mockServer = function() {
 
 xdescribe('CouchDB Adapter', function() {
 
-  before('should be defined - ' + config.db.url, function(done) {
+  before(function(done) {
     mockServer();
-    db = new CouchDB(config.db.url);
+    db = new CouchDB(config.database.url);
     done();
   });
   it('should be defined', function(done) {

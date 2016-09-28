@@ -16,7 +16,7 @@ var passes;
 
 // TODO: Program
 var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
-var program = mocks.program();
+var program = mocks.program('pouchdb');
 var db = program.db;
 var config = mocks.config;
 var Pass = mocks.Pass;
@@ -33,24 +33,15 @@ var app;
 
 describe('passbook-server routes', function() {
   before(function(done) {
-    mocks.mockPasses = [
-      new Pass({
-        serialNumber: 'test1'
-      }),
-      new Pass({
-        serialNumber: 'tes2t'
-      })
-    ];
     app = express();
     app.locals.program = program;
     app.locals.db = program.db;
+
     program.require('routes').Logs(app);
     program.require('routes').Passes(app);
     program.require('routes').Devices(app);
-    //  done();
-    //request(app);
+
     program.db.bulkDocs(mocks.mockPasses).then(function(resp) {
-      //  console.log('insterted', resp);
       mockPass = mocks.mockPass;
       //  mockDevice.authorization = 'ApplePass ' + mockPass.authenticationToken;
       done();
@@ -61,8 +52,6 @@ describe('passbook-server routes', function() {
 
 
   describe('Web Service API', function() {
-
-
 
     describe('Devices', function() {
       it(
@@ -164,7 +153,7 @@ describe('passbook-server routes', function() {
           request(app)
             .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/unknown')
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
-  
+
             .expect(204, done);
         });
 
@@ -195,7 +184,7 @@ describe('passbook-server routes', function() {
             .expect(200, done);
         });
 
-        it('GET - 200 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(
+        it('GET - 204 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(
           done) {
           var prevTimestamp = Date.now();
 
@@ -205,12 +194,12 @@ describe('passbook-server routes', function() {
             )
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
             //.expect('Content-Type', /application\/vnd.apple.pkpass/)
-            .expect(200, done);
+            .expect(204, done);
 
         });
       });
 
-      it('DELETE - /api/v1/devices/:device_id/:pass_type_id/:serial_number - un-register device',
+      xit('DELETE - /api/v1/devices/:device_id/:pass_type_id/:serial_number - un-register device',
         function(done) {
           request(app)
             .delete(
