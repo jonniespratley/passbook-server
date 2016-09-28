@@ -8,7 +8,7 @@ var app;
 var instance;
 
 // TODO: Program
-var mocks = require(path.resolve(__dirname, '../helpers/mocks.js'));
+var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 var program = mocks.program();
 var Admin = require(path.resolve(__dirname, '../../src/routes/admin'));
 

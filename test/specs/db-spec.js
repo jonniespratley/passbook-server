@@ -33,13 +33,13 @@ describe('db adapters', function () {
 
   describe('file system', function () {
     before(function (done) {
-      db = new DB(path.resolve(__dirname, '../temp/tempdb'));
+      db = new DB(path.resolve(__dirname, '../temp/file-db'));
       done();
     });
 
     after(function (done) {
-      cleanTestDocs(done);
-
+      //cleanTestDocs(done);
+done();
     });
 
     it('should be defined', function (done) {
@@ -115,10 +115,10 @@ describe('db adapters', function () {
         docType: 'file'
       }).then(function (resp) {
         testDocs.push(resp);
-        testId = resp._id;
+        testId = resp.id;
         assert(resp);
-        assert(resp._id);
-        assert(resp._rev);
+        assert(resp.id);
+        assert(resp.rev);
         done();
       }).catch(function (err) {
         assert.fail(err);
@@ -131,11 +131,11 @@ describe('db adapters', function () {
         name: 'test log with prefixed id',
         docType: 'log'
       }, 'log').then(function (resp) {
-        testId = resp._id;
+        testId = resp.id;
         testDocs.push(resp);
         assert(resp);
-        assert(resp._id);
-        assert(resp._rev);
+        assert(resp.id);
+        assert(resp.rev);
         done();
       }).catch(function (err) {
         assert.fail(err);

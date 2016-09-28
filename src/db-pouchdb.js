@@ -114,13 +114,14 @@ class PouchDBAdapter {
      */
   put(doc) {
       assert(doc._id, 'document must have _id');
+      assert(doc._rev, 'document must have _rev');
       return new Promise((resolve, reject) => {
         logger('put', doc._id);
         this.db.put(doc).then((res) => {
           doc._id = doc.id;
           doc._rev = doc.rev;
           logger('put.success', res);
-          resolve(doc);
+          resolve(res);
         }).catch(reject);
       });
     }
