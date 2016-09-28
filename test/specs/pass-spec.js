@@ -1,3 +1,4 @@
+'use strict';
 var path = require('path');
 var assert = require('assert');
 var Pass = require(path.resolve(__dirname, '../../src/routes/passes/pass.js'));
@@ -10,14 +11,14 @@ const program = mocks.program();
 
 const config = mocks.config;
 
-
+/*global describe, it*/
 describe('Pass', function() {
 	it('should create default generic Pass', function(done) {
 		assert(Pass);
 		p = new Pass();
 		assert.ok(p._id);
 		assert.equal(p.type, 'generic');
-		done()
+		done();
 	});
 
 	it('should create pass model with [storeCard] type', function(done) {
