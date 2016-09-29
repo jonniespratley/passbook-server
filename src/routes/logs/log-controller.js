@@ -7,12 +7,10 @@ class LogController {
   }
   post_log(req, res) {
     var data = {
-      body: JSON.stringify(req.body),
+      body: req.body,
       params: req.params,
-      url: req.path,
-      _id: 'log-' + Date.now().toString(),
-      type: 'log',
-      time: Date.now().toString()
+      url: req.url,
+      _id: 'log-' + Date.now().toString()
     };
     req.app.locals.db.put(new Log(data)).then((msg) => {
       res.status(201).json(msg);

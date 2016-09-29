@@ -33,10 +33,10 @@ exports.program = function(adapterType) {
       _config.dataPath = dbPath;
       break;
     case 'pouchdb':
-      _config.adapter = new PouchDBAdapter(dbPath);
+      _config.adapter = new PouchDBAdapter(config.get('database.url'));
       break;
     case 'couchdb':
-      _config.adapter = new CouchDB(config.database.url);
+      _config.adapter = new CouchDB(config.get('database.url'));
       break;
     default:
       _config.dataPath = dbPath;

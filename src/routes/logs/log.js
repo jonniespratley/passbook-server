@@ -4,7 +4,7 @@ class Log {
   constructor(o) {
     let defaults = {
       docType: 'log',
-      time: Date.now().toString()
+      created: Date.now().toString()
     };
     _.assign(this, defaults, o);
   }

@@ -233,7 +233,7 @@ describe('db adapters', function() {
 
     describe('Sync', function() {
       this.timeout(10000);
-      it('sync() - should replicate from local to remote', (done) => {
+      xit('sync() - should replicate from local to remote', (done) => {
         var db = {
           username: process.env.PASSBOOK_SERVER_DB_USERNAME,
           password: process.env.PASSBOOK_SERVER_DB_PASSWORD
