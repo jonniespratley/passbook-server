@@ -17,6 +17,7 @@ var testDocId = 'test-pouchdb-doc-' + Date.now();
 
 /* global describe, before, it, xit */
 const dataPath = path.resolve(__dirname, '../temp/', 'passbook-server');
+var dbPath = dataPath;
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb'));
 const PouchDB = require('pouchdb');
 var tempDoc = {
@@ -38,7 +39,7 @@ describe('db adapters', function() {
   after(function(done) {
     //fs.mkdirSync('../temp');
     //console.log('CLean', testDocs);
-    fs.removeSync(dbPath);
+    //fs.removeSync(dbPath);
 
     //pouchdb.destroy();
     done();
@@ -230,19 +231,25 @@ describe('db adapters', function() {
     });
 
 
-    describe('Sync', () => {
+    describe('Sync', function() {
+      this.timeout(10000);
       it('sync() - should replicate from local to remote', (done) => {
-        pouchdb.sync(dataPath, 'http://localhost:4987/passbook-server-')
+        var db = {
+          username: process.env.PASSBOOK_SERVER_DB_USERNAME,
+          password: process.env.PASSBOOK_SERVER_DB_PASSWORD
+        };
+        var repl = pouchdb.getAdapter().replicate.to(`https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server`)
           .on('change', function(info) {
-            program.log.info('change', info);
+            assert(info);
+            console.log('change', info);
             // handle change
           }).on('complete', function(info) {
-            program.log.info('complete', info);
+            console.log('complete', info);
             assert(info, 'sync complete');
             done();
             // handle complete
           }).on('uptodate', function(info) {
-            program.log.info('uptodate', info);
+            console.log('uptodate', info);
             // handle up-to-date
           }).on('error', function(err) {
             assert.fail(err, 'sync fails');
@@ -250,9 +257,6 @@ describe('db adapters', function() {
             // handle error
             done();
           });
-
-        sync.cancel(); // whenever you want to cancel
-        done();
       });
     });
   });

@@ -29,6 +29,7 @@
     "body-parser": "^1.10.2",
     "chalk": "^0.5.1",
     "commander": "~2.0.0",
+    "debug": "^2.2.0",
     "express": "^4.11.1",
     "express-list-routes": "^0.1.4",
     "fs-extra": "^0.16.3",
