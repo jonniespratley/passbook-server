@@ -6,11 +6,17 @@ const path = require('path');
 const pkg = require(path.resolve(__dirname, '../package.json'));
 const defaultConfig = require(path.resolve(__dirname, '../config.js'));
 const DB = require('./db');
-const CouchDB = require('./db-couchdb');
+
+
+
 const utils = require('./utils');
 const logger = utils.getLogger('program');
 
 const log = require('npmlog');
+
+
+const PouchDbAdapter = require('./db-pouchdb');
+const CouchDB = require('./db-couchdb');
 
 var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
@@ -74,6 +80,7 @@ class Program {
 	getDb() {
 		return db;
 	}
+
 }
 
 

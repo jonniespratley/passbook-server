@@ -5,7 +5,7 @@ var path = require('path');
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
 const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
 const Configuration = require(path.resolve(__dirname, '../../src/configuration.js'))
-//var config = require(path.resolve(__dirname, '../../config.js'));
+  //var config = require(path.resolve(__dirname, '../../config.js'));
 var config = new Configuration(require(path.resolve(__dirname, '../test-config.js')));
 
 
@@ -21,9 +21,6 @@ exports.mockIdentifer = {
 };
 
 
-config.get = function(name) {
-  return config[name];
-};
 exports.config = config;
 
 exports.program = function(adapterType) {
@@ -35,10 +32,10 @@ exports.program = function(adapterType) {
     case 'filedb':
       _config.dataPath = dbPath;
       break;
-      case 'pouchdb':
+    case 'pouchdb':
       _config.adapter = new PouchDBAdapter(dbPath);
       break;
-      case 'couchdb':
+    case 'couchdb':
       _config.adapter = new CouchDB(config.database.url);
       break;
     default:
@@ -81,7 +78,7 @@ exports.mockPasses = [
   }),
 
   new Pass({
-   // serialNumber: 'mock-coupon',
+    // serialNumber: 'mock-coupon',
     description: 'Example Coupon',
     type: 'coupon'
   }),

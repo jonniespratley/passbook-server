@@ -62,10 +62,10 @@ class PouchDBAdapter {
         let _out, _docs = [];
 
         self.allDocs(params).then(function(resp) {
-          _docs = _.map(resp.rows, function(row){
+          _docs = _.map(resp.rows, function(row) {
             return row.doc;
           });
-          if(params){
+          if (params) {
             _out = _.filter(_docs, params);
           } else {
             _out = _docs;

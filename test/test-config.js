@@ -1,8 +1,11 @@
 var path = require('path');
+
+
+
 //TODO - Change to your values
 const APPLE_TEAM_IDENTIFIER = 'USE9YUYDFH';
 const APPLE_PASS_TYPE_IDENTIFIER = 'pass.io.jsapps.walletmanager';
-const APPLE_WWDR = path.resolve(__dirname, './certificates/wwdr-authority.pem');
+const APPLE_WWDR = path.resolve(__dirname, '../../src/certificates/wwdr-authority.pem');
 const APPLE_PASS_TYPE_IDENTIFIER_CERT = path.resolve(__dirname, `./certs/${APPLE_PASS_TYPE_IDENTIFIER}-cert.pem`);
 const APPLE_PASS_TYPE_IDENTIFIER_KEY = path.resolve(__dirname,
 	`./certs/${APPLE_PASS_TYPE_IDENTIFIER}-key.pem`);
@@ -26,7 +29,7 @@ module.exports = {
 	debug: true,
 	baseUrl: '/api',
 	name: 'passbook-server',
-  "message": "passbook-server api",
+	"message": "passbook-server api",
 	"version": "v1",
 	"teamIdentifier": "USE9YUYDFH",
 	"passTypeIdentifier": "pass.io.passbook-manager.test",
@@ -34,9 +37,9 @@ module.exports = {
 	security: {
 		salt: 'a58e325c6df628d07a18b673a3420986'
 	},
-  "middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
+	"middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
 	"publicDir": "./public",
-  "database": {
+	"database": {
 		"name": "passbook-server",
 		"local": "passbook-server",
 		"url": "http://localhost:4987/passbook-server",

@@ -16,7 +16,7 @@ var testDocId = 'test-pouchdb-doc-' + Date.now();
 
 
 /* global describe, before, it, xit */
-
+const dataPath = path.resolve(__dirname, '../temp/', 'passbook-server');
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb'));
 const PouchDB = require('pouchdb');
 var tempDoc = {
@@ -25,12 +25,12 @@ var tempDoc = {
 }
 
 describe('db adapters', function() {
-  let dbPath = path.resolve(__dirname, '../temp/pouchdb');
+
   before(function(done) {
-    fs.ensureDirSync(dbPath);
+    fs.ensureDirSync(dataPath);
     //fs.mkdirSync('../temp');
-    //pouchdb = new PouchDB(path.resolve(__dirname, '../temp/pouchdb'));
-    pouchdb = new PouchDBAdapter(dbPath);
+    //pouchdb = new PouchDB(dataPath);
+    pouchdb = new PouchDBAdapter(dataPath);
 
     done();
   });
@@ -96,12 +96,12 @@ describe('db adapters', function() {
       }).catch(done);
     });
 
-    context('Attachments', function(){
+    context('Attachments', function() {
       var testDocAttachment = {
         name: 'test-doc-attachment'
       };
-      before(function(done){
-        pouchdb.post(testDocAttachment).then(function(resp){
+      before(function(done) {
+        pouchdb.post(testDocAttachment).then(function(resp) {
           testDocAttachment._id = resp.id;
           testDocAttachment._rev = resp.rev;
           done();
@@ -109,7 +109,8 @@ describe('db adapters', function() {
       })
       it('putAttachment() - should save attachment', function(done) {
         var attachment = new Buffer(['Is there life on Mars?'], 'utf8');
-        pouchdb.putAttachment(testDocAttachment._id, 'text', testDocAttachment._rev, attachment, 'text/plain').then(function(res) {
+        pouchdb.putAttachment(testDocAttachment._id, 'text', testDocAttachment._rev, attachment,
+          'text/plain').then(function(res) {
           testDocAttachment._rev = res.rev;
           assert(res);
           assert.ok(res.rev);
@@ -126,7 +127,8 @@ describe('db adapters', function() {
       });
 
       it('removeAttachment() - should remove attachment', function(done) {
-        pouchdb.removeAttachment(testDocAttachment._id, 'text', testDocAttachment._rev).then(function(res) {
+        pouchdb.removeAttachment(testDocAttachment._id, 'text', testDocAttachment._rev).then(function(
+          res) {
 
           assert(res);
           done();
@@ -191,7 +193,7 @@ describe('db adapters', function() {
     });
 
 
-    it('bulkDocs(docs) - should resolve bulk remove docs', function(done) {
+    xit('bulkDocs(docs) - should resolve bulk remove docs', function(done) {
       for (var i = 0; i < testDocs.length; i++) {
         testDocs[i]._deleted = true;
       }
@@ -204,6 +206,55 @@ describe('db adapters', function() {
     });
 
 
+    var PassbookViews = {
+      passes: (doc) => {
+        if (doc.docType === 'pass') {
+          emit(doc.serialNumber);
+        }
+      }
+    };
+
+
+
+    it('query() - should resolve array of passes', function(done) {
+      pouchdb.query({
+        map: PassbookViews.passes
+      }, {
+        reduce: false,
+        include_docs: true
+      }).then((resp) => {
+        assert(resp.rows);
+        console.log('query resp', resp);
+        done();
+      }).catch(done);
+    });
+
+
+    describe('Sync', () => {
+      it('sync() - should replicate from local to remote', (done) => {
+        pouchdb.sync(dataPath, 'http://localhost:4987/passbook-server-')
+          .on('change', function(info) {
+            program.log.info('change', info);
+            // handle change
+          }).on('complete', function(info) {
+            program.log.info('complete', info);
+            assert(info, 'sync complete');
+            done();
+            // handle complete
+          }).on('uptodate', function(info) {
+            program.log.info('uptodate', info);
+            // handle up-to-date
+          }).on('error', function(err) {
+            assert.fail(err, 'sync fails');
+            program.log.info('error', info);
+            // handle error
+            done();
+          });
+
+        sync.cancel(); // whenever you want to cancel
+        done();
+      });
+    });
   });
 
 });
