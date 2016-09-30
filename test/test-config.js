@@ -39,9 +39,11 @@ module.exports = {
 	"middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
 	"publicDir": "./public",
 	"database": {
+    "username": "admin",
+    "password": "fred",
 		"name": "passbook-server",
 		"local": "passbook-server",
-		"url": "https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server",
-		"dataPath": "/Users/212400520/.passbook-server/db"
+		"url": "http://localhost:4987/passbook-server",
+		"path": "./temp/db"
 	}
 };

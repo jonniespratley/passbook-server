@@ -6,6 +6,7 @@ const _ = require('lodash');
 const async = require('async');
 const logger = utils.getLogger('passes');
 const log = require('npmlog');
+const assert = require('assert');
 
 
 module.exports = function(program) {
@@ -15,7 +16,17 @@ module.exports = function(program) {
       this.db = program.get('db');
     }
     save(p) {
-      return this.db.put(p);
+      assert(p._id, 'pass must have _id');
+      return this.get(p._id).then((resp) =>{
+        log.info('Found existing doc', resp);
+        p._id = resp._id;
+        p._rev = resp._rev;
+        log.info('save', resp);
+        return this.db.put(p);
+      }).catch((err) => {
+        log.error('save', err);
+        return this.db.put(p);
+      });
     }
     create(p) {
       return this.db.post(p);
@@ -23,14 +34,28 @@ module.exports = function(program) {
     update(p) {
       return this.db.put(p);
     }
-    get(p) {
-      return this.db.get(p);
+    get(id) {
+      log.info('get',id);
+      assert(id, 'pass must have _id');
+      return this.db.get(id);
     }
     findById(id) {
+      assert(id, 'pass must have _id');
+      log.info('findById', id);
       return this.db.get(id);
     }
     remove(p) {
-      return this.db.remove(p._id, p._rev);
+      log.info('remove', p);
+      assert(p._id, 'pass must have _id');
+      return this.db.get(p._id).then((resp) =>{
+        return this.db.remove(resp._id, resp._rev).catch((err) =>{
+          log.error('remove', err);
+          return err;
+        });
+      }).catch((err) =>{
+        log.error('remove', err);
+        return err;
+      });
     }
 
     parseResponse(resp) {
@@ -40,6 +65,7 @@ module.exports = function(program) {
     find(params) {
       return this.db.find(params);
     }
+
     findOne(params) {
       return this.getPasses(params).then((resp) => {
         //log.info('findOne', _.filter(resp, params));
@@ -69,7 +95,7 @@ module.exports = function(program) {
       }, params);
       return new Promise((resolve, reject) => {
         log.info('getPasses', params);
-        this.db.allDocs(params).then((resp) => {
+        this.db.allDocs({include_docs: true}).then((resp) => {
           _passes = resp.rows.map((row) => {
             return row.doc;
           });
@@ -90,10 +116,14 @@ module.exports = function(program) {
     }
     findPassBySerial(serial) {
       logger('findPassBySerial', serial);
-      return this.db.find({
-        docType: 'pass',
-        serialNumber: serial
-      });
+
+      function map(doc){
+        if(doc.docType === 'pass' && doc.serialNumber === serial){
+          console.log('found doc', doc);
+          emit(doc.serialNumber);
+        }
+      }
+      return this.db.query({map: map}, {reduce: false, include_docs: true});
     }
     bulk(docs) {
       return this.db.bulkDocs(docs);

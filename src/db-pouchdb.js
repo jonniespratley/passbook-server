@@ -24,6 +24,7 @@ class PouchDBAdapter {
     instance = this;
   }
 
+
   static getInstance() {
     if (instance) {
       return instance;

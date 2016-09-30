@@ -1,5 +1,7 @@
 'use strict';
 const path = require('path');
+const Chance = require('chance');
+const chance = new Chance();
 const _ = require('lodash');
 const config = require(path.resolve(__dirname, '../../../config.js'));
 
@@ -21,7 +23,7 @@ module.exports = function(obj) {
   } catch (e) {
     console.log('Error loading schema');
   }
-  let uuid = obj.serialNumber || require('node-uuid').v4();
+  let uuid = obj.serialNumber || chance.guid();
   let passTypeId = (obj.passTypeIdentifier || config.passTypeIdentifier).replace(/\./g, '-');
   let id = passTypeId + '-' + uuid;
   var pass = _.assign(this, {
@@ -102,11 +104,6 @@ module.exports = function(obj) {
     },
     passType,
     obj
-    /*{
-    	'passTypeIdentifier': config.passkit.passTypeIdentifier,
-    	'teamIdentifier': config.passkit.teamIdentifier,
-    	'webServiceURL': config.passkit.webServiceURL
-    }*/
   );
 
   //console.log('ID', pass._id);

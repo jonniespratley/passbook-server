@@ -194,7 +194,7 @@ describe('db adapters', function() {
     });
 
 
-    xit('bulkDocs(docs) - should resolve bulk remove docs', function(done) {
+    it('bulkDocs(docs) - should resolve bulk remove docs', function(done) {
       for (var i = 0; i < testDocs.length; i++) {
         testDocs[i]._deleted = true;
       }
@@ -233,12 +233,12 @@ describe('db adapters', function() {
 
     describe('Sync', function() {
       this.timeout(10000);
-      xit('sync() - should replicate from local to remote', (done) => {
+      it('sync() - should replicate from local to remote', (done) => {
         var db = {
-          username: process.env.PASSBOOK_SERVER_DB_USERNAME,
-          password: process.env.PASSBOOK_SERVER_DB_PASSWORD
+          username: program.config.get('database.username'),
+          password: program.config.get('database.password')
         };
-        var repl = pouchdb.getAdapter().replicate.to(`https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server`)
+        var repl = pouchdb.getAdapter().replicate.to(program.config.get('database.url'))
           .on('change', function(info) {
             assert(info);
             console.log('change', info);

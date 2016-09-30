@@ -6,48 +6,57 @@ const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'
 const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
 const Configuration = require(path.resolve(__dirname, '../../src/configuration.js'))
   //var config = require(path.resolve(__dirname, '../../config.js'));
-var config = new Configuration(require(path.resolve(__dirname, '../test-config.js')));
-
-
-const dbPath = path.resolve(__dirname, '../temp/', config.get('database.name'));
+var config ='../test-config.js';
 
 
 
-exports.mockIdentifer = {
-  teamIdentifier: process.env.TEAM_IDENTIFIER || config.get('teamIdentifier'),
-  passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.get('passTypeIdentifier'),
-  p12: config.get('passTypeIdentifierP12'),
-  passphrase: 'fred'
-};
 
 
-exports.config = config;
+
 
 exports.program = function(adapterType) {
-  fs.ensureDirSync(dbPath);
+
   let _config = {
     config: config
   };
+
+/*
+
   switch (adapterType) {
     case 'filedb':
       _config.dataPath = dbPath;
       break;
     case 'pouchdb':
-      _config.adapter = new PouchDBAdapter(config.get('database.url'));
+      _config.adapter = new PouchDBAdapter(config.database.url);
       break;
     case 'couchdb':
-      _config.adapter = new CouchDB(config.get('database.url'));
+      _config.adapter = new CouchDB(config.database.url);
       break;
     default:
       _config.dataPath = dbPath;
       break;
 
   }
-
+*/
   //var adapter = new CouchDB('http://localhost:4987/passbook-server');
   //  var adapter = new PouchDBAdapter(dbPath);
-  var _program = require(path.resolve(__dirname, '../../src/program.js'))(_config);
+  var _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
+  exports.config = config = _program.config;
+  const dbPath = path.resolve(__dirname, '../temp/', config.get('database.name'));
   //adapter.bulkDocs(exports.mockPasses);
+  config.set('database.path', dbPath);
+   fs.ensureDirSync(dbPath);
+
+
+
+   exports.mockIdentifer = {
+     teamIdentifier: process.env.TEAM_IDENTIFIER || config.get('teamIdentifier'),
+     passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.get('passTypeIdentifier'),
+     p12: config.get('passTypeIdentifierP12'),
+     passphrase: 'fred'
+   };
+
+
   return _program;
 };
 

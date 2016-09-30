@@ -31,6 +31,7 @@ var config = {
 	"baseUrl": "/api",
 	"message": "passbook-server api",
 	"version": "v1",
+
 	"teamIdentifier": APPLE_TEAM_IDENTIFIER,
 	"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
 	"webServiceURL": APPLE_WEB_SERVICE_URL,
@@ -42,7 +43,7 @@ var config = {
 	"database": {
 		"name": "passbook-server",
 		"url": `https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server`,
-		"dataPath": "./db"
+		"path": "./db"
 	},
 	"passport": {
 		"development": {

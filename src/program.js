@@ -1,6 +1,8 @@
 'use strict';
+const fs = require('fs-extra');
 const debug = require('debug');
 const _ = require('lodash');
+const userHome = require('user-home');
 const http = require('http');
 const path = require('path');
 const pkg = require(path.resolve(__dirname, '../package.json'));
@@ -9,12 +11,14 @@ const DB = require('./db');
 
 
 
+const Configuration = require('./configuration');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
 
 const log = require('npmlog');
 
 
+const PouchDB = require('pouchdb');
 const PouchDbAdapter = require('./db-pouchdb');
 const CouchDB = require('./db-couchdb');
 
@@ -25,23 +29,18 @@ var db;
 /**
  * @class
  */
+
+
 class Program {
 	constructor(config) {
 		log.heading = pkg.name;
 
-		this.config = {
-			defaults: _.assign(defaultConfig, config),
-			get: (name) => {
-				if (name) {
-					return this.config.defaults[name];
-				}
-				return this.config;
-			}
-		};
+		this.config = new Configuration(config);
 
-		logger('config', this.config);
-
-		db = config.adapter || new DB(this.config.dataPath, {
+		log.info('config', this.config);
+    var dbPath = path.resolve(this.config.get('database.path'), './', this.config.get('database.name'))
+    fs.ensureDirSync(dbPath);
+    db = config.adapter || new PouchDbAdapter( dbPath, {
 			//type: 'single'
 		});
 
