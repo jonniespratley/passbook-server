@@ -217,7 +217,7 @@ describe('db adapters', function() {
 
 
 
-    it('query() - should resolve array of passes', function(done) {
+    xit('query() - should resolve array of passes', function(done) {
       pouchdb.query({
         map: PassbookViews.passes
       }, {
@@ -233,7 +233,7 @@ describe('db adapters', function() {
 
     describe('Sync', function() {
       this.timeout(10000);
-      it('sync() - should replicate from local to remote', (done) => {
+      xit('sync() - should replicate from local to remote', (done) => {
         var db = {
           username: program.config.get('database.username'),
           password: program.config.get('database.password')

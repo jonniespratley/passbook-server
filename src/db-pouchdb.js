@@ -17,7 +17,7 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    this.options = Object.assign(options || {});
+    this.options = Object.assign({}, options);
     log.info('PouchDBAdapter', name);
 
     this.db = this.getAdapter(name, this.options);

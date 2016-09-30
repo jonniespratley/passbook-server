@@ -6,12 +6,7 @@ const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'
 const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
 const Configuration = require(path.resolve(__dirname, '../../src/configuration.js'))
   //var config = require(path.resolve(__dirname, '../../config.js'));
-var config ='../test-config.js';
-
-
-
-
-
+var config = require('../test-config.js');
 
 
 exports.program = function(adapterType) {
@@ -45,6 +40,7 @@ exports.program = function(adapterType) {
   const dbPath = path.resolve(__dirname, '../temp/', config.get('database.name'));
   //adapter.bulkDocs(exports.mockPasses);
   config.set('database.path', dbPath);
+  config.set('dbPath', dbPath);
    fs.ensureDirSync(dbPath);
 
 
