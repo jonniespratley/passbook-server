@@ -26,50 +26,52 @@ const GITHUB_CLIENT_SECRET = GITHUB_DEV_CLIENT_SECRET;
 const GITHUB_CALLBACK_URL = '/auth/provider/callback';
 
 var config = {
-	"name": "passbook-server",
-	"debug": true,
-	"baseUrl": "/api",
-	"message": "passbook-server api",
-	"version": "v1",
+  "name": "passbook-server",
+  "debug": true,
+  "baseUrl": "/api",
+  "message": "passbook-server api",
+  "version": "v1",
 
-	"teamIdentifier": APPLE_TEAM_IDENTIFIER,
-	"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
-	"webServiceURL": APPLE_WEB_SERVICE_URL,
-	"session": {
-		"user": {
-			"username": "jonniespratley"
-		}
-	},
-	"database": {
-		"name": "passbook-server",
-		"url": `https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server`,
-		"path": "./db"
-	},
-	"passport": {
-		"development": {
-			"github": {
-				"clientID": "7171ef010ffc067de767",
-				"clientSecret": "387c9cd85b4c48abcaa7547bf2865aaf922e4ac2",
-				"callbackURL": "http://127.0.0.1:5001/auth/provider/callback"
-			}
-		},
-		"production": {
-			"github": {
-				"clientID": "96943ce4c9b4f09bf98f",
-				"clientSecret": "f9809160c20f1f57876924c015aa68283f1c4a4b",
-				"callbackURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/auth/provider/callback"
-			}
-		}
-	},
-	"security": {
-		"salt": "a58e325c6df628d07a18b673a3420986"
-	},
-	"server": {
-		"host": "127.0.0.1",
-		"port": 5001
-	},
-	"middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
-	"publicDir": "./public"
+  "teamIdentifier": APPLE_TEAM_IDENTIFIER,
+  "passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
+  "webServiceURL": APPLE_WEB_SERVICE_URL,
+  "session": {
+    "user": {
+      "username": "jonniespratley"
+    }
+  },
+  "database": {
+    "name": "passbook-server",
+    "username": "admin",
+    "password": "fred",
+    "url": `https://pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-cli`,
+    "path": "./db"
+  },
+  "passport": {
+    "development": {
+      "github": {
+        "clientID": "7171ef010ffc067de767",
+        "clientSecret": "387c9cd85b4c48abcaa7547bf2865aaf922e4ac2",
+        "callbackURL": "http://127.0.0.1:5001/auth/provider/callback"
+      }
+    },
+    "production": {
+      "github": {
+        "clientID": "96943ce4c9b4f09bf98f",
+        "clientSecret": "f9809160c20f1f57876924c015aa68283f1c4a4b",
+        "callbackURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/auth/provider/callback"
+      }
+    }
+  },
+  "security": {
+    "salt": "a58e325c6df628d07a18b673a3420986"
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5001
+  },
+  "middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
+  "publicDir": "./public"
 };
 
 module.exports = config;

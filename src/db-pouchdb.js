@@ -66,16 +66,17 @@ class PouchDBAdapter {
           _docs = _.map(resp.rows, function(row) {
             return row.doc;
           });
+
           if (params) {
             _out = _.filter(_docs, params);
           } else {
             _out = _docs;
           }
 
-
+          resolve(_docs);
           if (_out && _out.length > 0) {
             logger('find.success', _out.length);
-            resolve(_out);
+            resolve(_docs);
           } else {
             /*TODO - Never reject, just return empty */
             reject({

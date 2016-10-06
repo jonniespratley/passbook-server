@@ -11,5 +11,4 @@ block content
       ul.list-group
         each pass in passes.rows
           li.list-group-item
-            h5=pass.doc._id
-            span=pass.doc.passType
+            a(href='/_browse/'+pass.doc._id)=pass.doc.description

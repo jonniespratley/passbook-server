@@ -1,6 +1,8 @@
 'use strict';
+const express = require('express');
 const path = require('path');
 const yaml = require('js-yaml');
+const fs = require('fs-extra');
 
 module.exports = (function(userConfig) {
   const Server = require('./server');
@@ -16,7 +18,7 @@ module.exports = (function(userConfig) {
   Server.setExpressMiddleware(program.config.get('middleware'));
 
   var app = Server.getExpressApp();
-
+  app.use(express.static('public'));
   app.set('x-powered-by', false);
   app.set('views', path.resolve(__dirname, '../public/views'));
   app.set('view engine', 'pug');
@@ -64,20 +66,58 @@ module.exports = (function(userConfig) {
     });
   });
 
-  app.get('/_browse', function(req, res) {
-    var passes = [];
-    program.get('db').allDocs({docType: 'pass'}).then((resp) =>{
-      passes = resp;
-      console.log('Got passes', resp);
-      res.render('browse', {
-        title: config.name,
-        passes: passes
+
+  app.get('/download/:id', function(req, res) {
+    var pkpassFilename = `${req.params.id}.pkpass`;
+    var filename = path.resolve(__dirname, '../temp', pkpassFilename);
+    fs.ensureDirSync(path.dirname(filename));
+    program.get('db').getAttachment(req.params.id, pkpassFilename).then((file) => {
+      fs.writeFile(filename, file, (err) => {
+        res.set('Content-Type', 'application/pkpass');
+        res.sendFile(filename);
       });
+    }).catch((err) => {
+      res.send(err);
     });
-
-
-
   });
+
+  var browseRouter = new require('express').Router();
+
+  browseRouter.route('/_browse/:id?')
+    .get(function(req, res) {
+      var passes = [];
+
+      if (req.params.id) {
+        program.get('db').get(req.params.id).then((resp) => {
+
+          console.log('Got pass', resp);
+          res.render('pass', {
+            title: config.name,
+            pass: resp
+          });
+        }).catch((err) => {
+          console.log('err', err);
+          res.render('error', err);
+        });
+      } else {
+        program.get('db').allDocs({
+          docType: 'pass'
+        }).then((resp) => {
+          passes = resp;
+          console.log('Got passes', resp);
+          res.render('browse', {
+            title: config.name,
+            passes: passes
+          });
+        }).catch((err) => {
+          console.log('err', err);
+          res.render('error', err);
+        });
+      }
+
+    });
+  app.use('/', browseRouter);
+
 
   app.get('/bad', function(req, res) {
     unknownMethod();

@@ -154,7 +154,7 @@ describe('passbook-server routes', function() {
             .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/unknown')
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
 
-            .expect(204, done);
+          .expect(204, done);
         });
 
 
@@ -199,7 +199,7 @@ describe('passbook-server routes', function() {
         });
       });
 
-      xit('DELETE - /api/v1/devices/:device_id/:pass_type_id/:serial_number - un-register device',
+      it('DELETE - /api/v1/devices/:device_id/:pass_type_id/:serial_number - un-register device',
         function(done) {
           request(app)
             .delete(

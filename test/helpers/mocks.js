@@ -15,24 +15,24 @@ exports.program = function(adapterType) {
     config: config
   };
 
-/*
+  /*
 
-  switch (adapterType) {
-    case 'filedb':
-      _config.dataPath = dbPath;
-      break;
-    case 'pouchdb':
-      _config.adapter = new PouchDBAdapter(config.database.url);
-      break;
-    case 'couchdb':
-      _config.adapter = new CouchDB(config.database.url);
-      break;
-    default:
-      _config.dataPath = dbPath;
-      break;
+    switch (adapterType) {
+      case 'filedb':
+        _config.dataPath = dbPath;
+        break;
+      case 'pouchdb':
+        _config.adapter = new PouchDBAdapter(config.database.url);
+        break;
+      case 'couchdb':
+        _config.adapter = new CouchDB(config.database.url);
+        break;
+      default:
+        _config.dataPath = dbPath;
+        break;
 
-  }
-*/
+    }
+  */
   //var adapter = new CouchDB('http://localhost:4987/passbook-server');
   //  var adapter = new PouchDBAdapter(dbPath);
   var _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
@@ -41,16 +41,16 @@ exports.program = function(adapterType) {
   //adapter.bulkDocs(exports.mockPasses);
   config.set('database.path', dbPath);
   config.set('dbPath', dbPath);
-   fs.ensureDirSync(dbPath);
+  fs.ensureDirSync(dbPath);
 
 
 
-   exports.mockIdentifer = {
-     teamIdentifier: process.env.TEAM_IDENTIFIER || config.get('teamIdentifier'),
-     passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.get('passTypeIdentifier'),
-     p12: config.get('passTypeIdentifierP12'),
-     passphrase: 'fred'
-   };
+  exports.mockIdentifer = {
+    teamIdentifier: process.env.TEAM_IDENTIFIER || config.get('teamIdentifier'),
+    passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.get('passTypeIdentifier'),
+    p12: config.get('passTypeIdentifierP12'),
+    passphrase: 'fred'
+  };
 
 
   return _program;
@@ -108,6 +108,7 @@ exports.mockPass = exports.mockPasses[0];
 exports.mockDevice = new Device({
   //"_id": "device-123456789",
   pushToken: '123456',
-  "deviceLibraryIdentifier": "0000-0000-0000-0000-" + Date.now(),
+  //  "deviceLibraryIdentifier": "0000-0000-0000-0000-" + Date.now(),
+  "deviceLibraryIdentifier": "b4ed43cfeb2a5563454069a0eb0f760b",
   "authorization": exports.mockPass.authenticationToken
 });

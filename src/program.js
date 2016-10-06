@@ -35,32 +35,30 @@ class Program {
 	constructor(config) {
 		log.heading = pkg.name;
 
-    if( config instanceof Configuration){
-      this.config = config;
+		if (config instanceof Configuration) {
+			this.config = config;
 
-    }else {
-      this.config = new Configuration(config);
-    }
+		} else {
+			this.config = new Configuration(config);
+		}
 
 
 		log.info('config', this.config);
 
 
 
+		var dbPath = path.resolve(this.config.get('database.path'), './', this.config.get('database.name'));
+		fs.ensureDirSync(dbPath);
 
 
-    var dbPath = path.resolve(this.config.get('database.path'), './', this.config.get('database.name'));
-    fs.ensureDirSync(dbPath);
-
-
-    db = config.adapter || new PouchDbAdapter(this.config.get('database.path') || this.config.get('database.url'), {
-        ajax: {
-          auth: {
-            username: this.config.get('database.username'),
-            password: this.config.get('database.password'),
-            sendImmediately: false
-          }
-        }
+		db = config.adapter || new PouchDbAdapter(this.config.get('database.url'), {
+			ajax: {
+				auth: {
+					username: this.config.get('database.username'),
+					password: this.config.get('database.password'),
+					sendImmediately: false
+				}
+			}
 			//type: 'single'
 		});
 

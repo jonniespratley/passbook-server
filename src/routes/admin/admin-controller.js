@@ -38,8 +38,10 @@ class AdminController {
   put(req, res, next) {
     console.log('adminController', 'db', req.method, req.url);
     req.app.locals.db.put(req.body, req.params.id).then(function(resp) {
+      console.log('put success', resp);
       res.status(200).json(resp);
     }).catch(function(err) {
+      console.log('put error', err);
       res.status(404).json(err);
     });
   }

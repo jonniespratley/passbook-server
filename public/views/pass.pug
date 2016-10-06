@@ -1,0 +1,45 @@
+extends ./includes/layout.pug
+
+//- passField - take a field object and output the label and value.
+mixin passField(field)
+  dt=field.label
+  dd=field.value
+
+//- passFields - take a pass and fieldType and output each label and field.
+mixin passFields(fieldType, pass)
+  if pass.generic[fieldType]
+    each field in pass.generic[fieldType]
+      +passField(field)
+
+
+block content
+  .row
+    .col-sm-6
+      h2=pass.logoText
+      p=pass.description
+      h3 Header Fields
+      dl
+        +passFields('headerFields', pass)
+      h3 Primary Fields
+      dl
+        +passFields('primaryFields', pass)
+      h3 Secondary Fields
+      dl
+        +passFields('secondaryFields', pass)
+      h3 Auxiliary Fields
+      dl
+        +passFields('auxiliaryFields', pass)
+      h3 Back Fields
+      dl
+        +passFields('backFields', pass)
+
+    .col-sm-6
+      dl
+        dt Organization
+        dd=pass.organizationName
+        dt Pass Type ID
+        dd=pass.passTypeIdentifier
+        dt Team Identifier
+        dd=pass.teamIdentifier
+      a(href='/download/'+pass._id, target='_blank')
+        img(src='/images/Add_to_Apple_Wallet.svg', title='Add to Apple Wallet')
