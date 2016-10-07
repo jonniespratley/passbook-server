@@ -17,7 +17,8 @@ module.exports = function(program) {
         ids = [];
       var params = args.params;
       program.log.info('Passes', params);
-      program.global.app.get('db').allDocs().then((resp) => {
+
+      program.global.app().get('db').allDocs().then((resp) => {
         docs = resp.rows.map((row) => {
           return row.doc;
         });

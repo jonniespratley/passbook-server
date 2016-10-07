@@ -38,6 +38,14 @@ describe('program', function() {
 			assert(program.get('db') === program.db);
 			done();
 		});
+		it('program.db.allDocs', function(done) {
+			program.get('db').allDocs().then((resp) =>{
+				console.log(resp);
+				assert(resp);
+				done();
+			});
+		});
+
 		it('should have allDocs, get, remove, getAttachment, put methods', function(done) {
 			assert(program.db.allDocs, 'should have allDocs');
 			assert(program.db.remove, 'should have remove');

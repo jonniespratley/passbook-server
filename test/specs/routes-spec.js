@@ -16,7 +16,7 @@ var passes;
 
 // TODO: Program
 var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
-var program = mocks.program();
+var program = mocks.program('pouchdb');
 var db = program.db;
 var config = mocks.config;
 var Pass = mocks.Pass;
@@ -33,24 +33,15 @@ var app;
 
 describe('passbook-server routes', function() {
   before(function(done) {
-    mocks.mockPasses = [
-      new Pass({
-        serialNumber: 'test1'
-      }),
-      new Pass({
-        serialNumber: 'tes2t'
-      })
-    ];
     app = express();
     app.locals.program = program;
     app.locals.db = program.db;
+
     program.require('routes').Logs(app);
     program.require('routes').Passes(app);
     program.require('routes').Devices(app);
-    //  done();
-    //request(app);
+
     program.db.bulkDocs(mocks.mockPasses).then(function(resp) {
-      //  console.log('insterted', resp);
       mockPass = mocks.mockPass;
       //  mockDevice.authorization = 'ApplePass ' + mockPass.authenticationToken;
       done();
@@ -58,16 +49,10 @@ describe('passbook-server routes', function() {
 
   });
 
-
-
   describe('Web Service API', function() {
 
-
-
     describe('Devices', function() {
-      it(
-        'POST - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - register a new device for pass',
-        function(done) {
+      it('POST - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - register a new device for pass', function(done) {
           request(app)
             .post(
               //'/api/v1/devices/012345678987654321/registrations/pass.jsapps.io/012345678987654321'
@@ -80,9 +65,7 @@ describe('passbook-server routes', function() {
             .expect('Content-Type', /json/)
             .expect(201, done);
         });
-      it(
-        'POST - 404 - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - no auth register a new device for pass',
-        function(done) {
+      it('POST - 404 - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - no auth register a new device for pass', function(done) {
           request(app)
             .post(
               //'/api/v1/devices/012345678987654321/registrations/pass.jsapps.io/012345678987654321'
@@ -97,8 +80,7 @@ describe('passbook-server routes', function() {
         });
 
       it(
-        'POST - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - return existing device for pass',
-        function(done) {
+        'POST - /api/v1/devices/:device_id/registrations/:pass_type_id/:serial_number - return existing device for pass', function(done) {
 
           request(app)
             .post(
@@ -123,9 +105,7 @@ describe('passbook-server routes', function() {
       });
 
       describe('Getting the Serial Numbers for Passes Associated with a Device', () => {
-
-      });
-      it('GET - /api/v1/devices/:device_id/registrations/:pass_type_id - get serial numbers',
+        it('GET - /api/v1/devices/:device_id/registrations/:pass_type_id - get serial numbers',
         function(done) {
           request(app)
             .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/' +
@@ -135,8 +115,7 @@ describe('passbook-server routes', function() {
             .expect(200, done);
         });
 
-      it(
-        'GET - /api/v1/devices/:device_id/registrations/:pass_type_id?passesUpdatedSince=tag - get passesUpdatedSince serial numbers',
+      it('GET - /api/v1/devices/:device_id/registrations/:pass_type_id?passesUpdatedSince=tag - get passesUpdatedSince serial numbers',
         function(done) {
           request(app)
             .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/' +
@@ -159,14 +138,27 @@ describe('passbook-server routes', function() {
           .expect(200, done);
       });
 
-      it('GET - 204 - /api/v1/devices/:device_id/:registrations/:pass_type_id - no matching passes',
-        function(done) {
+      it('GET - 204 - /api/v1/devices/:device_id/:registrations/:pass_type_id - no matching passes', function(done) {
           request(app)
             .get('/api/v1/devices/' + mockDevice.deviceLibraryIdentifier + '/registrations/unknown')
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
-  
+
             .expect(204, done);
         });
+
+      it('DELETE - /api/v1/devices/:device_id/:pass_type_id/:serial_number - un-register device', function(done) {
+          console.log('mockDevice', mockDevice);
+          request(app)
+            .delete(
+              `/api/v1/devices/${mockDevice.deviceLibraryIdentifier}/registrations/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`
+            )
+            // .expect('Content-Type', /json/)
+            .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
+            .expect('Content-Type', /json/)
+            .expect(200, done);
+        });
+      });
+
 
 
       it('POST - /api/v1/log - should store logs', function(done) {
@@ -178,6 +170,8 @@ describe('passbook-server routes', function() {
           .expect('Content-Type', /json/)
           .expect(201, done);
       });
+
+
 
       describe('Passes', function() {
 
@@ -195,7 +189,7 @@ describe('passbook-server routes', function() {
             .expect(200, done);
         });
 
-        it('GET - 200 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(
+        it('GET - 204 - /api/v1/passes/:pass_type_id/:serial_number - ?updated since date', function(
           done) {
           var prevTimestamp = Date.now();
 
@@ -205,22 +199,12 @@ describe('passbook-server routes', function() {
             )
             .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
             //.expect('Content-Type', /application\/vnd.apple.pkpass/)
-            .expect(200, done);
+            .expect(204, done);
 
         });
       });
 
-      it('DELETE - /api/v1/devices/:device_id/:pass_type_id/:serial_number - un-register device',
-        function(done) {
-          request(app)
-            .delete(
-              `/api/v1/devices/${mockDevice.deviceLibraryIdentifier}/registrations/${mockPass.passTypeIdentifier}/${mockPass.serialNumber}`
-            )
-            // .expect('Content-Type', /json/)
-            .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
-            .expect('Content-Type', /json/)
-            .expect(200, done);
-        });
+
     });
 
   });

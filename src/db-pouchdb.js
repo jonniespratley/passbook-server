@@ -1,5 +1,5 @@
 'use strict';
-const logger = require('debug')('passbook-server:db');
+const logger = require('debug')('passbook-server:db-pouchdb');
 var instance = null;
 const _ = require('lodash');
 const assert = require('assert');
@@ -17,14 +17,13 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    this.options = _.extend({
-      prefix: ''
-    }, options)
-    log.info('PouchDBAdapter', name);
+    this.options = options;
+    logger('PouchDBAdapter', name);
 
-    this.db = this.getAdapter(name, this.options);
+    this.db = this.getAdapter(name, options);
     instance = this;
   }
+
 
   static getInstance() {
     if (instance) {
@@ -35,7 +34,7 @@ class PouchDBAdapter {
   }
 
   getAdapter(name, options) {
-      log.info('getAdapter', name, options);
+    logger('getAdapter', name, options);
       if (!db) {
         db = new PouchDB(name, options);
       }
@@ -64,11 +63,20 @@ class PouchDBAdapter {
         let _out, _docs = [];
 
         self.allDocs(params).then(function(resp) {
-          _out = _.filter(resp.rows, params);
+          _docs = _.map(resp.rows, function(row) {
+            return row.doc;
+          });
 
+          if (params) {
+            _out = _.filter(_docs, params);
+          } else {
+            _out = _docs;
+          }
+
+          resolve(_docs);
           if (_out && _out.length > 0) {
             logger('find.success', _out.length);
-            resolve(_out);
+            resolve(_docs);
           } else {
             /*TODO - Never reject, just return empty */
             reject({
@@ -96,15 +104,7 @@ class PouchDBAdapter {
           if (err) {
             reject(err);
           }
-          _docs = res.rows.map((row) => {
-            return row.doc;
-          });
-          if (params) {
-            _docs = _.filter(_docs, params);
-          }
-          resolve({
-            rows: _docs
-          });
+          resolve(res);
         });
       });
     }
@@ -116,13 +116,14 @@ class PouchDBAdapter {
      */
   put(doc) {
       assert(doc._id, 'document must have _id');
+      //assert(doc._rev, 'document must have _rev');
       return new Promise((resolve, reject) => {
         logger('put', doc._id);
         this.db.put(doc).then((res) => {
           doc._id = doc.id;
           doc._rev = doc.rev;
           logger('put.success', res);
-          resolve(doc);
+          resolve(res);
         }).catch(reject);
       });
     }
@@ -135,9 +136,9 @@ class PouchDBAdapter {
   post(doc, prefix) {
       doc._id = this.getUUID(prefix);
       return new Promise((resolve, reject) => {
-        log.info('post', doc);
+          logger('post', doc);
         this.db.post(doc).then((resp) => {
-          log.info('post.success', resp);
+          logger('post.success', resp);
           doc._id = resp.id;
           doc._rev = resp.rev;
           resolve(resp);
@@ -153,12 +154,9 @@ class PouchDBAdapter {
      * @param id
      * @returns {Promise}
      */
-  remove(doc) {
-      return new Promise((resolve, reject) => {
-        logger('remove', doc);
-        this.db.remove(doc).then(resolve, reject);
-      });
-      return db.remove(doc).then(resolve, reject);
+  remove(id, rev) {
+      logger('remove', id, rev);
+      return db.remove(id, rev);
     }
     /**
      * Get document in store by id.

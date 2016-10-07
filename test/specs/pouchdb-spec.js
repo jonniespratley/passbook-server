@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs-extra');
 const _ = require('lodash');
 const assert = require('assert');
 const path = require('path');
@@ -12,32 +13,35 @@ var mockPass = mocks.mockPass;
 
 var pouchdb, testDocs = [];
 var testDocId = 'test-pouchdb-doc-' + Date.now();
-var testDoc = {
-  //  _id: testDocId,
-  docType: 'test',
-  name: 'Test PouchDB'
-};
+
 
 /* global describe, before, it, xit */
-
+const dataPath = path.resolve(__dirname, '../temp/', 'passbook-server');
+var dbPath = dataPath;
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb'));
 const PouchDB = require('pouchdb');
-
+var tempDoc = {
+  name: 'jonnie',
+  docType: 'test'
+}
 
 describe('db adapters', function() {
 
   before(function(done) {
+    fs.ensureDirSync(dataPath);
     //fs.mkdirSync('../temp');
-    pouchdb = new PouchDB('pouchdb');
-    //  pouchdb = new PouchDBAdapter(path.resolve(__dirname, '../temp/pouchdb'));
+    //pouchdb = new PouchDB(dataPath);
+    pouchdb = new PouchDBAdapter(dataPath, {});
+
     done();
   });
 
   after(function(done) {
     //fs.mkdirSync('../temp');
-    console.log('CLean', testDocs);
+    //console.log('CLean', testDocs);
+    //fs.removeSync(dbPath);
 
-    pouchdb.destroy();
+    //pouchdb.destroy();
     done();
   });
 
@@ -71,94 +75,110 @@ describe('db adapters', function() {
       done();
     });
 
-    it('post(doc) - should create doc with generated id', (done) => {
-      var tempDoc = {
-        name: 'jonnie',
-        docType: 'test'
-      }
-      pouchdb.post(tempDoc).then((resp) => {
-        assert(resp);
-        tempDoc._id = resp.id;
-        tempDoc._rev = resp.rev;
-        testDocs.push(tempDoc);
-        done();
-      }).catch(done);
+    context('Documents', function(){
+      it('post(doc) - should create doc with generated id', (done) => {
+        pouchdb.post(tempDoc).then((resp) => {
+          assert(resp.ok, 'returns ok');
+          assert(resp.id, 'returns id');
+          assert(resp.rev, 'returns rev');
+          tempDoc._id = resp.id;
+          tempDoc._rev = resp.rev;
+          done();
+        }).catch(done);
+      });
+
+      it('put(doc) - should create doc', function(done) {
+        pouchdb.put(tempDoc).then(function(resp) {
+          assert(resp.ok, 'returns ok');
+          assert(resp.id, 'returns id');
+          assert(resp.rev, 'returns rev');
+          tempDoc._rev = resp.rev;
+          tempDoc._id = resp.id;
+          done();
+        }).catch(done);
+      });
+
+      it('get(doc) - should get doc', function(done) {
+        pouchdb.get(tempDoc._id).then(function(resp) {
+          assert(resp._id, 'returns _id');
+          assert(resp._rev, 'returns _rev');
+          tempDoc = resp;
+          done();
+        }).catch(done);
+      });
+
+      it('remove(id, rev) - should remove doc', function(done) {
+        pouchdb.remove(tempDoc._id, tempDoc._rev).then(function(resp) {
+          assert(resp.ok);
+          done();
+        }).catch(done);
+      });
+
+      it('bulkDocs(docs) - should resolve bulk insert docs', function(done) {
+        testDocs = mocks.mockPasses;
+        pouchdb.bulkDocs(testDocs).then(function(resp) {
+          assert(resp.length);
+          for (var i = 0; i < resp.length; i++) {
+            testDocs[i]._rev = resp[i].rev;
+            testDocs[i]._id = resp[i].id;
+          }
+          done();
+        }).catch(done);
+      });
+
+
+
+      it('allDocs() - should resolve array of docs', function(done) {
+        pouchdb.allDocs({
+          include_docs: true
+        }).then(function(resp) {
+          assert(resp.rows);
+          done();
+        }).catch(done);
+      });
+
     });
 
-    it('put(doc) - should create doc', function(done) {
-      testDoc._id = 'test-' + Date.now();
-      pouchdb.put(testDoc).then(function(resp) {
-        assert(resp.ok);
-        assert(resp.id);
-        assert(resp.rev);
-        testDoc._rev = resp.rev;
-        done();
-      }).catch(done);
+    context('Attachments', function() {
+      var testDocAttachment = {
+        name: 'test-doc-attachment'
+      };
+      before(function(done) {
+        pouchdb.post(testDocAttachment).then(function(resp) {
+          testDocAttachment._id = resp.id;
+          testDocAttachment._rev = resp.rev;
+          done();
+        });
+      })
+      it('putAttachment() - should save attachment', function(done) {
+        var attachment = new Buffer(['Is there life on Mars?'], 'utf8');
+        pouchdb.putAttachment(testDocAttachment._id, 'text', testDocAttachment._rev, attachment,
+          'text/plain').then(function(res) {
+          testDocAttachment._rev = res.rev;
+          assert(res);
+          assert.ok(res.rev);
+          //  console.log('attachment resp', res);
+          done();
+        }).catch(done);
+      });
+
+      it('getAttachment() - should get attachment', function(done) {
+        pouchdb.getAttachment(testDocAttachment._id, 'text').then(function(res) {
+          assert(res);
+          done();
+        }).catch(done);
+      });
+
+      it('removeAttachment() - should remove attachment', function(done) {
+        pouchdb.removeAttachment(testDocAttachment._id, 'text', testDocAttachment._rev).then(function(
+          res) {
+
+          assert(res);
+          done();
+        }).catch(done);
+      });
     });
 
-    it('putAttachment() - should save attachment', function(done) {
-      var attachment = new Buffer(['Is there life on Mars?'], 'utf8');
-      pouchdb.putAttachment(testDoc._id, 'text', testDoc._rev, attachment, 'text/plain').then(function(res) {
-        testDoc._rev = res.rev;
-        assert(res);
-        assert.ok(res.rev);
-        //  console.log('attachment resp', res);
-        done();
-      }).catch(done);
-    });
-
-    it('getAttachment() - should get attachment', function(done) {
-      pouchdb.getAttachment(testDoc._id, 'text').then(function(res) {
-
-
-        assert(res);
-        done();
-      }).catch(done);
-    });
-
-    it('removeAttachment() - should remove attachment', function(done) {
-      pouchdb.removeAttachment(testDoc._id, 'text', testDoc._rev).then(function(res) {
-
-        assert(res);
-        done();
-      }).catch(done);
-    });
-
-    it('get(doc) - should get doc', function(done) {
-      pouchdb.get(testDoc._id).then(function(resp) {
-        assert(resp._id);
-        assert(resp._rev);
-        testDoc._rev = resp._rev;
-        done();
-      }).catch(done);
-    });
-
-    it('bulkDocs(docs) - should resolve bulk insert docs', function(done) {
-      pouchdb.bulkDocs(testDocs).then(function(resp) {
-        assert(resp.length);
-        for (var i = 0; i < resp.length; i++) {
-          testDocs[i]._rev = resp[i].rev;
-          testDocs[i]._id = resp[i].id;
-        }
-        done();
-      }).catch(done);
-    });
-
-    it('remove(id, rev) - should remove doc', function(done) {
-      pouchdb.remove(testDoc).then(function(resp) {
-        assert(resp.ok);
-        done();
-      }).catch(done);
-    });
-
-    it('allDocs() - should resolve array of docs', function(done) {
-      pouchdb.allDocs({
-        include_docs: true
-      }).then(function(resp) {
-        assert(resp.rows);
-        done();
-      }).catch(done);
-    });
 
     it('query() - should resolve array of docs', function(done) {
       function map(doc) {
@@ -193,6 +213,60 @@ describe('db adapters', function() {
     });
 
 
+
+
+    var PassbookViews = {
+      passes: (doc) => {
+        if (doc.docType === 'pass') {
+          emit(doc.serialNumber);
+        }
+      }
+    };
+
+
+
+    xit('query() - should resolve array of passes', function(done) {
+      pouchdb.query({
+        map: PassbookViews.passes
+      }, {
+        reduce: false,
+        include_docs: true
+      }).then((resp) => {
+        assert(resp.rows);
+        console.log('query resp', resp);
+        done();
+      }).catch(done);
+    });
+
+
+    describe('Sync', function() {
+      this.timeout(10000);
+      xit('sync() - should replicate from local to remote', (done) => {
+        var db = {
+          username: program.config.get('database.username'),
+          password: program.config.get('database.password')
+        };
+        var repl = pouchdb.getAdapter().replicate.to(program.config.get('database.url'))
+          .on('change', function(info) {
+            assert(info);
+            console.log('change', info);
+            // handle change
+          }).on('complete', function(info) {
+            console.log('complete', info);
+            assert(info, 'sync complete');
+            done();
+            // handle complete
+          }).on('uptodate', function(info) {
+            console.log('uptodate', info);
+            // handle up-to-date
+          }).on('error', function(err) {
+            assert.fail(err, 'sync fails');
+            program.log.info('error', info);
+            // handle error
+            done();
+          });
+      });
+    });
   });
 
 });

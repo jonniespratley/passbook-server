@@ -18,11 +18,13 @@ config.dataPath = path.resolve(userHome, `./${pkg.name}/${config.dataPath}`);
 
 fs.ensureDirSync(config.dataPath);
 
-var app = require(path.resolve(__dirname, '../src/program'))(config);
+var app = require(path.resolve(__dirname, '../src/program'));
 
 program.global = {
   config: config,
-  app: app
+  app: function() {
+    return app(config);
+  }
 };
 
 require('autocmdr/lib/loader')(program);

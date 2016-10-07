@@ -1,3 +1,9 @@
 language: node_js
 node_js:
-  - '6.0'
+  - '6'
+services:
+  - couchdb
+before_script:
+  - curl -X PUT localhost:5984/passbook-server
+env:
+  - PASSBOOK_SERVER_DATABASE_URL=http://localhost:5984/passbook-server

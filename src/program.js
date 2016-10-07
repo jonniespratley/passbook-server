@@ -1,16 +1,22 @@
 'use strict';
+const fs = require('fs-extra');
 const debug = require('debug');
 const _ = require('lodash');
+const userHome = require('user-home');
 const http = require('http');
 const path = require('path');
 const pkg = require(path.resolve(__dirname, '../package.json'));
 const defaultConfig = require(path.resolve(__dirname, '../config.js'));
 const DB = require('./db');
-const CouchDB = require('./db-couchdb');
+const Configuration = require('./configuration');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
-
 const log = require('npmlog');
+
+
+const PouchDB = require('pouchdb');
+const PouchDbAdapter = require('./db-pouchdb');
+const CouchDB = require('./db-couchdb');
 
 var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
@@ -19,29 +25,27 @@ var db;
 /**
  * @class
  */
+var instance = null;
 class Program {
 	constructor(config) {
 		log.heading = pkg.name;
 
-		this.config = {
-			defaults: _.assign(defaultConfig, config),
-			get: (name) => {
-				if (name) {
-					return this.config.defaults[name];
-				}
-				return this.config;
-			}
-		};
+		if (config instanceof Configuration) {
+			this.config = config;
+		} else {
+			this.config = new Configuration(config);
+		}
+    log.info('Program.constructor');
+		log.info('config', this.config);
 
-		logger('config', this.config);
+		var dbPath = path.resolve(this.config.get('database.path'), './', this.config.get('database.name'));
+		fs.ensureDirSync(dbPath);
 
-		db = config.adapter || new DB(this.config.dataPath, {
-			//type: 'single'
-		});
+
+		db = config.adapter || new PouchDbAdapter(this.config.get('database.url'));
 
 		this.db = db;
 		this.pkg = pkg;
-
 		this.getLogger = utils.getLogger;
 
 		this.modules = {};
@@ -55,6 +59,8 @@ class Program {
 
 		this.log = log;
 		this.server = null;
+
+    instance = this;
 	}
 	require(name) {
 		return require(path.resolve(__dirname, name));
@@ -74,9 +80,20 @@ class Program {
 	getDb() {
 		return db;
 	}
+
+  static getInstance(c){
+    if(instance){
+      log.info('getInstance', 'returning existing instance');
+      return instance;
+    } else {
+      log.info('getInstance', 'creating new instance');
+      return new Program(c);
+    }
+  }
+
 }
 
 
 module.exports = function(c) {
-	return new Program(c);
+	return Program.getInstance(c);
 };

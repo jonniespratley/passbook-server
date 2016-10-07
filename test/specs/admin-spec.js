@@ -13,8 +13,8 @@ var program = mocks.program();
 var Admin = require(path.resolve(__dirname, '../../src/routes/admin'));
 
 /*global describe, it, before*/
-describe('Admin Module', function () {
-  before(function (done) {
+describe('Admin Module', function() {
+  before(function(done) {
     app = express();
     app.locals.program = program;
     app.locals.db = program.db;
@@ -22,7 +22,7 @@ describe('Admin Module', function () {
     done();
   });
 
-  it('POST - /api/v1/admin/db - should create doc', function (done) {
+  it('POST - /api/v1/admin/db - should create doc', function(done) {
     request(app)
       .post(`/api/v1/admin/db`)
       .send({
@@ -32,8 +32,8 @@ describe('Admin Module', function () {
       .expect('Content-Type', /json/)
       .expect(201, done);
   });
-  
-  it('PUT - /api/v1/admin/db - should update doc', function (done) {
+
+  it('PUT - /api/v1/admin/db - should update doc', function(done) {
     request(app)
       .post(`/api/v1/admin/db`)
       .send({

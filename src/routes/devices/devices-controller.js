@@ -48,10 +48,10 @@ module.exports = function(program) {
      post '/v1/devices/:device_id/registrations/:pass_type_id/:serial_number'
      */
     post_device_registration: function(req, res, next) {
-
+      logger('post_device_registration', 'Handling registration request...');
       logger('post_device_registration', req.url);
       logger('post_device_registration', 'params', req.params);
-      logger('post_device_registration', 'Handling registration request...');
+
 
       let device_id = req.params.device_id;
       let pass_type_id = req.params.pass_type_id;
@@ -100,14 +100,15 @@ module.exports = function(program) {
           });
 
           //# The device has already registered for updates on this pass
-          req.app.locals.db.get(registration._id).then(function(reg) {
+          db.get(registration._id).then(function(reg) {
             log.info('Found device registration', device._id);
             logger('post_device_registration', 'found', registration._id);
-            logger('post_device_registration', 'returning 200');
+            logger('post_device_registration', 'returning 200', reg);
 
             res.status(200).json(reg);
           }).catch(function(err) {
             console.log('Error', 'device not found', registration);
+
             db.bulkDocs([device, registration]).then(function(resp) {
               logger('post_device_registration', 'inserted', resp);
               logger('post_device_registration', 'returning 201');
@@ -184,19 +185,16 @@ module.exports = function(program) {
           tokensMatch = (authentication_token === reg.auth_token);
 
           logger('delete_device_registration', 'found', reg._id);
-          logger('delete_device_registration', 'checking tokens', tokensMatch);
 
           if (tokensMatch) {
-
-            logger('delete_device_registration', 'req.authenticationToken =', authentication_token);
-            logger('delete_device_registration', 'registration token =', reg.auth_token);
             logger('delete_device_registration', 'Pass and authentication token match.');
-
+            logger('delete_device_registration', 'reqquest auth =', authentication_token);
+            logger('delete_device_registration', 'registration auth =', reg.auth_token);
 
             db.remove(reg._id, reg._rev).then(function(resp) {
               res.status(200).json(resp);
-
             }).catch(function(err) {
+              logger('delete_device_registration', 'error', err);
               res.status(404).json({
                 error: 'Registration does not exist'
               });
@@ -216,27 +214,20 @@ module.exports = function(program) {
         });
       }
     },
-    /**
-     *
 
-     # Updatable passes
-     #
-     # get all serial #s associated with a device for passes that need an update
-     # Optionally with a query limiter to scope the last update since
-     #
-     # GET /v1/devices/<deviceID>/registrations/<typeID>
-     # GET /v1/devices/<deviceID>/registrations/<typeID>?passesUpdatedSince=<tag>
-     #
-     # server action: figure out which passes associated with this device have been modified since the supplied tag (if no tag provided, all associated serial #s)
-     # server response:
-     # --> if there are matching passes: 200, with JSON payload: { "lastUpdated" : <new tag>, "serialNumbers" : [ <array of serial #s> ] }
-     # --> if there are no matching passes: 204
-     # --> if unknown device identifier: 404
-     #
-     #
-     * @param req
-     * @param res
-     * @param next
+    /**
+     * get_device_passes - Get all serial #s associated with a device for passes that need an update.
+     *
+     * ```
+     * GET /v1/devices/<deviceID>/registrations/<typeID>
+       GET /v1/devices/<deviceID>/registrations/<typeID>?passesUpdatedSince=<tag>
+     * { "lastUpdated" : <new tag>, "serialNumbers" : [ <array of serial #s> ] }
+     * ```
+     *
+     * @param  {type} req  description
+     * @param  {type} res  description
+     * @param  {type} next description
+     * @return {type}      description
      */
     get_device_passes: function(req, res, next) {
       let authentication_token = req.get('Authorization');
@@ -244,7 +235,7 @@ module.exports = function(program) {
       let pass_type_id = req.params.pass_type_id;
       let serials = [];
       let serial_number = req.params.serial_number;
-
+      let updated = Date.now().toString();
       assert(device_id, 'has device id');
       assert(pass_type_id, 'has pass type id');
 
@@ -253,41 +244,39 @@ module.exports = function(program) {
 
       if (!authentication_token) {
         log.error('no Authorization', authentication_token);
-
-        res.status(401).json({
+        return res.status(401).json({
           error: 'Unauthorized'
         });
 
       } else {
-        let updated = Date.now().toString();
+
         logger('get_device_passes', device_id, pass_type_id, authentication_token);
 
         db.find({
             docType: 'registration',
-            pass_type_id: pass_type_id,
             auth_token: authentication_token,
             deviceLibraryIdentifier: device_id
           })
           .then(function(resp) {
-            console.log('parse response', resp);
+            logger('parse response', resp);
             return resp;
           })
           .then(function(resp) {
-            console.log('get_device passes', resp);
+            logger('get_device passes', resp);
             serials = _.map(resp, (row) => {
               return row.serial_number || row.serialNumber;
             });
 
-            if(resp.length === 0){
-               res.status(204).json({lastUpdated: Date.now()});
+            if(!_.find(resp, {pass_type_id: pass_type_id}) ){
+               return res.status(204).json({lastUpdated: Date.now()});
             }
 
+            logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
 
-            //logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
             if (serials && serials.length > 0) {
               logger('get_device_passes', 'serials', serials);
 
-              res.status(200).json({
+              return res.status(200).json({
                 lastUpdated: updated,
                 serialNumbers: serials
               });
@@ -295,7 +284,7 @@ module.exports = function(program) {
             }
 
           }).catch(function(err) {
-            logger('ERROR', 'no passes found for device', err);
+            logger('ERROR', 'Device is not registered for pass', err);
             res.status(404).json({
               error_message: `No passTypeIdentifier ${pass_type_id} found for device ${device_id}`
             });

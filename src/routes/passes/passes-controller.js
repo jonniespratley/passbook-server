@@ -39,6 +39,8 @@ module.exports = function(program) {
       //assert.ok(pass_type_id, 'has pass type id');
 
       logger('Handling pass delivery request...');
+      logger('url=', req.url);
+      logger('params=', req.params);
       logger('Authorization=', auth);
       logger('pass_type_id=', pass_type_id);
       logger('serial_number=', serial_number);
@@ -56,11 +58,11 @@ module.exports = function(program) {
           passTypeIdentifier: pass_type_id,
           serialNumber: serial_number
         }).then(function(resp) {
-          let pass = new  Pass(resp);
+          let pass = new Pass(resp);
           logger('get_passes:success', pass._id);
           if (lastUpdated > pass.lastUpdated) {
             logger('last-updated', lastUpdated, pass.lastUpdated);
-            res.status(204).json({});
+            res.status(204).json(pass);
           } else {
             res.status(200).json(pass);
           }

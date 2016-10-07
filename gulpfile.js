@@ -37,17 +37,32 @@ gulp.task('pre-test', function() {
     }))
     .pipe(istanbul.hookRequire());
 });
-const mocha = require('gulp-spawn-mocha');
 
-gulp.task('test', function() {
+const mocha = require('gulp-mocha');
+gulp.task('test', ['pre-test'], function() {
   return gulp.src(config.specs)
     .pipe(mocha({
+      read: false,
+      reporter: 'mochawesome'
+    }))
+    .pipe(istanbul.writeReports())
+    .once('error', function() {
+      process.exit(1);
+    })
+    .once('end', function() {
+      process.exit();
+    });
+});
+const spawnMocha = require('gulp-spawn-mocha');
+gulp.task('spawn-mocha', function() {
+  return gulp.src(config.specs)
+    .pipe(spawnMocha({
       read: false,
       reporter: 'mochawesome',
       istanbul: true,
       env: {
-        'PASSBOOK_SERVER_TEAM_IDENTIFIER': '123456',
-        'PASSBOOK_SERVER_PASS_TYPE_IDENTIFIER': 'pass-io-passbook-server-test',
+        'PASSBOOK_SERVER_TEAM_IDENTIFIER': 'USE9YUYDFH',
+        'PASSBOOK_SERVER_PASS_TYPE_IDENTIFIER': 'pass.io.passbookmanager.test',
         'PASSBOOK_SERVER_WEB_SERVICE_URL': 'https://passbook-server.run.aws-usw02-pr.ice.predix.io/api'
       }
     }))
@@ -65,4 +80,4 @@ gulp.task('watch', function() {
 });
 
 
-gulp.task('default', gulpSequence('test', 'docs', 'coveralls'));
+gulp.task('default', gulpSequence('test', 'coveralls'));

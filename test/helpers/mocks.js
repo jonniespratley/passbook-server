@@ -1,37 +1,58 @@
 'use strict';
+var fs = require('fs-extra');
 var path = require('path');
-//var config = require(path.resolve(__dirname, '../../config.js'));
-var config = require(path.resolve(__dirname, '../test-config.js'));
+
+const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
+const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+const Configuration = require(path.resolve(__dirname, '../../src/configuration.js'))
+  //var config = require(path.resolve(__dirname, '../../config.js'));
+var config = require('../test-config.js');
 
 
-const dbPath = path.resolve(__dirname, '../temp/', config.db.name);
+exports.program = function(adapterType) {
 
+  let _config = {
+    config: config
+  };
 
+  /*
 
-exports.mockIdentifer = {
-  teamIdentifier: process.env.TEAM_IDENTIFIER || config.passkit.teamIdentifier,
-  passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.passkit.passTypeIdentifier,
-  p12: config.passkit.passTypeIdentifierP12,
-  passphrase: 'fred'
-};
+    switch (adapterType) {
+      case 'filedb':
+        _config.dataPath = dbPath;
+        break;
+      case 'pouchdb':
+        _config.adapter = new PouchDBAdapter(config.database.url);
+        break;
+      case 'couchdb':
+        _config.adapter = new CouchDB(config.database.url);
+        break;
+      default:
+        _config.dataPath = dbPath;
+        break;
 
-
-config.get = function(name) {
-  return config[name];
-};
-exports.config = config;
-
-exports.program = function() {
-  //  var PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
-  //var CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+    }
+  */
   //var adapter = new CouchDB('http://localhost:4987/passbook-server');
   //  var adapter = new PouchDBAdapter(dbPath);
-  var _program = require(path.resolve(__dirname, '../../src/program.js'))({
-    config: config,
-    dataPath: dbPath,
-    //  adapter: adapter
-  });
+  var _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
+  exports.config = config = _program.config;
+  const dbPath = path.resolve(__dirname, '../temp/', config.get('database.name'));
   //adapter.bulkDocs(exports.mockPasses);
+  config.set('database.path', dbPath);
+  config.set('dbPath', dbPath);
+  fs.ensureDirSync(dbPath);
+
+
+
+  exports.mockIdentifer = {
+    teamIdentifier: process.env.TEAM_IDENTIFIER || config.get('teamIdentifier'),
+    passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.get('passTypeIdentifier'),
+    p12: config.get('passTypeIdentifierP12'),
+    passphrase: 'fred'
+  };
+
+
   return _program;
 };
 
@@ -49,32 +70,32 @@ exports.mockPasses = [
   new Pass({
     //_id: 'mock-generic',
     description: 'Example Generic',
-    serialNumber: '0123456789876543210',
+    //serialNumber: '0123456789876543210',
     authenticationToken: '0123456789876543210',
 
     type: 'generic'
   }),
 
   new Pass({
-    serialNumber: 'mock-boardingpass',
+    //serialNumber: 'mock-boardingpass',
     description: 'Example Boarding Pass',
     type: 'boardingPass'
   }),
 
   new Pass({
-    serialNumber: 'mock-coupon',
+    // serialNumber: 'mock-coupon',
     description: 'Example Coupon',
     type: 'coupon'
   }),
 
   new Pass({
-    serialNumber: 'mock-eventticket',
+    //serialNumber: 'mock-eventticket',
     description: 'Example Event Ticket',
     type: 'eventTicket'
   }),
 
   new Pass({
-    serialNumber: 'mock-storecard',
+    //serialNumber: 'mock-storecard',
     description: 'Example Store Card',
     type: 'storeCard'
   })
@@ -87,6 +108,7 @@ exports.mockPass = exports.mockPasses[0];
 exports.mockDevice = new Device({
   //"_id": "device-123456789",
   pushToken: '123456',
-  "deviceLibraryIdentifier": "0000-0000-0000-0000-" + Date.now(),
+  //  "deviceLibraryIdentifier": "0000-0000-0000-0000-" + Date.now(),
+  "deviceLibraryIdentifier": "b4ed43cfeb2a5563454069a0eb0f760b",
   "authorization": exports.mockPass.authenticationToken
 });

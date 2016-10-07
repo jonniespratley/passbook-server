@@ -1,5 +1,7 @@
 'use strict';
 const path = require('path');
+const Chance = require('chance');
+const chance = new Chance();
 const _ = require('lodash');
 const config = require(path.resolve(__dirname, '../../../config.js'));
 
@@ -21,8 +23,8 @@ module.exports = function(obj) {
   } catch (e) {
     console.log('Error loading schema');
   }
-  let uuid = obj.serialNumber || require('node-uuid').v4();
-  let passTypeId = (obj.passTypeIdentifier || config.passkit.passTypeIdentifier).replace(/\./g, '-');
+  let uuid = obj.serialNumber || chance.guid();
+  let passTypeId = (obj.passTypeIdentifier || config.passTypeIdentifier).replace(/\./g, '-');
   let id = passTypeId + '-' + uuid;
   var pass = _.assign(this, {
       _id: id,
@@ -35,13 +37,13 @@ module.exports = function(obj) {
       'description': 'This is the default pass description.',
       formatVersion: 1,
       'organizationName': 'Passbook Manager',
-      'passTypeIdentifier': obj.passTypeIdentifier || config.passkit.passTypeIdentifier,
+      'passTypeIdentifier': obj.passTypeIdentifier || config.passTypeIdentifier,
       serialNumber: uuid,
-      'teamIdentifier': obj.teamIdentifier || config.passkit.teamIdentifier,
+      'teamIdentifier': obj.teamIdentifier || config.teamIdentifier,
 
       //web service keys
       'authenticationToken': uuid,
-      'webServiceURL': obj.webServiceURL || config.passkit.webServiceURL,
+      'webServiceURL': obj.webServiceURL || config.webServiceURL,
 
       // TODO: expiration keys - Information about when a pass expires and whether it is still valid.
       /*expirationDate: null,
@@ -102,11 +104,6 @@ module.exports = function(obj) {
     },
     passType,
     obj
-    /*{
-    	'passTypeIdentifier': config.passkit.passTypeIdentifier,
-    	'teamIdentifier': config.passkit.teamIdentifier,
-    	'webServiceURL': config.passkit.webServiceURL
-    }*/
   );
 
   //console.log('ID', pass._id);
