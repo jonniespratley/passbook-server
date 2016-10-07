@@ -17,10 +17,10 @@ class PouchDBAdapter {
    * @constructor
    */
   constructor(name, options) {
-    this.options = Object.assign({}, options);
+    this.options = options;
     logger('PouchDBAdapter', name);
 
-    this.db = this.getAdapter(name, this.options);
+    this.db = this.getAdapter(name, options);
     instance = this;
   }
 
@@ -156,7 +156,7 @@ class PouchDBAdapter {
      */
   remove(id, rev) {
       logger('remove', id, rev);
-      return db.remove(id, rev).then(resolve, reject);
+      return db.remove(id, rev);
     }
     /**
      * Get document in store by id.

@@ -37,8 +37,8 @@ gulp.task('pre-test', function() {
     }))
     .pipe(istanbul.hookRequire());
 });
-const mocha = require('gulp-spawn-mocha');
 
+const mocha = require('gulp-spawn-mocha');
 gulp.task('test', function() {
   return gulp.src(config.specs)
     .pipe(mocha({
@@ -65,4 +65,4 @@ gulp.task('watch', function() {
 });
 
 
-gulp.task('default', gulpSequence('test', 'docs', 'coveralls'));
+gulp.task('default', gulpSequence('test', 'coveralls'));

@@ -31,7 +31,7 @@ describe('db adapters', function() {
     fs.ensureDirSync(dataPath);
     //fs.mkdirSync('../temp');
     //pouchdb = new PouchDB(dataPath);
-    pouchdb = new PouchDBAdapter(dataPath);
+    pouchdb = new PouchDBAdapter(dataPath, {});
 
     done();
   });
@@ -75,26 +75,68 @@ describe('db adapters', function() {
       done();
     });
 
-    it('post(doc) - should create doc with generated id', (done) => {
-      pouchdb.post(tempDoc).then((resp) => {
-        assert(resp.ok, 'returns ok');
-        assert(resp.id, 'returns id');
-        assert(resp.rev, 'returns rev');
-        tempDoc._id = resp.id;
-        tempDoc._rev = resp.rev;
-        done();
-      }).catch(done);
-    });
+    context('Documents', function(){
+      it('post(doc) - should create doc with generated id', (done) => {
+        pouchdb.post(tempDoc).then((resp) => {
+          assert(resp.ok, 'returns ok');
+          assert(resp.id, 'returns id');
+          assert(resp.rev, 'returns rev');
+          tempDoc._id = resp.id;
+          tempDoc._rev = resp.rev;
+          done();
+        }).catch(done);
+      });
 
-    it('put(doc) - should create doc', function(done) {
-      pouchdb.put(tempDoc).then(function(resp) {
-        assert(resp.ok, 'returns ok');
-        assert(resp.id, 'returns id');
-        assert(resp.rev, 'returns rev');
-        tempDoc._rev = resp.rev;
-        tempDoc._id = resp.id;
-        done();
-      }).catch(done);
+      it('put(doc) - should create doc', function(done) {
+        pouchdb.put(tempDoc).then(function(resp) {
+          assert(resp.ok, 'returns ok');
+          assert(resp.id, 'returns id');
+          assert(resp.rev, 'returns rev');
+          tempDoc._rev = resp.rev;
+          tempDoc._id = resp.id;
+          done();
+        }).catch(done);
+      });
+
+      it('get(doc) - should get doc', function(done) {
+        pouchdb.get(tempDoc._id).then(function(resp) {
+          assert(resp._id, 'returns _id');
+          assert(resp._rev, 'returns _rev');
+          tempDoc = resp;
+          done();
+        }).catch(done);
+      });
+
+      it('remove(id, rev) - should remove doc', function(done) {
+        pouchdb.remove(tempDoc._id, tempDoc._rev).then(function(resp) {
+          assert(resp.ok);
+          done();
+        }).catch(done);
+      });
+
+      it('bulkDocs(docs) - should resolve bulk insert docs', function(done) {
+        testDocs = mocks.mockPasses;
+        pouchdb.bulkDocs(testDocs).then(function(resp) {
+          assert(resp.length);
+          for (var i = 0; i < resp.length; i++) {
+            testDocs[i]._rev = resp[i].rev;
+            testDocs[i]._id = resp[i].id;
+          }
+          done();
+        }).catch(done);
+      });
+
+
+
+      it('allDocs() - should resolve array of docs', function(done) {
+        pouchdb.allDocs({
+          include_docs: true
+        }).then(function(resp) {
+          assert(resp.rows);
+          done();
+        }).catch(done);
+      });
+
     });
 
     context('Attachments', function() {
@@ -137,42 +179,6 @@ describe('db adapters', function() {
       });
     });
 
-    it('get(doc) - should get doc', function(done) {
-      pouchdb.get(tempDoc._id).then(function(resp) {
-        assert(resp._id, 'returns _id');
-        assert(resp._rev, 'returns _rev');
-        tempDoc = resp;
-        done();
-      }).catch(done);
-    });
-
-    it('bulkDocs(docs) - should resolve bulk insert docs', function(done) {
-      testDocs = mocks.mockPasses;
-      pouchdb.bulkDocs(testDocs).then(function(resp) {
-        assert(resp.length);
-        for (var i = 0; i < resp.length; i++) {
-          testDocs[i]._rev = resp[i].rev;
-          testDocs[i]._id = resp[i].id;
-        }
-        done();
-      }).catch(done);
-    });
-
-    it('remove(id, rev) - should remove doc', function(done) {
-      pouchdb.remove(tempDoc).then(function(resp) {
-        assert(resp.ok);
-        done();
-      }).catch(done);
-    });
-
-    it('allDocs() - should resolve array of docs', function(done) {
-      pouchdb.allDocs({
-        include_docs: true
-      }).then(function(resp) {
-        assert(resp.rows);
-        done();
-      }).catch(done);
-    });
 
     it('query() - should resolve array of docs', function(done) {
       function map(doc) {
@@ -205,6 +211,8 @@ describe('db adapters', function() {
         done();
       }).catch(done);
     });
+
+
 
 
     var PassbookViews = {
