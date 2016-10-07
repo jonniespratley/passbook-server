@@ -44,7 +44,7 @@ var config = {
     "name": "passbook-cli",
     "username": "admin",
     "password": "fred",
-    "url": `https://pouchdb.run.aws-usw02-pr.ice.predix.io`,
+    "url": `https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-cli`,
     //"url": "http://localhost:4987",
     "path": "./db"
   },

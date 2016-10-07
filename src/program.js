@@ -12,6 +12,7 @@ const Configuration = require('./configuration');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
 const log = require('npmlog');
+const passbook = require('passbook-cli');
 
 
 const PouchDB = require('pouchdb');
@@ -55,6 +56,7 @@ class Program {
 		this.set('db', db);
 		this.set('config', this.config);
 		this.set('log', log);
+		this.set('passbook', passbook);
 		this.set('utils', utils);
 
 		this.log = log;

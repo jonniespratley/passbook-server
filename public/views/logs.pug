@@ -1,0 +1,20 @@
+extends ./includes/layout.pug
+
+block content
+  .jumbotron.jumbotron-fluid
+    .container
+      h1.display-5 Logs
+  .row
+    .col-sm-12
+      table.table
+        thead
+          tr
+            th Log
+            th Created
+        tbody
+          each log in logs
+            tr
+              td
+                each l in log.body.logs
+                  pre=l
+              td=log.created

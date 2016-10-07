@@ -44,7 +44,7 @@
     "node-uuid": "^1.4.7",
     "node-yaml": "^3.0.2",
     "npmlog": "^4.0.0",
-    "passbook-cli": "0.0.1",
+    "passbook-cli": "*",
     "pouchdb": "^6.0.5",
     "pshell": "^1.0.2",
     "pug": "*",

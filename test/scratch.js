@@ -102,10 +102,10 @@ function cleanDocs(rows) {
 
 
 
-const dbName = 'passbook-cli';
+const dbName = 'passbook-server';
 const localUrl = `http://${db.username}:${db.password}@localhost:4987/${db.name}`;
 const remoteUrl = `https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/${db.name}`;
-const localDb = new PouchDB(remoteUrl);
+const localDb = new PouchDB(localUrl);
 const remoteDb = new PouchDB(remoteUrl);
 
 
@@ -297,5 +297,28 @@ function cleanLogs() {
 
 
 
-getRemotePassesAndAddLocal();
+//getRemotePassesAndAddLocal();
 //syncDbs();
+//
+//
+function fixDocs(){
+  var docs = [], doc = null;
+  remoteDb.allDocs({include_docs: true}).then((resp) =>{
+
+    var _done = _.after(resp.rows.length, () =>{
+      remoteDb.bulkDocs(docs).then((res) =>{
+        console.log("Updated", res);
+      });
+    });
+
+    _.each(resp.rows, (row) =>{
+      doc = row.doc;
+      doc.passType = doc.type || 'generic';
+      console.log('Fixed', doc);
+      docs.push(doc);
+      _done();
+    });
+  });
+}
+
+fixDocs();

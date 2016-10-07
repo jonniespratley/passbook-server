@@ -66,19 +66,56 @@ module.exports = (function(userConfig) {
     });
   });
 
-
+  //
+  // Download will create the pass assets and pkpass and send the .pkpass
   app.get('/download/:id', function(req, res) {
+    var certs = {
+      p12: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test.p12'),
+      cert: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-cert.pem'),
+      key: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-key.pem'),
+      passphrase: 'test'
+    };
     var pkpassFilename = `${req.params.id}.pkpass`;
     var filename = path.resolve(__dirname, '../temp', pkpassFilename);
-    fs.ensureDirSync(path.dirname(filename));
-    program.get('db').getAttachment(req.params.id, pkpassFilename).then((file) => {
-      fs.writeFile(filename, file, (err) => {
-        res.set('Content-Type', 'application/pkpass');
-        res.sendFile(filename);
+
+    program.get('db').get(req.params.id).then((doc) =>{
+
+      //TODO Create .raw
+      program.get('passbook').createPassAssets({
+        name: doc._id,
+        type: doc.passType || doc.type || 'generic',
+        output: path.resolve(__dirname, '../temp/passes'),
+        pass: doc
+      }).then((out) => {
+        log.info('Created .raw', out);
+        program.get('passbook').createPkPass(out, certs.cert, certs.key, certs.passphrase).then((pkpass)=>{
+          res.set('Content-Type', 'application/pkpass');
+          res.download(pkpass);
+        }).catch((err) => {
+          log.error('error', err);
+          res.send(err);
+        });
+      }).catch((err) => {
+        log.error('error', err);
+        res.send(err);
       });
+
+    });
+/*
+    program.get('db').getAttachment(req.params.id, pkpassFilename).then((file) => {
+      fs.ensureDirSync(path.dirname(filename));
+      fs.writeFile(filename, file, (err) => {
+        if(err){
+          res.status(400).send(err);
+        }
+        res.set('Content-Type', 'application/pkpass');
+        res.download(filename);
+      });
+
     }).catch((err) => {
       res.send(err);
     });
+    */
   });
 
   var browseRouter = new require('express').Router();
@@ -122,6 +159,30 @@ module.exports = (function(userConfig) {
     });
   app.use('/', browseRouter);
 
+
+  app.get('/_logs', function(req, res) {
+    var logs = [];
+
+    program.get('db').allDocs({
+      docType: 'log'
+    }).then((resp) => {
+      var doc;
+      for (var i = 0; i < resp.rows.length; i++) {
+        doc = resp.rows[i].doc;
+        if(doc.docType=== 'log'){
+          logs.push(doc);
+        }
+      }
+      log.info('Got logs', logs);
+      res.render('logs', {
+        title: config.name,
+        logs: logs
+      });
+    }).catch((err) => {
+      console.log('err', err);
+      res.render('500', err);
+    });
+  });
 
   app.get('/bad', function(req, res) {
     unknownMethod();
