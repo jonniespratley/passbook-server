@@ -116,7 +116,7 @@ module.exports = (function(userConfig) {
           });
         }).catch((err) => {
           console.log('err', err);
-          res.render('error', err);
+          res.render('500', err);
         });
       }
     });

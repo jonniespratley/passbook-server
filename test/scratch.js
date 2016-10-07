@@ -105,7 +105,7 @@ function cleanDocs(rows) {
 const dbName = 'passbook-cli';
 const localUrl = `http://${db.username}:${db.password}@localhost:4987/${db.name}`;
 const remoteUrl = `https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/${db.name}`;
-const localDb = new PouchDB(localUrl);
+const localDb = new PouchDB(remoteUrl);
 const remoteDb = new PouchDB(remoteUrl);
 
 

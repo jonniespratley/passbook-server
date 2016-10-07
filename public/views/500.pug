@@ -1,5 +1,8 @@
-html
-  head
-    title= title
-  body
-    h1= message
+extends ./includes/layout.pug
+
+block content
+  .jumbotron.jumbotron-fluid
+    .container
+      h1.display-5
+        span=status + '-'
+        span=message
