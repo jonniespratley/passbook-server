@@ -38,10 +38,25 @@ gulp.task('pre-test', function() {
     .pipe(istanbul.hookRequire());
 });
 
-const mocha = require('gulp-spawn-mocha');
-gulp.task('test', function() {
+const mocha = require('gulp-mocha');
+gulp.task('test', ['pre-test'], function() {
   return gulp.src(config.specs)
     .pipe(mocha({
+      read: false,
+      reporter: 'mochawesome'
+    }))
+    .pipe(istanbul.writeReports())
+    .once('error', function() {
+      process.exit(1);
+    })
+    .once('end', function() {
+      process.exit();
+    });
+});
+const spawnMocha = require('gulp-spawn-mocha');
+gulp.task('spawn-mocha', function() {
+  return gulp.src(config.specs)
+    .pipe(spawnMocha({
       read: false,
       reporter: 'mochawesome',
       istanbul: true,
