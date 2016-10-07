@@ -75,6 +75,15 @@ module.exports = (function(userConfig) {
       key: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-key.pem'),
       passphrase: 'test'
     };
+
+    if(!fs.existsSync(certs.cert)){
+      program.get('passbook').createPemFiles(certs.p12, certs.passphrase, path.dirname(certs.p12)).then((resp) => {
+        console.log('pems', resp);
+        certs.key = resp.key.filename;
+        certs.cert = resp.cert.filename;
+      });
+    }
+
     var pkpassFilename = `${req.params.id}.pkpass`;
     var filename = path.resolve(__dirname, '../temp', pkpassFilename);
 
