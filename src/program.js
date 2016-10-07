@@ -51,7 +51,7 @@ class Program {
 		fs.ensureDirSync(dbPath);
 
 
-		db = config.adapter || new PouchDbAdapter(this.config.get('database.url'), {
+		db = config.adapter || new PouchDbAdapter(this.config.get('database.url') + '/' + this.config.get('database.name'), {
 			ajax: {
 				auth: {
 					username: this.config.get('database.username'),

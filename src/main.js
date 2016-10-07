@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const yaml = require('js-yaml');
 const fs = require('fs-extra');
-
+const log = require('npmlog');
 module.exports = (function(userConfig) {
   const Server = require('./server');
 
@@ -89,22 +89,27 @@ module.exports = (function(userConfig) {
 
       if (req.params.id) {
         program.get('db').get(req.params.id).then((resp) => {
-
-          console.log('Got pass', resp);
+          log.info('Got pass', resp);
           res.render('pass', {
             title: config.name,
             pass: resp
           });
         }).catch((err) => {
-          console.log('err', err);
+          log.error('err', err);
           res.render('error', err);
         });
       } else {
         program.get('db').allDocs({
           docType: 'pass'
         }).then((resp) => {
-          passes = resp;
-          console.log('Got passes', resp);
+          var doc;
+          for (var i = 0; i < resp.rows.length; i++) {
+            doc = resp.rows[i].doc;
+            if(doc.webServiceURL){
+              passes.push(doc);
+            }
+          }
+          log.info('Got passes', resp);
           res.render('browse', {
             title: config.name,
             passes: passes
@@ -114,7 +119,6 @@ module.exports = (function(userConfig) {
           res.render('error', err);
         });
       }
-
     });
   app.use('/', browseRouter);
 

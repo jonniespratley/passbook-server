@@ -1,14 +1,21 @@
 extends ./includes/layout.pug
+//- Mixins
+mixin card(title, body)
+	.col-md-4.col-sm-6
+		.card
+			.card-block
+				h4.card-title=title
+				p.card-text=body
+				a(href='/_browse/'+pass._id) View
 
 block content
-  .jumbotron.jumbotron-fluid
-    .container
-      h1.display-3 Browse
-      p.lead
-        | Here is all the available passes.
-  .row
-    .col-12
-      ul.list-group
-        each pass in passes.rows
-          li.list-group-item
-            a(href='/_browse/'+pass.doc._id)=pass.doc.description
+	.jumbotron.jumbotron-fluid
+		.container
+			h1.display-3 Browse
+			p.lead
+				| Here is all the available passes.
+	.container-fluid
+		.row.passes
+			each pass in passes
+				+card(pass.organizationName, pass.description)
+				//- a(href='/_browse/'+pass.doc._id)=pass.doc.description

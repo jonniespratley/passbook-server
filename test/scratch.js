@@ -162,11 +162,19 @@ function getRemotePassesAndAddLocal() {
     _.forEach(resp.rows, (row) => {
       let doc = row.doc;
       let passType = 'generic';
+
       if (doc.eventTicket) {
         passType = 'eventTicket';
       }
       if (doc.coupon) {
         passType = 'coupon';
+      }
+      if (doc.boardingPass) {
+        passType = 'boardingPass';
+      }
+
+      if (doc.storeCard) {
+        passType = 'storeCard';
       }
 
       index++;
@@ -177,8 +185,7 @@ function getRemotePassesAndAddLocal() {
       doc.passTypeIdentifier = config.passTypeIdentifier;
       //doc.authenticationToken = chance.guid();
       doc.lastUpdated = chance.timestamp();
-      doc.logoText = `Pass ${index}`;
-      doc.organizationName = `Pass ${index}`;
+
       assert(doc.passType, 'has docType');
 
       doc = new Pass(doc);
