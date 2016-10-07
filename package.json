@@ -10,7 +10,7 @@
     "docs": "./node_modules/.bin/esdoc -c esdoc.json",
     "serve": "node ./bin/passbook-server serve --debug",
     "start": "node src/main",
-    "test": "gulp"
+    "test": "gulp test"
   },
   "author": {
     "email": "jonniespratley@gmail.com",
@@ -35,6 +35,7 @@
     "express-list-routes": "^0.1.4",
     "fs-extra": "^0.16.3",
     "fs-utils": "^0.6.0",
+    "glob": "^7.1.1",
     "gulp-spawn-mocha": "^3.1.0",
     "jfs": "^0.2.6",
     "js-yaml": "^3.6.1",
@@ -46,7 +47,7 @@
     "passbook-cli": "0.0.1",
     "pouchdb": "^6.0.5",
     "pshell": "^1.0.2",
-    "pug": "^0.1.0",
+    "pug": "*",
     "q": "^1.1.2",
     "request": "^2.51.0",
     "serve-index": "^1.6.0",
@@ -62,7 +63,8 @@
     "gulp-mocha": "^2.0.0",
     "gulp-sequence": "^0.4.6",
     "gulp-util": "^3.0.2",
-    "mocha": "^2.1.0",
+    "jshint": "^2.9.3",
+    "mocha": "^2.5.3",
     "mochawesome": "^1.5.2",
     "nock": "^8.0.0",
     "supertest": "^0.15.0"

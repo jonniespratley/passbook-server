@@ -43,7 +43,7 @@ module.exports = {
     "password": "fred",
 		"name": "passbook-server",
 		"local": "passbook-server",
-		"url": "http://admin:fred@localhost:4987",
+		"url": "https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server",
 		"path": "./temp/db"
 	}
 };
