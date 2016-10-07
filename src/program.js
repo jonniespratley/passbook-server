@@ -8,13 +8,9 @@ const path = require('path');
 const pkg = require(path.resolve(__dirname, '../package.json'));
 const defaultConfig = require(path.resolve(__dirname, '../config.js'));
 const DB = require('./db');
-
-
-
 const Configuration = require('./configuration');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
-
 const log = require('npmlog');
 
 
@@ -29,38 +25,24 @@ var db;
 /**
  * @class
  */
-
-
+var instance = null;
 class Program {
 	constructor(config) {
 		log.heading = pkg.name;
 
 		if (config instanceof Configuration) {
 			this.config = config;
-
 		} else {
 			this.config = new Configuration(config);
 		}
-
-
+    log.info('Program.constructor');
 		log.info('config', this.config);
-
-
 
 		var dbPath = path.resolve(this.config.get('database.path'), './', this.config.get('database.name'));
 		fs.ensureDirSync(dbPath);
 
 
-		db = config.adapter || new PouchDbAdapter(this.config.get('database.url') + '/' + this.config.get('database.name'), {
-			ajax: {
-				auth: {
-					username: this.config.get('database.username'),
-					password: this.config.get('database.password'),
-					sendImmediately: false
-				}
-			}
-			//type: 'single'
-		});
+		db = config.adapter || new PouchDbAdapter(this.config.get('database.url'));
 
 		this.db = db;
 		this.pkg = pkg;
@@ -77,6 +59,8 @@ class Program {
 
 		this.log = log;
 		this.server = null;
+
+    instance = this;
 	}
 	require(name) {
 		return require(path.resolve(__dirname, name));
@@ -97,9 +81,19 @@ class Program {
 		return db;
 	}
 
+  static getInstance(c){
+    if(instance){
+      log.info('getInstance', 'returning existing instance');
+      return instance;
+    } else {
+      log.info('getInstance', 'creating new instance');
+      return new Program(c);
+    }
+  }
+
 }
 
 
 module.exports = function(c) {
-	return new Program(c);
+	return Program.getInstance(c);
 };
