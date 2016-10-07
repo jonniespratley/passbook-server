@@ -46,8 +46,8 @@ gulp.task('test', function() {
       reporter: 'mochawesome',
       istanbul: true,
       env: {
-        'PASSBOOK_SERVER_TEAM_IDENTIFIER': '123456',
-        'PASSBOOK_SERVER_PASS_TYPE_IDENTIFIER': 'pass-io-passbook-server-test',
+        'PASSBOOK_SERVER_TEAM_IDENTIFIER': 'USE9YUYDFH',
+        'PASSBOOK_SERVER_PASS_TYPE_IDENTIFIER': 'pass.io.passbookmanager.test',
         'PASSBOOK_SERVER_WEB_SERVICE_URL': 'https://passbook-server.run.aws-usw02-pr.ice.predix.io/api'
       }
     }))

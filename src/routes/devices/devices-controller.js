@@ -48,10 +48,10 @@ module.exports = function(program) {
      post '/v1/devices/:device_id/registrations/:pass_type_id/:serial_number'
      */
     post_device_registration: function(req, res, next) {
-
+      logger('post_device_registration', 'Handling registration request...');
       logger('post_device_registration', req.url);
       logger('post_device_registration', 'params', req.params);
-      logger('post_device_registration', 'Handling registration request...');
+
 
       let device_id = req.params.device_id;
       let pass_type_id = req.params.pass_type_id;
@@ -100,14 +100,15 @@ module.exports = function(program) {
           });
 
           //# The device has already registered for updates on this pass
-          req.app.locals.db.get(registration._id).then(function(reg) {
+          db.get(registration._id).then(function(reg) {
             log.info('Found device registration', device._id);
             logger('post_device_registration', 'found', registration._id);
-            logger('post_device_registration', 'returning 200');
+            logger('post_device_registration', 'returning 200', reg);
 
             res.status(200).json(reg);
           }).catch(function(err) {
             console.log('Error', 'device not found', registration);
+
             db.bulkDocs([device, registration]).then(function(resp) {
               logger('post_device_registration', 'inserted', resp);
               logger('post_device_registration', 'returning 201');
@@ -184,19 +185,16 @@ module.exports = function(program) {
           tokensMatch = (authentication_token === reg.auth_token);
 
           logger('delete_device_registration', 'found', reg._id);
-          logger('delete_device_registration', 'checking tokens', tokensMatch);
 
           if (tokensMatch) {
-
-            logger('delete_device_registration', 'req.authenticationToken =', authentication_token);
-            logger('delete_device_registration', 'registration token =', reg.auth_token);
             logger('delete_device_registration', 'Pass and authentication token match.');
-
+            logger('delete_device_registration', 'reqquest auth =', authentication_token);
+            logger('delete_device_registration', 'registration auth =', reg.auth_token);
 
             db.remove(reg._id, reg._rev).then(function(resp) {
               res.status(200).json(resp);
-
             }).catch(function(err) {
+              logger('delete_device_registration', 'error', err);
               res.status(404).json({
                 error: 'Registration does not exist'
               });
@@ -256,29 +254,29 @@ module.exports = function(program) {
 
         db.find({
             docType: 'registration',
-
             auth_token: authentication_token,
             deviceLibraryIdentifier: device_id
           })
           .then(function(resp) {
-            console.log('parse response', resp);
+            logger('parse response', resp);
             return resp;
           })
           .then(function(resp) {
-            console.log('get_device passes', resp);
+            logger('get_device passes', resp);
             serials = _.map(resp, (row) => {
               return row.serial_number || row.serialNumber;
             });
 
             if(!_.find(resp, {pass_type_id: pass_type_id}) ){
-               res.status(204).json({lastUpdated: Date.now()});
+               return res.status(204).json({lastUpdated: Date.now()});
             }
 
             logger('get_device_passes', 'get passes for ', pass_type_id, device_id);
+
             if (serials && serials.length > 0) {
               logger('get_device_passes', 'serials', serials);
 
-              res.status(200).json({
+              return res.status(200).json({
                 lastUpdated: updated,
                 serialNumbers: serials
               });

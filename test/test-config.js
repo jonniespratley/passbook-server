@@ -43,7 +43,7 @@ module.exports = {
     "password": "fred",
 		"name": "passbook-server",
 		"local": "passbook-server",
-		"url": "http://localhost:4987/passbook-server",
+		"url": "http://admin:fred@localhost:4987",
 		"path": "./temp/db"
 	}
 };

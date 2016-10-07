@@ -1,5 +1,5 @@
 'use strict';
-const logger = require('debug')('passbook-server:db');
+const logger = require('debug')('passbook-server:db-pouchdb');
 var instance = null;
 const _ = require('lodash');
 const assert = require('assert');
@@ -18,7 +18,7 @@ class PouchDBAdapter {
    */
   constructor(name, options) {
     this.options = Object.assign({}, options);
-    log.info('PouchDBAdapter', name);
+    logger('PouchDBAdapter', name);
 
     this.db = this.getAdapter(name, this.options);
     instance = this;
@@ -34,7 +34,7 @@ class PouchDBAdapter {
   }
 
   getAdapter(name, options) {
-      log.info('getAdapter', name, options);
+    logger('getAdapter', name, options);
       if (!db) {
         db = new PouchDB(name, options);
       }
@@ -136,9 +136,9 @@ class PouchDBAdapter {
   post(doc, prefix) {
       doc._id = this.getUUID(prefix);
       return new Promise((resolve, reject) => {
-        log.info('post', doc);
+          logger('post', doc);
         this.db.post(doc).then((resp) => {
-          log.info('post.success', resp);
+          logger('post.success', resp);
           doc._id = resp.id;
           doc._rev = resp.rev;
           resolve(resp);
@@ -154,12 +154,9 @@ class PouchDBAdapter {
      * @param id
      * @returns {Promise}
      */
-  remove(doc) {
-      return new Promise((resolve, reject) => {
-        logger('remove', doc);
-        this.db.remove(doc).then(resolve, reject);
-      });
-      return db.remove(doc).then(resolve, reject);
+  remove(id, rev) {
+      logger('remove', id, rev);
+      return db.remove(id, rev).then(resolve, reject);
     }
     /**
      * Get document in store by id.
