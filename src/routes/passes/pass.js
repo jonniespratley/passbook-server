@@ -23,7 +23,7 @@ module.exports = function(obj) {
   } catch (e) {
     console.log('Error loading schema');
   }
-  let uuid = obj.serialNumber || chance.guid();
+  let uuid = obj.serialNumber;
   let passTypeId = (obj.passTypeIdentifier || config.passTypeIdentifier).replace(/\./g, '-');
   let id = passTypeId + '-' + uuid;
   var pass = _.assign(this, {
@@ -38,7 +38,7 @@ module.exports = function(obj) {
       formatVersion: 1,
       'organizationName': 'Passbook Manager',
       'passTypeIdentifier': obj.passTypeIdentifier || config.passTypeIdentifier,
-      serialNumber: uuid,
+      //serialNumber: uuid,
       'teamIdentifier': obj.teamIdentifier || config.teamIdentifier,
 
       //web service keys
@@ -106,6 +106,6 @@ module.exports = function(obj) {
     obj
   );
 
-  //console.log('ID', pass._id);
+  console.log('ID', pass._id);
   return pass;
 };

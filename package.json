@@ -9,6 +9,7 @@
   "scripts": {
     "docs": "./node_modules/.bin/esdoc -c esdoc.json",
     "serve": "node ./bin/passbook-server serve --debug",
+    "watch": "export DEBUG=passbook-server:* &&  nodemon -w src/ src/main",
     "start": "node src/main",
     "test": "gulp test"
   },
