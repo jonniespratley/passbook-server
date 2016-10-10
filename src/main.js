@@ -70,13 +70,16 @@ module.exports = (function(userConfig) {
   // Download will create the pass assets and pkpass and send the .pkpass
   app.get('/download/:id', function(req, res) {
     var certs = {
-      p12: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test.p12'),
-      cert: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-cert.pem'),
-      key: path.resolve(__dirname, '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-key.pem'),
+      p12: path.resolve(__dirname,
+        '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test.p12'),
+      cert: path.resolve(__dirname,
+        '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-cert.pem'),
+      key: path.resolve(__dirname,
+        '../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-key.pem'),
       passphrase: 'test'
     };
 
-    if(!fs.existsSync(certs.cert)){
+    if (!fs.existsSync(certs.cert)) {
       program.get('passbook').createPemFiles(certs.p12, certs.passphrase, path.dirname(certs.p12)).then((resp) => {
         console.log('pems', resp);
         certs.key = resp.key.filename;
@@ -87,7 +90,7 @@ module.exports = (function(userConfig) {
     var pkpassFilename = `${req.params.id}.pkpass`;
     var filename = path.resolve(__dirname, '../temp', pkpassFilename);
 
-    program.get('db').get(req.params.id).then((doc) =>{
+    program.get('db').get(req.params.id).then((doc) => {
 
       //TODO Create .raw
       program.get('passbook').createPassAssets({
@@ -97,8 +100,8 @@ module.exports = (function(userConfig) {
         pass: doc
       }).then((out) => {
         log.info('Created .raw', out);
-        program.get('passbook').createPkPass(out, certs.cert, certs.key, certs.passphrase).then((pkpass)=>{
-          res.set('Content-Type', 'application/pkpass');
+        program.get('passbook').createPkPass(out, certs.cert, certs.key, certs.passphrase).then((pkpass) => {
+          res.set('Content-Type', 'application/vnd.apple.pkpass');
           res.download(pkpass);
         }).catch((err) => {
           log.error('error', err);
@@ -110,21 +113,21 @@ module.exports = (function(userConfig) {
       });
 
     });
-/*
-    program.get('db').getAttachment(req.params.id, pkpassFilename).then((file) => {
-      fs.ensureDirSync(path.dirname(filename));
-      fs.writeFile(filename, file, (err) => {
-        if(err){
-          res.status(400).send(err);
-        }
-        res.set('Content-Type', 'application/pkpass');
-        res.download(filename);
-      });
+    /*
+        program.get('db').getAttachment(req.params.id, pkpassFilename).then((file) => {
+          fs.ensureDirSync(path.dirname(filename));
+          fs.writeFile(filename, file, (err) => {
+            if(err){
+              res.status(400).send(err);
+            }
+            res.set('Content-Type', 'application/pkpass');
+            res.download(filename);
+          });
 
-    }).catch((err) => {
-      res.send(err);
-    });
-    */
+        }).catch((err) => {
+          res.send(err);
+        });
+        */
   });
 
   var browseRouter = new require('express').Router();
@@ -151,7 +154,7 @@ module.exports = (function(userConfig) {
           var doc;
           for (var i = 0; i < resp.rows.length; i++) {
             doc = resp.rows[i].doc;
-            if(doc.webServiceURL){
+            if (doc.webServiceURL) {
               passes.push(doc);
             }
           }
@@ -178,7 +181,7 @@ module.exports = (function(userConfig) {
       var doc;
       for (var i = 0; i < resp.rows.length; i++) {
         doc = resp.rows[i].doc;
-        if(doc.docType=== 'log'){
+        if (doc.docType === 'log') {
           logs.push(doc);
         }
       }

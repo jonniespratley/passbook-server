@@ -10,8 +10,6 @@ const APPLE_WWDR = path.resolve(__dirname, '../../src/certificates/wwdr-authorit
 
 
 
-
-
 const GITHUB_PRODUCTION_CLIENT_ID = '96943ce4c9b4f09bf98f';
 const GITHUB_PRODUCTION_CLIENT_SECRET = 'f9809160c20f1f57876924c015aa68283f1c4a4b';
 const GITHUB_PRODUCTION_CALLBACK_URL = 'https://passbook-server.run.aws-usw02-pr.ice.predix.io/auth/provider/callback';
@@ -31,7 +29,7 @@ module.exports = {
 	"message": "passbook-server api",
 	"version": "v1",
 	"teamIdentifier": APPLE_TEAM_IDENTIFIER,
-	"passTypeIdentifier":APPLE_PASS_TYPE_IDENTIFIER,
+	"passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
 	"webServiceURL": APPLE_WEB_SERVICE_URL,
 	security: {
 		salt: 'a58e325c6df628d07a18b673a3420986'
@@ -39,11 +37,12 @@ module.exports = {
 	"middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
 	"publicDir": "./public",
 	"database": {
-    "username": "admin",
-    "password": "fred",
+		"username": "admin",
+		"password": "fred",
 		"name": "passbook-server",
 		"local": "passbook-server",
-		"url": "https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server",
+		//"url": "https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server",
+		"url": "http://admin:fred@localhost:4987/passbook-server",
 		"path": "./temp/db"
 	}
 };

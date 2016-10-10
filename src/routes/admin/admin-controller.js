@@ -6,9 +6,24 @@ class AdminController {
   }
   index(req, res, next) {
     console.log('adminController', 'index', req.url);
-    res.status(200).json({
-      message: 'Admin index'
+    var docs = [];
+
+    req.app.locals.db.allDocs({
+      include_docs: true
+    }).then(function(resp) {
+      docs = resp;
+
+      console.log('docs', docs);
+
+      res.status(200).render('admin/index', {
+        docs: docs
+      });
+    }).catch(function(err) {
+      res.status(404).json(err);
     });
+
+
+
   }
   use(req, res, next) {
     console.log('adminController', 'use', req.url);

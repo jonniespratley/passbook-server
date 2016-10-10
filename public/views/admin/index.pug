@@ -1,0 +1,18 @@
+extends ../includes/layout.pug
+
+block content
+  .jumbotron.jumbotron-fluid
+    .container
+      h1.display-5 Admin
+  .row
+    .col-sm-12
+      table.table
+        thead
+          tr
+            th ID
+            th Type
+        tbody
+          each row in docs.rows
+            tr
+              td=row.doc._id
+              td=row.doc.docType

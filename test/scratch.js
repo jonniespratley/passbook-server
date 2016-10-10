@@ -20,7 +20,7 @@ const REMOTE_BASE_URL = 'https://passbook-server.run.aws-usw02-pr.ice.predix.io'
 
 const passbook = require('passbook-cli');
 const db = {
-  name: 'passbook-server',
+  name: 'passbook-cli',
   username: process.env.PASSBOOK_SERVER_DB_USERNAME || 'admin',
   password: process.env.PASSBOOK_SERVER_DB_PASSWORD || 'fred'
 };
@@ -148,6 +148,25 @@ var saveDocToPassbookServer = (doc) => {
 var index = 0;
 
 
+/****
+https://developer.apple.com/library/content/documentation/UserExperience/Conceptual/PassKit_PG/PassPersonalization.html#//apple_ref/doc/uid/TP40012195-CH12-SW2
+*/
+var personalizationFilename = 'personalization.json';
+var personalization = {
+  "requiredPersonalizationFields": [
+    "PKPassPersonalizationFieldName",
+    "PKPassPersonalizationFieldPostalCode",
+    "PKPassPersonalizationFieldEmailAddress",
+    "PKPassPersonalizationFieldPhoneNumber"
+  ],
+  "description": "Enter your information to sign up and earn points.",
+  "termsAndConditions": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n\n<a href='http://apple.com'>Tap Here for more Info</a> Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."
+};
+
+function addPersonalization(p) {
+  fs.writeFileSync(path.resolve(p, personalizationFilename), JSON.stringify(personalization));
+}
+
 /**
  * getRemotePassesAndAddLocal - Get all remote passes, and add to local db
  *
@@ -248,13 +267,7 @@ function getRemotePassesAndAddLocal() {
           "latitude": 51.50506,
           "longitude": -0.0196,
           "relevantText": "Company Office"
-        }],
-        "barcode": {
-          "format": "PKBarcodeFormatQR",
-          "message": "0000001",
-          "messageEncoding": "iso-8859-1",
-          "altText": "Staff ID 0000001"
-        }
+        }]
       });
       assert(doc.passType, 'has docType');
 
@@ -274,6 +287,8 @@ function getRemotePassesAndAddLocal() {
           doc.rawpassFilename = out;
           rawPasses.push(out);
           log.info('raw', out);
+
+          //addPersonalization(out);
 
           assert(fs.existsSync(out), 'returns .raw filename');
 
@@ -393,3 +408,44 @@ function fixDocs() {
 
 //fixDocs();
 getRemotePassesAndAddLocal();
+/**
+Device table. A device is identified by its device library identifier; it also has a push token.
+
+Passes table. A pass is identified by pass type ID and serial number. This table includes a last-update tag (such as a time stamp) for when the pass was last updated, and typically includes whatever data you need to generate the actual pass.
+
+Registrations table. A registration is a relationship between a device and a pass.
+
+You need to be able to look up information in both directions:
+  to find the passes that a given device has registered for, and
+  to find the devices that have registered for a given pass.
+
+Registration is a many-to-many relationship:
+  a single device can register for updates to multiple passes, and
+  a single pass can be registered by multiple devices.
+*/
+const PassbookServerViews = {
+  devices: function(doc) {
+    if (doc.docType === 'device') {
+      emit(doc._id, doc.deviceLibraryIdentifier);
+    }
+  },
+  passes: function(doc) {
+    if (doc.docType === 'pass') {
+      emit(doc._id, doc.passTypeIdentifier);
+    }
+  },
+  logs: function(doc) {
+    if (doc.docType === 'log') {
+      emit(doc._id);
+    }
+  }
+};
+
+
+localDb.query({
+  map: PassbookServerViews.logs
+}, {
+  include_docs: true
+}).then((resp) => {
+  console.log(resp);
+});
