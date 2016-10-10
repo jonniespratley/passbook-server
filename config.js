@@ -9,8 +9,8 @@ const APPLE_WWDR = path.resolve(__dirname, './certificates/wwdr-authority.pem');
 const APPLE_WEB_SERVICE_URL = 'https://passbook-server.run.aws-usw02-pr.ice.predix.io/api';
 
 const db = {
-  username: process.env.PASSBOOK_SERVER_DB_USERNAME || 'admin',
-  password: process.env.PASSBOOK_SERVER_DB_PASSWORD || 'fred'
+  username: process.env.PASSBOOK_SERVER_DATABASE_USERNAME || 'admin',
+  password: process.env.PASSBOOK_SERVER_DATABASE_PASSWORD || 'fred'
 };
 
 const GITHUB_PRODUCTION_CLIENT_ID = '96943ce4c9b4f09bf98f';
@@ -45,7 +45,7 @@ var config = {
     "username": "admin",
     "password": "fred",
     //"url": `https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-cli`,
-    "url": "http://admin:fred@localhost:4987/passbook-server",
+    "url": process.env.PASSBOOK_SERVER_DATABASE_URL || "http://admin:fred@localhost:4987/passbook-server",
     "path": "./db"
   },
   "passport": {

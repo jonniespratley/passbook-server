@@ -20,7 +20,7 @@ const REMOTE_BASE_URL = 'https://passbook-server.run.aws-usw02-pr.ice.predix.io'
 
 const passbook = require('passbook-cli');
 const db = {
-  name: 'passbook-cli',
+  name: 'passbook-server',
   username: process.env.PASSBOOK_SERVER_DB_USERNAME || 'admin',
   password: process.env.PASSBOOK_SERVER_DB_PASSWORD || 'fred'
 };
@@ -279,7 +279,7 @@ function getRemotePassesAndAddLocal() {
         //TODO Create .raw
         passbook.createPassAssets({
           name: doc._id,
-          type: doc.passType || 'generic',
+          type: doc.passType || doc.type || 'generic',
           output: path.resolve(__dirname, '../temp'),
           pass: doc
         }).then((out) => {
@@ -406,7 +406,7 @@ function fixDocs() {
   });
 }
 
-fixDocs();
+//fixDocs();
 //getRemotePassesAndAddLocal();
 /**
 Device table. A device is identified by its device library identifier; it also has a push token.
@@ -441,11 +441,114 @@ const PassbookServerViews = {
   }
 };
 
-
+/*
 localDb.query({
   map: PassbookServerViews.logs
 }, {
-  include_docs: true
+  include_docs: true,
+  reduce: false
 }).then((resp) => {
   console.log(resp);
+});
+
+*/
+
+
+
+
+
+
+
+
+// TODO: Create sample passes
+//
+function createSamplePasses(count){
+  return new Promise((resolve, reject) =>{
+    var docs = [],
+        passes = [],
+        i = 0,
+        p;
+    docs.length = count;
+
+    var _done = _.after(docs.length , () =>{
+      localDb.bulkDocs(passes).then(resolve, reject);
+    });
+
+
+    _.forEach(docs, (doc) =>{
+      i++;
+      p = new Pass({
+        type: 'generic',
+        description: 'Pass ' + i
+      });
+      _.extend(p, {
+        "foregroundColor": "rgb(255, 255, 255)",
+        "backgroundColor": "rgb(20, 89, 188)",
+        "organizationName": "GE Digital",
+        "description": "ID Card",
+        "logoText": "GE Digital",
+        "generic": {
+          "headerFields": [],
+          "primaryFields": [{
+            "key": "employeeName",
+            "label": "",
+            "value": "Jonnie Spratley"
+          }],
+          "secondaryFields": [{
+            "key": "member",
+            "label": "Member Since",
+            "value": "2013"
+          }, {
+            "key": "level",
+            "label": "Level",
+            "value": "Senior Software Engineer"
+          }],
+          auxiliaryFields: [
+            {
+            "key": "sso",
+            "label": "SSO",
+            "value": "212400520"
+          },
+          {
+           "key": "team",
+           "label": "Team",
+           "value": "Predix Security"
+         }
+        ],
+          "backFields": [{
+            "key": "phone",
+            "label": "Phone #",
+            "value": "555-555-5555"
+          }, {
+            "key": "email",
+            "label": "Email",
+            "value": "jonnie.spratley@ge.com"
+          }, {
+            "key": "team",
+            "label": "Team",
+            "value": "Predix Security"
+          }, {
+            "key": "expiryDate",
+            "dateStyle": "PKDateStyleShort",
+            "label": "Expiry Date",
+            "value": "2013-12-31T00:00-23:59"
+          }]
+        },
+        "locations": [{
+          "latitude": 51.50506,
+          "longitude": -0.0196,
+          "relevantText": "Company Office"
+        }]
+      });
+      passes.push(p);
+      console.log('Create doc', p);
+      _done();
+
+    });
+
+  });
+}
+
+createSamplePasses(25).then((res) =>{
+  console.log('Created', res);
 });

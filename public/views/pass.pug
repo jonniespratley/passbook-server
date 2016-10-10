@@ -27,16 +27,16 @@ block content
       h2=pass.logoText
       p=pass.description
       dl
-        +passFields(pass.passType, 'headerFields', pass)
-        +passFields(pass.passType, 'primaryFields', pass)
-        +passFields(pass.passType, 'auxiliaryFields', pass)
-        +passFields(pass.passType, 'secondaryFields', pass)
-        +passFields(pass.passType, 'backFields', pass)
+        +passFields(pass.type, 'headerFields', pass)
+        +passFields(pass.type, 'primaryFields', pass)
+        +passFields(pass.type, 'auxiliaryFields', pass)
+        +passFields(pass.type, 'secondaryFields', pass)
+        +passFields(pass.type, 'backFields', pass)
 
     .col-sm-4
       dl
         dt Pass Type
-        dd=pass.passType
+        dd=pass.type
         dt Pass Type ID
         dd=pass.passTypeIdentifier
         dt Team Identifier
