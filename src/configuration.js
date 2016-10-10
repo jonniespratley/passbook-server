@@ -49,7 +49,7 @@ class Configuration {
     let env = this.env(name);
     if (process.env.hasOwnProperty(env)) {
       let val = process.env[env];
-      log.info('env', env, val);
+      log.info('getEnv', env, val);
       return val;
     }
     return false;
@@ -57,6 +57,7 @@ class Configuration {
 
   setEnv(name, value) {
     let env = this.env(name);
+    log('setEnv', name, value);
     process.env[env] = value;
   }
 

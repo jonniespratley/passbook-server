@@ -42,7 +42,7 @@ module.exports = {
 		"name": "passbook-server",
 		"local": "passbook-server",
 		//"url": "https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server",
-		"url": "http://admin:fred@localhost:4987/passbook-server",
+		"url":  process.env.PASSBOOK_SERVER_DATABASE_URL || "http://admin:fred@localhost:4987/passbook-server",
 		"path": "./temp/db"
 	}
 };

@@ -406,8 +406,8 @@ function fixDocs() {
   });
 }
 
-//fixDocs();
-getRemotePassesAndAddLocal();
+fixDocs();
+//getRemotePassesAndAddLocal();
 /**
 Device table. A device is identified by its device library identifier; it also has a push token.
 
