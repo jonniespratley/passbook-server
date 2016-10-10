@@ -86,14 +86,14 @@ module.exports = function(obj) {
 		w3c date string*/
 
       //Visual apperance
-      barcodes: [],
+      //barcodes: [],
 
       //Only for eventTicket and boardingPass
       //groupingIdentifier: '',
 
-      labelColor: 'rgb(0, 0, 0)',
+      labelColor: 'rgb(255, 255, 255)',
       foregroundColor: 'rgb(72, 72, 72)',
-      backgroundColor: 'rgb(183, 180, 183)',
+      backgroundColor: 'rgb(0, 0, 0)',
       suppressStripShine: false,
 
       //File locations

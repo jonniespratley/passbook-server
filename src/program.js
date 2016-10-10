@@ -39,11 +39,11 @@ class Program {
     log.info('Program.constructor');
 		log.info('config', this.config);
 
-		var dbPath = path.resolve(this.config.get('database.path'), './', this.config.get('database.name'));
+		var dbPath = path.resolve(__dirname, this.config.get('database.path'), './', this.config.get('database.name'));
 		fs.ensureDirSync(dbPath);
 
 
-		db = config.adapter || new PouchDbAdapter(this.config.get('database.url'));
+		db = config.adapter || new PouchDbAdapter(dbPath);
 
 		this.db = db;
 		this.pkg = pkg;
@@ -58,12 +58,35 @@ class Program {
 		this.set('log', log);
 		this.set('passbook', passbook);
 		this.set('utils', utils);
+    this.set('dbPath', dbPath);
 
 		this.log = log;
 		this.server = null;
 
     instance = this;
 	}
+
+  sync(){
+    return new Promise((resolve, reject) =>{
+      var localUrl = this.get('dbPath');
+      var remoteUrl = this.config.get('database.url');
+      log.info('sync', localUrl, remoteUrl);
+      var sync = PouchDB.sync(localUrl, remoteUrl, {})
+        .on('change', function(info) {
+          log.info('change', info);
+        }).on('complete', function(info) {
+          log.info('complete', info);
+          resolve(info);
+        }).on('uptodate', function(info) {
+          log.info('uptodate', info);
+          resolve(info);
+        }).on('error', function(err) {
+          log.error('error', err);
+          reject(err);
+        });
+    });
+  }
+
 	require(name) {
 		return require(path.resolve(__dirname, name));
 	}
