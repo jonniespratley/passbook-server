@@ -3,7 +3,6 @@ title: passbook-server
 version: v1
 #baseUri: https://passbook-server.run.aws-usw02-pr.ice.predix.io/api/{version}
 baseUri: http://localhost:5353/api/v1
-
 baseUriParameters:
   version:
     type:
@@ -75,13 +74,17 @@ types:
         - string
       example: fbbb0ae201d1378b639f96f9381c3675
       description: A unique identifier that is used to identify and authenticate this device in future requests.
+      isAnnotation: false
+      default: 91bff270f6ac161abb2fe786efe585cf
     passTypeIdentifier:
       type:
         - string
-      description: The pass’s type, as specified in the pass.
+      description: The pass type identifier as specified in the pass.
+      default: pass.io.passbookmanager.test
     serialNumber:
       type:
         - string
+      default: 0000-0000-0000-7
       description: The pass’s serial number, as specified in the pass.
   post:
     body:
@@ -134,7 +137,7 @@ types:
       multipart/form-data:
         type:
           - string
-/admin/query:
+/admin/db:
   get:
     responses:
       200:

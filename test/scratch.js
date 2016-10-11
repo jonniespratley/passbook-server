@@ -477,11 +477,11 @@ function createSamplePasses(count){
 
     _.forEach(docs, (doc) =>{
       i++;
-      p = new Pass({
+      p = new Pass( {
         type: 'generic',
-        description: 'Pass ' + i
-      });
-      _.extend(p, {
+        description: 'Pass ' + i,
+        serialNumber: '0000-0000-0000-' + i,
+
         "foregroundColor": "rgb(255, 255, 255)",
         "backgroundColor": "rgb(20, 89, 188)",
         "organizationName": "GE Digital",
@@ -540,6 +540,7 @@ function createSamplePasses(count){
           "relevantText": "Company Office"
         }]
       });
+
       passes.push(p);
       console.log('Create doc', p);
       _done();
@@ -549,6 +550,13 @@ function createSamplePasses(count){
   });
 }
 
-createSamplePasses(25).then((res) =>{
+createSamplePasses(10).then((res) =>{
   console.log('Created', res);
 });
+
+
+var p = new Pass({
+  serialNumber: '12345'
+});
+assert(p._id === 'pass-io-passbookmanager-test-12345', 'serial number matches')
+assert(p.serialNumber === '12345', 'serial number matches')
