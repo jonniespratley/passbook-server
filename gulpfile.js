@@ -1,6 +1,5 @@
 'use strict';
 const gulp = require('gulp');
-
 const gulpSequence = require('gulp-sequence');
 
 
@@ -13,7 +12,7 @@ const config = {
 };
 
 
-
+//JS Docs
 const jsdoc = require('gulp-jsdoc3');
 gulp.task('docs', function(cb) {
   gulp.src(['README.md', './src/**/*.js'], {
@@ -23,12 +22,14 @@ gulp.task('docs', function(cb) {
 });
 
 
+//Coveralls
 const coveralls = require('gulp-coveralls');
 gulp.task('coveralls', function() {
   return gulp.src('./coverage/lcov.info')
     .pipe(coveralls());
 });
 
+//Code Coverage
 const istanbul = require('gulp-istanbul');
 gulp.task('pre-test', function() {
   return gulp.src(config.src)
@@ -38,6 +39,7 @@ gulp.task('pre-test', function() {
     .pipe(istanbul.hookRequire());
 });
 
+//Mocha
 const mocha = require('gulp-mocha');
 gulp.task('test', ['pre-test'], function() {
   return gulp.src(config.specs)
@@ -53,6 +55,8 @@ gulp.task('test', ['pre-test'], function() {
       process.exit();
     });
 });
+
+//Spawn Mocha
 const spawnMocha = require('gulp-spawn-mocha');
 gulp.task('spawn-mocha', function() {
   return gulp.src(config.specs)
@@ -75,6 +79,8 @@ gulp.task('spawn-mocha', function() {
     });
 });
 
+
+//Watch
 gulp.task('watch', function() {
   gulp.watch(['src/**', 'test/specs/**'], ['test']);
 });

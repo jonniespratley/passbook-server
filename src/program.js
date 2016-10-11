@@ -39,7 +39,7 @@ class Program {
     log.info('Program.constructor');
 		log.info('config', this.config);
 
-		var dbPath = path.resolve(__dirname, this.config.get('database.path'), './', this.config.get('database.name'));
+		var dbPath = path.resolve(__dirname, '../temp', this.config.get('database.path'), this.config.get('database.name'));
 		fs.ensureDirSync(dbPath);
 
 

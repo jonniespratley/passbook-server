@@ -14,14 +14,24 @@ var Admin = require(path.resolve(__dirname, '../../src/routes/admin'));
 
 /*global describe, it, before*/
 describe('Admin Module', function() {
-  var testDoc = null;
+  var testDoc = {
+    title: 'testdoc',
+    docType: 'test'
+  };
   before(function(done) {
     program = mocks.program();
     app = express();
     app.locals.program = program;
     app.locals.db = program.db;
     instance = new Admin(app);
-    done();
+
+    program.db.bulkDocs([
+      {docType: 'test'},
+      {docType: 'test'}
+    ]).then((res)=>{
+      done();
+    });
+
   });
 
 
@@ -40,11 +50,12 @@ describe('Admin Module', function() {
     request(app)
       .post(`/api/v1/admin/db`)
       .send({
-        name: 'test-doc',
+        title: 'new doc',
         docType: 'test'
       })
       .expect('Content-Type', /json/)
       .expect(201, done);
+
   });
 
 
@@ -55,7 +66,7 @@ describe('Admin Module', function() {
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res)=>{
-        assert(res.body.id);
+        assert(res.body.ok, 'returns ok');
         testDoc._id = res.body.id;
         testDoc._rev = res.body.rev;
         console.log(res.body);

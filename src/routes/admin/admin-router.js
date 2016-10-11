@@ -14,7 +14,6 @@ module.exports = function(app) {
 
   adminRouter.param('id', function(req, res, next, id) {
     req.id = id;
-    console.log('CALLED ONLY ONCE', id);
     next();
   });
 
@@ -23,14 +22,12 @@ module.exports = function(app) {
   adminRouter.get('/', adminController.index);
   adminRouter.route('/db/:id?')
     .all(function(req, res, next) {
-      // runs for all HTTP verbs first
-      // think of it as route specific middleware!
       next();
     })
     .get(adminController.get)
     .put(bodyParser.json(), adminController.put)
     .post(bodyParser.json(), adminController.post)
-    .delete(adminController.delete);
+    .delete(adminController.del);
 
 
   expressListRoutes({
@@ -38,7 +35,6 @@ module.exports = function(app) {
   }, 'API:', adminRouter);
 
   app.use(bodyParser.json());
-
   app.use(adminPrefix, adminRouter);
   return adminRouter;
 };
