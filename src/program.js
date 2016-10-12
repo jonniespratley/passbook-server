@@ -66,14 +66,20 @@ class Program {
     instance = this;
 	}
 
-  sync(){
+  sync(params){
     return new Promise((resolve, reject) =>{
-      var localUrl = this.get('dbPath');
-      var remoteUrl = this.config.get('database.url');
-      log.info('sync', localUrl, remoteUrl);
+      params = _.extend({
+          to: this.get('dbPath'),
+          from: this.config.get('database.url')
+      }, params);
+      var localUrl = params.to;
+      var remoteUrl = params.from;
+      log.info('sync', params);
+
+
       var sync = PouchDB.sync(localUrl, remoteUrl, {})
         .on('change', function(info) {
-          log.info('change', info);
+          log.info('change', info.direction, info.change);
         }).on('complete', function(info) {
           log.info('complete', info);
           resolve(info);

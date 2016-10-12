@@ -10,7 +10,7 @@ module.exports = function(app) {
   var program = app.locals.program;
   var adminController = new AdminController(program);
   var adminRouter = new Router();
-  const adminPrefix = `/api/${program.config.get('version')}/admin`;
+  const adminPrefix = `/_admin`;
 
   adminRouter.param('id', function(req, res, next, id) {
     req.id = id;
@@ -28,6 +28,14 @@ module.exports = function(app) {
     .put(bodyParser.json(), adminController.put)
     .post(bodyParser.json(), adminController.post)
     .delete(adminController.del);
+
+    adminRouter.get('/sync?', function(req, res) {
+      program.sync(req.params).then((resp) =>{
+        res.status(200).send(resp);
+      }, (err)=>{
+        res.status(400).send(err);
+      });
+    });
 
 
   expressListRoutes({

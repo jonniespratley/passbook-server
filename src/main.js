@@ -52,13 +52,6 @@ module.exports = (function(userConfig) {
   app.get('/', indexRoute);
   app.get('/api/v1', indexRoute);
 
-  app.get('/sync', function(req, res) {
-    program.sync().then((resp) =>{
-      res.status(200).send(resp);
-    }, (err)=>{
-      res.status(400).send(err);
-    });
-  });
 
   app.get('/404', function(req, res) {
     res.status(404).render('404', {

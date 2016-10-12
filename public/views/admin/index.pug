@@ -16,3 +16,8 @@ block content
             tr
               td=row.doc._id
               td=row.doc.docType
+block scripts
+  script.
+    $(document).ready(function(){
+        $('table').DataTable();
+    });
