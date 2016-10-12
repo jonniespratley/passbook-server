@@ -35,6 +35,13 @@ describe('Admin Module', function() {
   });
 
 
+  xit('GET - /_admin - should index', function(done) {
+    request(app)
+      .get(`/_admin`)
+      //.set('Accept', 'text/html')
+      //.expect('Content-Type', /html/)
+      .expect(200, done);
+  });
   it('GET - /_admin/db - should return all docs', function(done) {
     request(app)
       .get(`/_admin/db`)
@@ -44,6 +51,26 @@ describe('Admin Module', function() {
         testDoc = res.body[0];
         done();
       });
+  });
+
+  it('GET - /_admin/db - should return all docs by params', function(done) {
+    request(app)
+      .get(`/_admin/db?docType=test`)
+      .expect('Content-Type', /json/)
+      .expect(200, done);
+  });
+
+  it('GET - /_admin/db/:id - should return 1 doc', function(done) {
+    request(app)
+      .get(`/_admin/db/${testDoc._id}`)
+      .expect('Content-Type', /json/)
+      .expect(200, done);
+  });
+  it('GET - /_admin/db/unknown - should return 404', function(done) {
+    request(app)
+      .get(`/_admin/db/unknown`)
+      .expect('Content-Type', /json/)
+      .expect(404, done);
   });
 
   it('POST - /_admin/db - should create doc', function(done) {

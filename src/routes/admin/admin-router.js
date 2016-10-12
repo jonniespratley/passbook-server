@@ -1,5 +1,6 @@
 'use strict';
 const util = require('util');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const Router = express.Router;
@@ -17,12 +18,8 @@ module.exports = function(app) {
     next();
   });
 
-  adminRouter.use(adminController.use);
   adminRouter.get('/', adminController.index);
   adminRouter.route('/db/:id?')
-    .all(function(req, res, next) {
-      next();
-    })
     .get(adminController.get)
     .put(bodyParser.json(), adminController.put)
     .post(bodyParser.json(), adminController.post)

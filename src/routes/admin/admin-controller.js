@@ -14,14 +14,8 @@ class AdminController {
         docs: docs
       });
     }).catch(function(err) {
-      res.status(404).json(err);
+      res.status(404).send(err);
     });
-  }
-  use(req, res, next) {
-    next();
-  }
-  db(req, res, next) {
-    next();
   }
   get(req, res, next) {
     if (req.id) {
@@ -37,7 +31,6 @@ class AdminController {
         res.status(404).json(err);
       });
     }
-
   }
   put(req, res, next) {
     req.app.locals.db.put(req.body).then(function(resp) {
