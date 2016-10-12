@@ -97,4 +97,4 @@ gulp.task('watch', function() {
 });
 
 
-gulp.task('default', gulpSequence('test', 'coveralls'));
+gulp.task('default', gulpSequence( 'clean', 'test', 'coveralls'));

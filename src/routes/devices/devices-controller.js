@@ -237,12 +237,12 @@ module.exports = function(program) {
      * @return {type}      description
      */
     get_device_passes: function(req, res, next) {
-      let authentication_token = req.get('Authorization');
-      let device_id = req.params.device_id;
-      let pass_type_id = req.params.pass_type_id;
-      let serials = [];
-      let serial_number = req.params.serial_number;
-      let updated = Date.now().toString();
+      var authentication_token = req.get('Authorization');
+      var device_id = req.params.device_id;
+      var pass_type_id = req.params.pass_type_id;
+      var serials = [];
+      var serial_number = req.params.serial_number;
+      var updated = Date.now().toString();
       assert(device_id, 'has device id');
       assert(pass_type_id, 'has pass type id');
 
@@ -251,7 +251,7 @@ module.exports = function(program) {
 
       if (!authentication_token) {
         log.error('no Authorization', authentication_token);
-        return res.status(401).json({
+        res.status(401).json({
           error: 'Unauthorized'
         });
 
@@ -275,7 +275,7 @@ module.exports = function(program) {
               return row.serialNumber;
             });
 
-            if(!_.find(resp, {pass_type_id: pass_type_id}) ){
+            if(!_.find(resp, {passTypeIdentifier: pass_type_id}) ){
                return res.status(204).json({lastUpdated: Date.now()});
             }
 

@@ -20,18 +20,24 @@ exports.program = function(adapterType) {
     config: config
   };
 
-  _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
-  exports.config = config = _program.get('config');
 
 
-  exports.mockIdentifer = {
-    teamIdentifier: process.env.TEAM_IDENTIFIER || _program.config.get('teamIdentifier'),
-    passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || _program.config.get('passTypeIdentifier'),
-    p12: config.get('passTypeIdentifierP12'),
-    passphrase: 'fred'
-  };
 
 
+
+
+  if(_program){
+    return _program;
+  } else {
+    _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
+    exports.config = config = _program.get('config');
+    exports.mockIdentifer = {
+      teamIdentifier: process.env.TEAM_IDENTIFIER || _program.config.get('teamIdentifier'),
+      passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || _program.config.get('passTypeIdentifier'),
+      p12: config.get('passTypeIdentifierP12'),
+      passphrase: 'fred'
+    };
+  }
   return _program;
 };
 
@@ -47,32 +53,30 @@ exports.mockPasses = [
   new Pass({
     //_id: 'mock-generic',
     description: 'Example Generic',
-    //serialNumber: '0123456789876543210',
-    authenticationToken: '0123456789876543210',
-
+    serialNumber: '0123456789876543210',
     type: 'generic'
   }),
 
   new Pass({
-    //serialNumber: 'mock-boardingpass',
+    serialNumber: 'mock-boardingpass',
     description: 'Example Boarding Pass',
     type: 'boardingPass'
   }),
 
   new Pass({
-    // serialNumber: 'mock-coupon',
+    serialNumber: 'mock-coupon',
     description: 'Example Coupon',
     type: 'coupon'
   }),
 
   new Pass({
-    //serialNumber: 'mock-eventticket',
+    serialNumber: 'mock-eventticket',
     description: 'Example Event Ticket',
     type: 'eventTicket'
   }),
 
   new Pass({
-    //serialNumber: 'mock-storecard',
+    serialNumber: 'mock-storecard',
     description: 'Example Store Card',
     type: 'storeCard'
   })

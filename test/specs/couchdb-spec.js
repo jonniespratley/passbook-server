@@ -8,7 +8,7 @@ const program = mocks.program();
 
 const config = mocks.config;
 
-const endpoint = 'http://localhost:9999';
+const endpoint = process.env.PASSBOOK_SERVER_DATABASE_URL || 'http://localhost:4987/default';
 const nock = require('nock');
 
 
@@ -17,7 +17,7 @@ const testDoc = {
   _id: 'test-doc',
   name: 'test'
 };
-
+var testRandomId = Date.now();
 var db;
 var mockDevice = mocks.mockDevice;
 var mockPass = mocks.mockPass;
@@ -26,7 +26,6 @@ var scope;
 
 var mockServer = function() {
 
-  console.dir('http://localhost:4987/passbook-server');
   scope = nock(endpoint)
 
   //get
@@ -73,6 +72,10 @@ var mockServer = function() {
     .reply(201, {
       id: testDoc._id
     })
+  .post(`/${testRandomId}`)
+    .reply(201, {
+      id: testRandomId
+    })
 
   //post
   .post(`/_bulk_docs`)
@@ -89,11 +92,11 @@ var mockServer = function() {
 
 };
 
-xdescribe('CouchDB Adapter', function() {
+describe('CouchDB Adapter', function() {
 
   before(function(done) {
     mockServer();
-    db = new CouchDB(config.database.url);
+    db = new CouchDB(endpoint);
     done();
   });
   it('should be defined', function(done) {
@@ -113,7 +116,7 @@ xdescribe('CouchDB Adapter', function() {
   });
 
   it('db.put - should create doc with id', function(done) {
-    mockPass._id = 'test-doc';
+    mockPass._id = 'test-doc-' + Date.now();
     var s = nock(endpoint)
       .put(`/${mockPass._id}`)
       .query(true)
@@ -154,9 +157,9 @@ xdescribe('CouchDB Adapter', function() {
     });
   });
 
-  xit('db.post - should create doc with generated', function(done) {
+  it('db.post - should create doc with generated', function(done) {
     let o = _.assign({}, mocks.mockPass);
-    delete o._id;
+    o._id = testRandomId;
     db.post(o).then(function(resp) {
       assert(resp.id, 'returns id');
       assert(resp);
@@ -206,9 +209,8 @@ xdescribe('CouchDB Adapter', function() {
   });
 
   xit('db.remove - should remove doc with id', function(done) {
-    testDoc._rev = '2-0000';
+    //testDoc._rev = '2-0000';
     var s = nock(endpoint)
-      //remove
       .delete(`/test-doc?rev=2-0000`)
       .query(true)
       .reply(200, {
@@ -216,7 +218,7 @@ xdescribe('CouchDB Adapter', function() {
       })
 
 
-    db.remove('test-doc', '2-0000').then(function(resp) {
+    db.remove(testDoc).then(function(resp) {
       assert(resp);
       done();
     }).catch(function(err) {
