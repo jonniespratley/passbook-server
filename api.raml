@@ -9,14 +9,16 @@ baseUriParameters:
       - string
     default: v1
 protocols:
-  #- HTTPS
+  - HTTPS
   - HTTP
 mediaType: application/json
 types:
+
+  #Pass
   Pass:
     type: object
+    description:  A pass is identified by pass type ID and serial number. This table includes a last-update tag (such as a time stamp) for when the pass was last updated, and typically includes whatever data you need to generate the actual pass.
     properties:
-      id: number
       _id: string
       logoText: string
       description: string
@@ -31,30 +33,32 @@ types:
       authenticationToken: string
       organizationName: string
       passTypeIdentifier: string
-
       teamIdentifier: string
-
       serialNumber: string
       webServiceURL: string
       formatVersion: number
-      lastUpdated: number
-
-
-
+      lastUpdated: datetime
       barcode:
         type: object
         required: false
+  # Registration
   Registration:
     type: object
+    description: A registration is a relationship between a device and a pass.
     properties:
-      id: number
-      optional?: string
-      expanded:
-        type: object
-        properties:
-          count: number
+      _id: string
+      created: datetime
+      updated: datetime
+      docType: string
+      device_id: string
+      pass_id: string
+      serialNumber: string
+      passTypeIdentifier: string
+      deviceLibraryIdentifier: string
+  # Device
   Device:
     type: object
+    description: A device is identified by its device library identifier
     properties:
       id: number
       optional?: string
@@ -74,33 +78,40 @@ types:
         - string
       example: fbbb0ae201d1378b639f96f9381c3675
       description: A unique identifier that is used to identify and authenticate this device in future requests.
-      isAnnotation: false
-      default: 91bff270f6ac161abb2fe786efe585cf
+      default: '1234'
     passTypeIdentifier:
       type:
         - string
       description: The pass type identifier as specified in the pass.
-      default: pass.io.passbookmanager.test
+      example: 'pass.io.passbookmanager.test'
     serialNumber:
       type:
         - string
-      default: 0000-0000-0000-7
+      example: '0000-0000-0000-7'
       description: The pass’s serial number, as specified in the pass.
   post:
     body:
     responses:
       200:
-        description: If the serial number is already registered for this device, returns HTTP status 200.
-        displayName: Registration returned
+        description: Serial number is already registered for this device, returns HTTP status 200.
         body:
           application/json:
             example: |
               {
-                "message": "value"
+                "docType": "registration",
+                "device_id": "device-1234",
+                "pass_id": "pass-passbookmanager-io-1eadfc60-895a-4e96-9bd1-988101e64ef0",
+                "created": 1476284819366,
+                "updated": 1476284819366,
+                "serial_number": "1eadfc60-895a-4e96-9bd1-988101e64ef0",
+                "pass_type_id": "pass.passbookmanager.io",
+                "auth_token": "ApplePass 1eadfc60-895a-4e96-9bd1-988101e64ef0",
+                "deviceLibraryIdentifier": "1234",
+                "_id": "registration-device-1234",
+                "_rev": "1-9d1559c06cb9953f1e201473b7b9753d"
               }
       201:
-        description: If registration succeeds, returns HTTP status 201.
-        displayName: Registration created
+        description: Registration succeeds, returns HTTP status 201.
         body:
           application/json:
             example: |
@@ -108,8 +119,7 @@ types:
                 "message": "value"
               }
       401:
-        description: If the request is not authorized, returns HTTP status 401.
-        displayName: Unauthorized
+        description: Request is not authorized, returns HTTP status 401.
         body:
           application/json:
             example: |
@@ -137,7 +147,10 @@ types:
       multipart/form-data:
         type:
           - string
-/admin/db:
+
+
+
+/_admin/db:
   get:
     responses:
       200:
@@ -147,6 +160,8 @@ types:
               {
                 "message" : "Hello World"
               }
+
+
 /admin/passes/{id}:
   uriParameters:
     id: string
@@ -159,3 +174,4 @@ types:
               {
                 "message" : "Hello World"
               }
+/_browse:

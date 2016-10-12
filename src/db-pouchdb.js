@@ -73,10 +73,9 @@ class PouchDBAdapter {
             _out = _docs;
           }
 
-          resolve(_docs);
           if (_out && _out.length > 0) {
             logger('find.success', _out.length);
-            resolve(_docs);
+            resolve(_out);
           } else {
             /*TODO - Never reject, just return empty */
             reject({
