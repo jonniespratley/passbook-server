@@ -1,11 +1,12 @@
 extends ./includes/layout.pug
 //- Mixins
-mixin card(title, body)
+mixin card(pass)
 	.col-md-4.col-sm-6
 		.card
 			.card-block
-				h4.card-title=title
-				p.card-text=body
+				img(src='/images/' + pass.type + '.png')
+				h6.card-title=pass.organizationName
+				p.card-text=pass.description
 				a(href='/_browse/'+pass._id) View
 
 block content
@@ -17,5 +18,5 @@ block content
 	.container-fluid
 		.row.passes
 			each pass in passes
-				+card(pass.organizationName, pass.description)
+				+card(pass)
 				//- a(href='/_browse/'+pass.doc._id)=pass.doc.description

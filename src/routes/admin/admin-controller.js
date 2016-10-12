@@ -5,23 +5,21 @@ class AdminController {
     console.log('AdminController', 'constructor');
   }
   index(req, res, next) {
-    console.log('adminController', 'index', req.url);
-    res.status(200).json({
-      message: 'Admin index'
+    var docs = [];
+    req.app.locals.db.allDocs({
+      include_docs: true
+    }).then(function(resp) {
+      docs = resp;
+      res.status(200).render('admin/index', {
+        docs: docs
+      });
+    }).catch(function(err) {
+      res.status(404).send(err);
     });
   }
-  use(req, res, next) {
-    console.log('adminController', 'use', req.url);
-    next();
-  }
-  db(req, res, next) {
-    console.log('adminController', 'db', req.method, req.url);
-    next();
-  }
   get(req, res, next) {
-    console.log('adminController', 'db', req.method, req.url);
-    if (req.params.id) {
-      req.app.locals.db.get(req.params.id).then(function(resp) {
+    if (req.id) {
+      req.app.locals.db.get(req.id).then(function(resp) {
         res.status(200).json(resp);
       }).catch(function(err) {
         res.status(404).json(err);
@@ -33,11 +31,9 @@ class AdminController {
         res.status(404).json(err);
       });
     }
-
   }
   put(req, res, next) {
-    console.log('adminController', 'db', req.method, req.url);
-    req.app.locals.db.put(req.body, req.params.id).then(function(resp) {
+    req.app.locals.db.put(req.body).then(function(resp) {
       console.log('put success', resp);
       res.status(200).json(resp);
     }).catch(function(err) {
@@ -46,15 +42,13 @@ class AdminController {
     });
   }
   post(req, res, next) {
-    console.log('adminController', 'db', req.method, req.url);
     req.app.locals.db.post(req.body).then(function(resp) {
       res.status(201).json(resp);
     }).catch(function(err) {
       res.status(404).json(err);
     });
   }
-  delete(req, res, next) {
-    console.log('adminController', 'db', req.method, req.url);
+  del(req, res, next) {
     req.app.locals.db.remove(req.id, req.query.rev).then(function(resp) {
       res.status(200).json(resp);
     }).catch(function(err) {

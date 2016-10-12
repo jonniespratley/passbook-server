@@ -9,38 +9,102 @@ var instance;
 
 // TODO: Program
 var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
-var program = mocks.program();
+var program;
 var Admin = require(path.resolve(__dirname, '../../src/routes/admin'));
 
 /*global describe, it, before*/
 describe('Admin Module', function() {
+  var testDoc = {
+    title: 'testdoc',
+    docType: 'test'
+  };
   before(function(done) {
+    program = mocks.program();
     app = express();
     app.locals.program = program;
     app.locals.db = program.db;
     instance = new Admin(app);
-    done();
+
+    program.db.bulkDocs([
+      {docType: 'test'},
+      {docType: 'test'}
+    ]).then((res)=>{
+      done();
+    });
+
   });
 
-  it('POST - /api/v1/admin/db - should create doc', function(done) {
+
+  xit('GET - /_admin - should index', function(done) {
     request(app)
-      .post(`/api/v1/admin/db`)
+      .get(`/_admin`)
+      //.set('Accept', 'text/html')
+      //.expect('Content-Type', /html/)
+      .expect(200, done);
+  });
+  it('GET - /_admin/db - should return all docs', function(done) {
+    request(app)
+      .get(`/_admin/db`)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res)=>{
+        testDoc = res.body[0];
+        done();
+      });
+  });
+
+  it('GET - /_admin/db - should return all docs by params', function(done) {
+    request(app)
+      .get(`/_admin/db?docType=test`)
+      .expect('Content-Type', /json/)
+      .expect(200, done);
+  });
+
+  it('GET - /_admin/db/:id - should return 1 doc', function(done) {
+    request(app)
+      .get(`/_admin/db/${testDoc._id}`)
+      .expect('Content-Type', /json/)
+      .expect(200, done);
+  });
+  it('GET - /_admin/db/unknown - should return 404', function(done) {
+    request(app)
+      .get(`/_admin/db/unknown`)
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+  });
+
+  it('POST - /_admin/db - should create doc', function(done) {
+    request(app)
+      .post(`/_admin/db`)
       .send({
-        name: 'test-doc',
+        title: 'new doc',
         docType: 'test'
       })
       .expect('Content-Type', /json/)
       .expect(201, done);
+
   });
 
-  it('PUT - /api/v1/admin/db - should update doc', function(done) {
+
+  it('PUT - /_admin/db - should update doc', function(done) {
     request(app)
-      .post(`/api/v1/admin/db`)
-      .send({
-        name: 'test-doc',
-        docType: 'test'
-      })
+      .put(`/_admin/db/${testDoc._id}?rev=${testDoc._rev}`)
+      .send(testDoc)
       .expect('Content-Type', /json/)
-      .expect(201, done);
+      .expect(200)
+      .end((err, res)=>{
+        assert(res.body.ok, 'returns ok');
+        testDoc._id = res.body.id;
+        testDoc._rev = res.body.rev;
+        console.log(res.body);
+        done();
+      });
+  });
+
+  it('DELETE - /_admin/db - should remove doc', function(done) {
+    request(app)
+      .del(`/_admin/db/${testDoc._id}?rev=${testDoc._rev}`)
+      .expect('Content-Type', /json/)
+      .expect(200, done);
   });
 });

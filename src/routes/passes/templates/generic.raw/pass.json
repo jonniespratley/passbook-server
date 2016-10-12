@@ -1,84 +1,77 @@
 {
   "formatVersion": 1,
-
-  "serialNumber": "8j23fm3",
-  "webServiceURL": "https://example.com/passes/",
-  "authenticationToken": "vxwxd7J8AlNNFPS8k0a0FfUFtq0ewzFdc",
+  "serialNumber": "aa6d563c-b6ed-5c19-9e51-fcecce535593",
+  "webServiceURL": "https://passbook-server.run.aws-usw02-pr.ice.predix.io/api",
+  "authenticationToken": "af9e26f5866fa0152da5da7dc6dfce5949e5f99e35b83a2a349c513765a2755c",
   "teamIdentifier": "USE9YUYDFH",
-  "passTypeIdentifier": "pass.passbookmanager.io",
+  "passTypeIdentifier": "pass.io.passbookmanager.test",
   "locations": [{
-    "longitude": -122.3748889,
-    "latitude": 37.6189722
-  }, {
-    "longitude": -122.03118,
-    "latitude": 37.33182
+    "latitude": 51.50506,
+    "longitude": -0.0196,
+    "relevantText": "Company Offices"
   }],
   "barcode": {
-    "message": "123456789",
-    "format": "PKBarcodeFormatPDF417",
-    "messageEncoding": "iso-8859-1"
+    "format": "PKBarcodeFormatQR",
+    "message": "0000001",
+    "messageEncoding": "iso-8859-1",
+    "altText": "Staff ID 0000001"
   },
-  "organizationName": "Toy Town",
-  "description": "Membership card",
-  "logoText": "Toy Town",
+  "organizationName": "GE Digital",
+  "description": "Example Generic",
+  "logoText": "GE Digital",
   "foregroundColor": "rgb(255, 255, 255)",
-  "backgroundColor": "rgb(197, 31, 31)",
+  "backgroundColor": "rgb(90, 90, 90)",
   "generic": {
+    "headerFields": [],
     "primaryFields": [{
-      "key": "member",
-      "value": "Johnny Appleseed"
+      "key": "employeeName",
+      "label": "",
+      "value": "Jonnie Spratley"
     }],
     "secondaryFields": [{
-      "key": "subtitle",
-      "label": "MEMBER SINCE",
-      "value": "2012"
-    }],
-    "auxiliaryFields": [{
-      "key": "level",
-      "label": "LEVEL",
-      "value": "Platinum"
+      "key": "member",
+      "label": "Member Since",
+      "value": "2013"
     }, {
-      "key": "favorite",
-      "label": "FAVORITE TOY",
-      "value": "Trucks",
-      "textAlignment": "PKTextAlignmentRight"
+      "key": "jobTitle",
+      "label": "Level",
+      "value": "Senior Software Engineer"
+    }, {
+      "key": "team",
+      "label": "Team",
+      "value": "Predix Security"
     }],
     "backFields": [{
-      "numberStyle": "PKNumberStyleSpellOut",
-      "label": "spelled out",
-      "key": "numberStyle",
-      "value": 200
+      "key": "managersName",
+      "label": "Manager's Name",
+      "value": "Paul Bailey"
     }, {
-      "key": "loc",
-      "label": "localized to french",
-      "value": "Oh my stars."
+      "key": "managersExt",
+      "label": "Manager's Extension",
+      "value": "9673"
     }, {
-      "label": "in reals",
-      "key": "currency",
-      "value": 200,
-      "currencyCode": "BRL"
-    }, {
-      "dateStyle": "PKDateStyleFull",
-      "label": "date full",
-      "key": "dateFull",
-      "value": "1980-05-07T10:00-05:00"
-    }, {
-      "label": "time full",
-      "key": "timeFull",
-      "value": "1980-05-07T10:00-05:00",
-      "timeStyle": "PKDateStyleFull"
-    }, {
+      "key": "expiryDate",
       "dateStyle": "PKDateStyleShort",
-      "label": "dateTime",
-      "key": "dateTime",
-      "value": "1980-05-07T10:00-05:00",
-      "timeStyle": "PKDateStyleShort"
-    }, {
-      "dateStyle": "PKDateStyleShort",
-      "label": "rel style",
-      "key": "relStyle",
-      "value": "2012-04-24T10:00-05:00",
-      "isRelative": true
+      "label": "Expiry Date",
+      "value": "2013-12-31T00:00-23:59"
     }]
-  }
+  },
+
+  "suppressStripShine": false,
+
+  "passType": "generic",
+  "labelColor": "rgb(255, 255, 255)",
+  "barcodes": [],
+  "lastUpdated": 900893999,
+
+
+  "beacons": [],
+
+  "docType": "pass",
+
+  "associatedStoreIdentifiers": [
+    375380948
+  ],
+  "voided": false,
+  "maxDistance": 0
 }

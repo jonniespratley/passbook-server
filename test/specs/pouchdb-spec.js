@@ -61,6 +61,12 @@ describe('db adapters', function() {
       done();
     });
 
+    it('getInstance() - should return existing instance', function(done) {
+      assert(pouchdb === PouchDBAdapter.getInstance(dataPath));
+      done();
+    });
+
+
     it('should have allDocs, get, remove, put methods', function(done) {
       assert(pouchdb.allDocs, 'should have allDocs');
       assert(pouchdb.remove, 'should have remove');
@@ -106,10 +112,49 @@ describe('db adapters', function() {
           done();
         }).catch(done);
       });
+      it('find(params) - should return all docs if no params', function(done) {
+        pouchdb.find().then(function(resp) {
+          assert(resp);
+          done();
+        }).catch(done);
+      });
+
+      it('findOne(params) - should return first matching doc', function(done) {
+        pouchdb.findOne({
+          docType: 'test'
+        }).then(function(resp) {
+          assert(resp);
+          assert(resp._id, 'returns _id');
+          assert(resp._rev, 'returns _rev');
+          tempDoc = resp;
+          done();
+        }).catch(done);
+      });
+      it('findBy(params) - should return first matching doc', function(done) {
+        pouchdb.findBy({
+          docType: 'test'
+        }).then(function(resp) {
+          assert(resp);
+          assert(resp._id, 'returns _id');
+          assert(resp._rev, 'returns _rev');
+          tempDoc = resp;
+          done();
+        }).catch(done);
+      });
 
       it('remove(id, rev) - should remove doc', function(done) {
         pouchdb.remove(tempDoc._id, tempDoc._rev).then(function(resp) {
           assert(resp.ok);
+          done();
+        }).catch(done);
+      });
+
+      it('saveAll(docs) - should save all documents by getting latest revision', function(done) {
+        pouchdb.saveAll([
+          tempDoc,
+          {_id: 'test-doc', title: 'SHould be updated'}
+        ]).then(function(resp) {
+          assert(resp);
           done();
         }).catch(done);
       });
@@ -125,8 +170,6 @@ describe('db adapters', function() {
           done();
         }).catch(done);
       });
-
-
 
       it('allDocs() - should resolve array of docs', function(done) {
         pouchdb.allDocs({
@@ -181,7 +224,7 @@ describe('db adapters', function() {
 
 
     it('query() - should resolve array of docs', function(done) {
-      function map(doc) {
+      function map(doc, emit) {
         if (doc.name) {
           emit(doc.name);
         }

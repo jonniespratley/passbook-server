@@ -10,27 +10,32 @@ module.exports = function(obj) {
   obj = obj || {
     docType: 'pass'
   };
+
+  var type = obj.type || 'generic';
+  var passType = {};
+
   if (obj.docType !== 'pass') {
     //  return obj;
   }
-  let type = obj.type || 'generic';
-  let passType = {};
+
   try {
     if (type) {
       passType = require(path.resolve(__dirname, './templates/schemas/' + type + '.json'));
     }
 
+
   } catch (e) {
     console.log('Error loading schema');
   }
-  let uuid = obj.serialNumber || chance.guid();
-  let passTypeId = (obj.passTypeIdentifier || config.passTypeIdentifier).replace(/\./g, '-');
-  let id = passTypeId + '-' + uuid;
+
+  var uuid = obj.serialNumber || chance.guid();
+  var passTypeId = (obj.passTypeIdentifier || config.passTypeIdentifier).replace(/\./g, '-');
+  var id = passTypeId + '-' + uuid;
+
   var pass = _.assign(this, {
       _id: id,
       docType: 'pass',
       type: type,
-
       // TODO: Standard keys - Information that is required for all passes.
       lastUpdated: _.now(),
       'logoText': 'Passbook Manager',
@@ -40,9 +45,7 @@ module.exports = function(obj) {
       'passTypeIdentifier': obj.passTypeIdentifier || config.passTypeIdentifier,
       serialNumber: uuid,
       'teamIdentifier': obj.teamIdentifier || config.teamIdentifier,
-
-      //web service keys
-      'authenticationToken': uuid,
+      'authenticationToken': chance.apple_token(),
       'webServiceURL': obj.webServiceURL || config.webServiceURL,
 
       // TODO: expiration keys - Information about when a pass expires and whether it is still valid.
@@ -86,26 +89,25 @@ module.exports = function(obj) {
 		w3c date string*/
 
       //Visual apperance
-      barcodes: [],
+      //barcodes: [],
 
       //Only for eventTicket and boardingPass
       //groupingIdentifier: '',
 
-      labelColor: 'rgb(0, 0, 0)',
+      labelColor: 'rgb(255, 255, 255)',
       foregroundColor: 'rgb(72, 72, 72)',
-      backgroundColor: 'rgb(183, 180, 183)',
+      backgroundColor: 'rgb(0, 0, 0)',
       suppressStripShine: false,
 
       //File locations
       filename: null,
       pkpassFilename: null,
       rawFilename: null
-
     },
     passType,
     obj
   );
 
-  //console.log('ID', pass._id);
-  return pass;
+  console.log('ID', pass._id);
+  return this;
 };

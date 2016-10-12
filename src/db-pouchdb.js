@@ -25,11 +25,11 @@ class PouchDBAdapter {
   }
 
 
-  static getInstance() {
+  static getInstance(name, options) {
     if (instance) {
       return instance;
     } else {
-      return new PouchDBAdapter('data');
+      return new PouchDBAdapter(name, options);
     }
   }
 
@@ -46,11 +46,11 @@ class PouchDBAdapter {
      * @returns {*}
      */
   findBy(params) {
-      logger('findBy', params);
-      return this.allDocs(params).then((resp) => {
-        return _(resp.rows).first();
-      });
-    }
+    logger('findBy', params);
+    return this.find(params).then((resp) => {
+      return _(resp).first();
+    });
+  }
     /**
      * Query documents in store.
      * @param {Object} params Parameters to query with
@@ -62,7 +62,7 @@ class PouchDBAdapter {
       return new Promise(function(resolve, reject) {
         let _out, _docs = [];
 
-        self.allDocs(params).then(function(resp) {
+        self.allDocs({include_docs: true}).then(function(resp) {
           _docs = _.map(resp.rows, function(row) {
             return row.doc;
           });
@@ -73,10 +73,9 @@ class PouchDBAdapter {
             _out = _docs;
           }
 
-          resolve(_docs);
           if (_out && _out.length > 0) {
             logger('find.success', _out.length);
-            resolve(_docs);
+            resolve(_out);
           } else {
             /*TODO - Never reject, just return empty */
             reject({
@@ -98,9 +97,7 @@ class PouchDBAdapter {
         let _docs = [],
           _obj;
         logger('allDocs', params);
-        db.allDocs({
-          include_docs: true
-        }, (err, res) => {
+        db.allDocs(_.extend({include_docs: true}, params), (err, res) => {
           if (err) {
             reject(err);
           }

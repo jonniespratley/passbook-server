@@ -5,11 +5,14 @@ html
     title passbook-server | browse
     link(rel='stylesheet', href='/styles/bootstrap.min.css')
     link(rel='stylesheet', href='/styles/styles.css')
+    link(rel='stylesheet', href='//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css')
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
     style.
       body{
         padding-top: 65px;
       }
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js')
+
   body
     header
       nav.navbar.navbar-dark.navbar-fixed-top.bg-inverse
@@ -21,9 +24,13 @@ html
           block content
 
 
-    block scripts
-      //# scripts
+
 
     script(src='/scripts/jquery.min.js')
     script(src='/scripts/tether.min.js')
     script(src='/scripts/bootstrap.min.js')
+    script(src='//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js')
+
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/pouchdb/6.0.6/pouchdb.min.js')
+    block scripts
+      //# scripts

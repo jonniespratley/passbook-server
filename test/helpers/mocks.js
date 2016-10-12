@@ -1,65 +1,48 @@
 'use strict';
-var fs = require('fs-extra');
-var path = require('path');
+const fs = require('fs-extra');
+const path = require('path');
+const _ = require('lodash');
 
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
 const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
 const Configuration = require(path.resolve(__dirname, '../../src/configuration.js'))
   //var config = require(path.resolve(__dirname, '../../config.js'));
+const Pass = require(path.resolve(__dirname, '../../src/routes/passes/pass.js'));
+const Passes = require(path.resolve(__dirname, '../../src/routes/passes/passes.js'));
+const Device = require(path.resolve(__dirname, '../../src/routes/devices/device.js'));
+
 var config = require('../test-config.js');
 
-
+var _program;
 exports.program = function(adapterType) {
 
   let _config = {
     config: config
   };
 
-  /*
-
-    switch (adapterType) {
-      case 'filedb':
-        _config.dataPath = dbPath;
-        break;
-      case 'pouchdb':
-        _config.adapter = new PouchDBAdapter(config.database.url);
-        break;
-      case 'couchdb':
-        _config.adapter = new CouchDB(config.database.url);
-        break;
-      default:
-        _config.dataPath = dbPath;
-        break;
-
-    }
-  */
-  //var adapter = new CouchDB('http://localhost:4987/passbook-server');
-  //  var adapter = new PouchDBAdapter(dbPath);
-  var _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
-  exports.config = config = _program.config;
-  const dbPath = path.resolve(__dirname, '../temp/', config.get('database.name'));
-  //adapter.bulkDocs(exports.mockPasses);
-  config.set('database.path', dbPath);
-  config.set('dbPath', dbPath);
-  fs.ensureDirSync(dbPath);
 
 
 
-  exports.mockIdentifer = {
-    teamIdentifier: process.env.TEAM_IDENTIFIER || config.get('teamIdentifier'),
-    passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || config.get('passTypeIdentifier'),
-    p12: config.get('passTypeIdentifierP12'),
-    passphrase: 'fred'
-  };
 
 
+
+  if(_program){
+    return _program;
+  } else {
+    _program = require(path.resolve(__dirname, '../../src/program.js'))(config);
+    exports.config = config = _program.get('config');
+    exports.mockIdentifer = {
+      teamIdentifier: process.env.TEAM_IDENTIFIER || _program.config.get('teamIdentifier'),
+      passTypeIdentifier: process.env.PASS_TYPE_IDENTIFIER || _program.config.get('passTypeIdentifier'),
+      p12: config.get('passTypeIdentifierP12'),
+      passphrase: 'fred'
+    };
+  }
   return _program;
 };
 
 
-var Pass = require(path.resolve(__dirname, '../../src/routes/passes/pass.js'));
-var Passes = require(path.resolve(__dirname, '../../src/routes/passes/passes.js'));
-var Device = require(path.resolve(__dirname, '../../src/routes/devices/device.js'));
+
 
 exports.Pass = Pass;
 exports.Passes = Passes;
@@ -70,32 +53,30 @@ exports.mockPasses = [
   new Pass({
     //_id: 'mock-generic',
     description: 'Example Generic',
-    //serialNumber: '0123456789876543210',
-    authenticationToken: '0123456789876543210',
-
+    serialNumber: '0123456789876543210',
     type: 'generic'
   }),
 
   new Pass({
-    //serialNumber: 'mock-boardingpass',
+    serialNumber: 'mock-boardingpass',
     description: 'Example Boarding Pass',
     type: 'boardingPass'
   }),
 
   new Pass({
-    // serialNumber: 'mock-coupon',
+    serialNumber: 'mock-coupon',
     description: 'Example Coupon',
     type: 'coupon'
   }),
 
   new Pass({
-    //serialNumber: 'mock-eventticket',
+    serialNumber: 'mock-eventticket',
     description: 'Example Event Ticket',
     type: 'eventTicket'
   }),
 
   new Pass({
-    //serialNumber: 'mock-storecard',
+    serialNumber: 'mock-storecard',
     description: 'Example Store Card',
     type: 'storeCard'
   })
@@ -112,3 +93,58 @@ exports.mockDevice = new Device({
   "deviceLibraryIdentifier": "b4ed43cfeb2a5563454069a0eb0f760b",
   "authorization": exports.mockPass.authenticationToken
 });
+
+
+function createSamplePasses(count){
+  return new Promise((resolve, reject) =>{
+    var docs = [],
+        passes = [],
+        i = 0,
+        p;
+    docs.length = count;
+
+    var _done = _.after(docs.length , () =>{
+      resolve(passes);
+    });
+
+    _.forEach(docs, (doc) =>{
+      i++;
+      p = new Pass( {
+        type: 'generic',
+        description: 'Pass ' + i,
+        //serialNumber: chan,
+        "foregroundColor": "rgb(255, 255, 255)",
+        "backgroundColor": "rgb(20, 89, 188)",
+        "organizationName": "GE Digital",
+        "description": "ID Card",
+        "logoText": "GE Digital"
+      });
+
+      _program.db.get(p._id).then((existingDoc) =>{
+        p._rev = existingDoc._rev;
+        _program.db.put(p).then((resp)=>{
+          console.log('create resp', resp);
+          p._rev = resp.rev;
+          p._id = resp.id;
+          passes.push(p);
+          _done();
+        }).catch((err) =>{
+          console.log('error', err);
+          _done();
+        });
+      }).catch((err) =>{
+        _program.db.put(p).then((resp)=>{
+          console.log('create resp', resp);
+          p._rev = resp.rev;
+          p._id = resp.id;
+          passes.push(p);
+          _done();
+        }).catch((err) =>{
+          console.log('error', err);
+          _done();
+        });
+      });
+    });
+  });
+}
+exports.createSamplePasses = createSamplePasses;
