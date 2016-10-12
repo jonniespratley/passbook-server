@@ -35,9 +35,9 @@ describe('Admin Module', function() {
   });
 
 
-  it('GET - /api/v1/admin/db - should return all docs', function(done) {
+  it('GET - /_admin/db - should return all docs', function(done) {
     request(app)
-      .get(`/api/v1/admin/db`)
+      .get(`/_admin/db`)
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res)=>{
@@ -46,9 +46,9 @@ describe('Admin Module', function() {
       });
   });
 
-  it('POST - /api/v1/admin/db - should create doc', function(done) {
+  it('POST - /_admin/db - should create doc', function(done) {
     request(app)
-      .post(`/api/v1/admin/db`)
+      .post(`/_admin/db`)
       .send({
         title: 'new doc',
         docType: 'test'
@@ -59,9 +59,9 @@ describe('Admin Module', function() {
   });
 
 
-  it('PUT - /api/v1/admin/db - should update doc', function(done) {
+  it('PUT - /_admin/db - should update doc', function(done) {
     request(app)
-      .put(`/api/v1/admin/db/${testDoc._id}?rev=${testDoc._rev}`)
+      .put(`/_admin/db/${testDoc._id}?rev=${testDoc._rev}`)
       .send(testDoc)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -74,9 +74,9 @@ describe('Admin Module', function() {
       });
   });
 
-  it('DELETE - /api/v1/admin/db - should remove doc', function(done) {
+  it('DELETE - /_admin/db - should remove doc', function(done) {
     request(app)
-      .del(`/api/v1/admin/db/${testDoc._id}?rev=${testDoc._rev}`)
+      .del(`/_admin/db/${testDoc._id}?rev=${testDoc._rev}`)
       .expect('Content-Type', /json/)
       .expect(200, done);
   });
