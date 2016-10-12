@@ -1,8 +1,7 @@
 'use strict';
 const gulp = require('gulp');
 const gulpSequence = require('gulp-sequence');
-
-
+const clean = require('gulp-clean');
 
 const config = {
   src: [
@@ -11,6 +10,18 @@ const config = {
   specs: 'test/specs/**/*-spec.js'
 };
 
+
+gulp.task('clean', function () {
+    return gulp.src([
+      './temp',
+      './coverage',
+      './mochawesome-reports',
+      './test/temp',
+      './docs',
+      './db'
+    ], {read: false})
+        .pipe(clean());
+});
 
 //JS Docs
 const jsdoc = require('gulp-jsdoc3');

@@ -17,7 +17,6 @@ module.exports = function(app) {
     next();
   });
 
-  //Logging Endpoint
   adminRouter.use(adminController.use);
   adminRouter.get('/', adminController.index);
   adminRouter.route('/db/:id?')
@@ -30,7 +29,7 @@ module.exports = function(app) {
     .delete(adminController.del);
 
     adminRouter.get('/sync?', function(req, res) {
-      program.sync(req.params).then((resp) =>{
+      program.sync(req.query).then((resp) =>{
         res.status(200).send(resp);
       }, (err)=>{
         res.status(400).send(err);

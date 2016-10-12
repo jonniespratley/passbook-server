@@ -12,27 +12,28 @@ var testPassName = 'Test_Pass_';
 var testPassDir = path.resolve(__dirname, '../../.tmp/');
 
 var app = express();
-var passes;
+
 
 // TODO: Program
 var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
-var program = mocks.program('pouchdb');
-var db = program.db;
+
+
+//Test Instances
+// var passes;
+var program, db;
+var mockDevice = mocks.mockDevice;
+var mockPass = mocks.mockPass;
+var mockIdentifer = mocks.mockIdentifer;
+
 var config = mocks.config;
 var Pass = mocks.Pass;
 var Device = mocks.Device;
-//Test Instances
-
-var mockDevice = mocks.mockDevice;
-var mockPass = mocks.mockPass;
-
-var mockIdentifer = mocks.mockIdentifer;
-var app;
-
 
 
 describe('passbook-server routes', function() {
   before(function(done) {
+    program = mocks.program();
+    db = program.db;
     app = express();
     app.locals.program = program;
     app.locals.db = program.db;
@@ -42,8 +43,7 @@ describe('passbook-server routes', function() {
     program.require('routes').Devices(app);
 
     program.db.bulkDocs(mocks.mockPasses).then(function(resp) {
-      mockPass = mocks.mockPass;
-      //  mockDevice.authorization = 'ApplePass ' + mockPass.authenticationToken;
+      mockPass = mocks.mockPasses[0];
       done();
     }).catch(done);
 

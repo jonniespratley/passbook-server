@@ -149,34 +149,38 @@ module.exports = function(program) {
      */
     delete_device_registration: function(req, res, next) {
       logger('delete_device_registration', req.url);
-
-      let authentication_token = `${req.get('Authorization')}`;
-      let device_id = req.params.device_id;
-      let pass_type_id = req.params.pass_type_id;
-      let serial_number = req.params.serial_number;
+      var tokensMatch = false;
+      var authentication_token = `${req.get('Authorization')}`;
+      var device_id = req.params.device_id;
+      var pass_type_id = req.params.pass_type_id;
+      var serial_number = req.params.serial_number;
 
       assert.ok(device_id, 'has device id');
       assert.ok(pass_type_id, 'has pass type id');
       assert.ok(serial_number, 'has serial number');
 
-      let uuid = device_id + '-' + serial_number;
-      let registration;
+      var uuid = device_id + '-' + serial_number;
+      var registration;
 
-      let device = new Device({
+      var device = new Device({
+        serialNumber: serial_number,
+        authorization: authentication_token,
         deviceLibraryIdentifier: device_id
       });
 
       registration = new Registration({
-        serial_number: serial_number,
-        auth_token: authentication_token,
+        serialNumber: device.serialNumber,
+        authorization: device.authentication,
+        deviceLibraryIdentifier: device.deviceLibraryIdentifier,
         device_id: device._id
       });
 
-      var tokensMatch = false;
+
 
       logger('delete_device_registration', 'req.authenticationToken =', authentication_token);
+
       if (!authentication_token) {
-        res.status(401).json({
+        return res.status(401).json({
           error: 'Unauthorized'
         });
       } else {
@@ -184,16 +188,17 @@ module.exports = function(program) {
         logger('delete_device_registration', 'Finding registration', registration._id);
 
         db.get(registration._id).then(function(reg) {
-          tokensMatch = (authentication_token === reg.auth_token);
-
-          logger('delete_device_registration', 'found', reg._id);
+          tokensMatch = (authentication_token === reg.authorization);
+          logger('check token', authentication_token, reg.authorization)
+          logger('delete_device_registration', 'found', reg);
 
           if (tokensMatch) {
             logger('delete_device_registration', 'Pass and authentication token match.');
             logger('delete_device_registration', 'reqquest auth =', authentication_token);
-            logger('delete_device_registration', 'registration auth =', reg.auth_token);
+            logger('delete_device_registration', 'registration auth =', reg.authorization);
 
             db.remove(reg._id, reg._rev).then(function(resp) {
+              logger('delete_device_registration', 'remove', resp);
               res.status(200).json(resp);
             }).catch(function(err) {
               logger('delete_device_registration', 'error', err);

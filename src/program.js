@@ -68,7 +68,7 @@ class Program {
 
   sync(params){
     return new Promise((resolve, reject) =>{
-      params = _.extend({
+      params = _.assign({
           to: this.get('dbPath'),
           from: this.config.get('database.url')
       }, params);
@@ -81,7 +81,7 @@ class Program {
         .on('change', function(info) {
           log.info('change', info.direction, info.change);
         }).on('complete', function(info) {
-          log.info('complete', info);
+          //log.info('complete', info);
           resolve(info);
         }).on('uptodate', function(info) {
           log.info('uptodate', info);
