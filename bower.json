@@ -1,0 +1,21 @@
+{
+  "name": "passbook-server",
+  "description": "Passbook API server",
+  "main": "",
+  "authors": [
+    "Jonnie Spratley"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/jonniespratley/passbook-server",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.7.0"
+  }
+}

@@ -10,6 +10,7 @@ store
 docs
 mochawesome-reports
 coverage
+bower_components
 pouchdb
 tempdb
 mydb
