@@ -38,12 +38,20 @@ class Program {
 		}
     log.info('Program.constructor');
 		log.info('config', this.config);
-
 		var dbPath = path.resolve(this.config.get('database.path'), this.config.get('database.name'));
-		fs.ensureDirSync(dbPath);
+		try {
+			fs.ensureDirSync(dbPath);
+		} catch (e) {
+			log.error(e);
+			log.error('Trying to create another directory');
+			dbPath = path.resolve(__dirname, '../db/', this.config.get('database.name'));
+			fs.ensureDirSync(dbPath);
+		} finally {
+			db = config.adapter || new PouchDbAdapter(dbPath);
+		}
 
 
-		db = config.adapter || new PouchDbAdapter(dbPath);
+
 
 		this.db = db;
 		this.pkg = pkg;

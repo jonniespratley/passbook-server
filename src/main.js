@@ -131,6 +131,7 @@ module.exports = (function(userConfig) {
         */
   });
 
+  // TODO: Extract
   var browseRouter = new require('express').Router();
 
   browseRouter.route('/_browse/:id?')
@@ -175,21 +176,13 @@ module.exports = (function(userConfig) {
 
   app.get('/_logs', function(req, res) {
     var logs = [];
-
-    program.get('db').allDocs({
+    program.get('db').find({
       docType: 'log'
     }).then((resp) => {
-      var doc;
-      for (var i = 0; i < resp.rows.length; i++) {
-        doc = resp.rows[i].doc;
-        if (doc.docType === 'log') {
-          logs.push(doc);
-        }
-      }
-      log.info('Got logs', logs);
+      log.info('Got logs', resp);
       res.render('logs', {
         title: config.name,
-        logs: logs
+        logs: resp
       });
     }).catch((err) => {
       console.log('err', err);
