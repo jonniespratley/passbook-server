@@ -20,3 +20,10 @@ block content
 			each pass in passes
 				+card(pass)
 				//- a(href='/_browse/'+pass.doc._id)=pass.doc.description
+
+
+block scripts
+	script.
+		document.addEventListener('WebComponentsReady', function(){
+			console.log('WebComponentsReady');
+		});

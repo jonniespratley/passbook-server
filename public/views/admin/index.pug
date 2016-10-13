@@ -17,6 +17,9 @@ block content
               td=row.doc._id
               td=row.doc.docType
 block scripts
+  link(rel='stylesheet', href='/datatables/media/css/dataTables.bootstrap4.min.css')
+  link(rel='stylesheet', href='/datatables/media/css/jquery.dataTables.min.css')
+  script(src='/datatables/media/js/jquery.dataTables.min.js')
   script.
     $(document).ready(function(){
         $('table').DataTable();

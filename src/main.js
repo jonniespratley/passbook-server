@@ -18,10 +18,19 @@ module.exports = (function(userConfig) {
   Server.setExpressMiddleware(program.config.get('middleware'));
 
   var app = Server.getExpressApp();
-  app.use(express.static('public'));
+
   app.set('x-powered-by', false);
   app.set('views', path.resolve(__dirname, '../public/views'));
   app.set('view engine', 'pug');
+
+
+  var dirs = config.get('publicDir');
+  if(dirs && dirs.length){
+    dirs.forEach((dir)=>{
+      app.use(express.static(dir));
+    });
+  }
+
 
   function indexRoute(req, res) {
     let data = {
