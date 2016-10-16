@@ -13,7 +13,7 @@ module.exports = (function(userConfig) {
   var config = program.get('config');
 
   Server.setExpressLocals('program', program);
-  Server.setExpressLocals('config', program.get('config'));
+  Server.setExpressLocals('config', config);
   Server.setExpressLocals('db', program.get('db'));
   Server.setExpressMiddleware(program.config.get('middleware'));
 
@@ -25,8 +25,8 @@ module.exports = (function(userConfig) {
 
 
   var dirs = config.get('publicDir');
-  if(dirs && dirs.length){
-    dirs.forEach((dir)=>{
+  if (dirs && dirs.length) {
+    dirs.forEach((dir) => {
       app.use(express.static(dir));
     });
   }

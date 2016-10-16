@@ -1,0 +1,56 @@
+<link rel="import" href="/polymer/polymer.html" >
+<link rel="import" href="/iron-input/iron-input.html">
+<link rel="import" href="/px-table-view/px-table-view.html">
+
+<dom-module id="x-pass-fields">
+  <style include="px-layout-css">
+    :host {
+      @apply(--x-pass-fields);
+    }
+  </style>
+  <template>
+      <px-table-view modifier="tiny">
+        <template is="dom-repeat" items="{{_getFields(selectedItem)}}" as="field">
+          <px-table-row label2="Field {{index}}">
+            <div class="flex flex--wrap" row-content>
+              <input is="iron-input" type="text" class="text-input u-mr-" placeholder="key" bind-value="{{field.key}}">
+              <input is="iron-input" type="text" class="text-input u-mr-" placeholder="label" bind-value="{{field.label}}">
+              <input is="iron-input" type="text" class="text-input u-mr-" placeholder="value" bind-value="{{field.value}}">
+              <px-button icon="fa:fa-times-circle" on-tap="removeField"></px-button>
+              <px-button icon="fa:fa-plus-circle" on-tap="addField"></px-button>
+            </div>
+          </px-table-row>
+        </template>
+      </px-table-view>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'x-pass-fields',
+      properties: {
+        fieldName: {
+          type: String
+        },
+        selectedItem: {
+          type: Object
+        }
+      },
+      created: function() {
+        //console.log(this.tagName, 'created', this);
+      },
+      attached: function() {
+      //  console.log(this.tagName, 'attached', this);
+      },
+      _getFields: function(p){
+        if(p && p.type){
+        //  console.log('get fields', p.type, this.fieldName);
+          return p[p.type][this.fieldName];
+        }
+      },
+      addField: function(f){
+        this.selectedItem[this.selectedItem.type][this.fieldName].push(f);
+      }
+    });
+  </script>
+</dom-module>

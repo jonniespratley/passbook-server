@@ -36,7 +36,7 @@ class Program {
 		} else {
 			this.config = new Configuration(config);
 		}
-    log.info('Program.constructor');
+		log.info('Program.constructor');
 		log.info('config', this.config);
 		var dbPath = path.resolve(this.config.get('database.path'), this.config.get('database.name'));
 		try {
@@ -52,54 +52,55 @@ class Program {
 
 
 
-
 		this.db = db;
 		this.pkg = pkg;
 		this.getLogger = utils.getLogger;
 
 		this.modules = {};
-		this.set('Device', Device);
-		this.set('Pass', Pass);
-		this.set('Passes', Passes);
+
 		this.set('db', db);
 		this.set('config', this.config);
 		this.set('log', log);
 		this.set('passbook', passbook);
 		this.set('utils', utils);
-    this.set('dbPath', dbPath);
+		this.set('dbPath', dbPath);
+		this.set('Device', Device);
+		this.set('Pass', Pass);
+		this.set('Passes', Passes);
+		this.set('passes', Passes(this));
 
 		this.log = log;
 		this.server = null;
 
-    instance = this;
+		instance = this;
 	}
 
-  sync(params){
-    return new Promise((resolve, reject) =>{
-      params = _.assign({
-          to: this.get('dbPath'),
-          from: this.config.get('database.url')
-      }, params);
-      var localUrl = params.to;
-      var remoteUrl = params.from;
-      log.info('sync', params);
+	sync(params) {
+		return new Promise((resolve, reject) => {
+			params = _.assign({
+				to: this.get('dbPath'),
+				from: this.config.get('database.url')
+			}, params);
+			var localUrl = params.to;
+			var remoteUrl = params.from;
+			log.info('sync', params);
 
 
-      var sync = PouchDB.sync(localUrl, remoteUrl, {})
-        .on('change', function(info) {
-          log.info('change', info.direction, info.change);
-        }).on('complete', function(info) {
-          //log.info('complete', info);
-          resolve(info);
-        }).on('uptodate', function(info) {
-          log.info('uptodate', info);
-          resolve(info);
-        }).on('error', function(err) {
-          log.error('error', err);
-          reject(err);
-        });
-    });
-  }
+			var sync = PouchDB.sync(localUrl, remoteUrl, {})
+				.on('change', function(info) {
+					log.info('change', info.direction, info.change);
+				}).on('complete', function(info) {
+					//log.info('complete', info);
+					resolve(info);
+				}).on('uptodate', function(info) {
+					log.info('uptodate', info);
+					resolve(info);
+				}).on('error', function(err) {
+					log.error('error', err);
+					reject(err);
+				});
+		});
+	}
 
 	require(name) {
 		return require(path.resolve(__dirname, name));
@@ -120,15 +121,15 @@ class Program {
 		return db;
 	}
 
-  static getInstance(c){
-    if(instance){
-      log.info('getInstance', 'returning existing instance');
-      return instance;
-    } else {
-      log.info('getInstance', 'creating new instance');
-      return new Program(c);
-    }
-  }
+	static getInstance(c) {
+		if (instance) {
+			log.info('getInstance', 'returning existing instance');
+			return instance;
+		} else {
+			log.info('getInstance', 'creating new instance');
+			return new Program(c);
+		}
+	}
 
 }
 

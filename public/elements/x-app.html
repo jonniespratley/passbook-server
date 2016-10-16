@@ -1,0 +1,191 @@
+<link rel="import" href="/polymer/polymer.html" >
+<link rel="import" href="/app-route/app-location.html">
+<link rel="import" href="/app-route/app-route.html">
+<link rel="import" href="/iron-ajax/iron-ajax.html">
+<link rel="import" href="/iron-form/iron-form.html">
+<link rel="import" href="/iron-pages/iron-pages.html">
+<link rel="import" href="/px-layout/px-layout.html">
+<link rel="import" href="/px-table-view/px-table-view.html">
+<link rel="import" href="x-pass-details.html">
+<link rel="import" href="/px-partials/px-partials.html">
+<link rel="import" href="/px-page/px-pages.html">
+<!--
+<script src="/jquery.qrcode/dist/jquery-qrcode.min.js"></script>
+
+-->
+<dom-module id="x-app">
+  <style include="px-layout-css">
+     :host {
+      display: block;
+    }
+    :host .has-navbar{
+      padding-top: 0;
+    }
+  </style>
+  <template>
+    <app-location id="location" use-hash-as-path route="{{route}}"></app-location>
+    <app-route id="router"
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{tail}}">
+    </app-route>
+
+
+    <iron-ajax id="ajaxPasses" url="/_admin/db?docType=pass" last-response="{{passes}}" auto></iron-ajax>
+    <px-drawer-layout id="layout" force-narrow>
+   	  <px-drawer id="drawer" fixed>
+         <div>
+   				<div class="brand u-p flex flex--middle flex--center">Passbook Server</div>
+          <nav>
+   				<px-table-view row-modifier="tappable" modifier="tiny" selected="{{routeData.page}}" attr-for-selected="data-route">
+   					<px-table-row title="Passes" data-route="passes"></px-table-row>
+   					<px-table-row title="Admin" data-route="admin"></px-table-row>
+   					</px-table-view>
+   				</nav>
+         </div>
+       </px-drawer>
+
+       <px-pages id="appPages" debug selected="{{routeData.page}}" selected-page="{{selectedPage}}">
+              <px-page id="passes" title="Main" main>
+                <px-navbar pages-container="appPages">
+                  <button class="navbar__button" drawer-toggle left>
+                    <i class="fa fa-lg fa-bars"></i>
+                  </button>
+                </px-navbar>
+                <array-selector id="passSelector" items="{{passes}}" selected="{{selectedItem}}"></array-selector>
+                <div class="flex">
+                  <div class="flex__item u-1/3">
+                    <px-navbar id="navbar" title="{{routeData.page}}" fixed auto-hide>
+                   	 <div left>
+                   		 <px-icon class="navbar__button" icon="fa:fa-bars" drawer-toggle></px-icon>
+                   		</div>
+                   	 </px-navbar>
+                  <px-table-view id="passesTable" modifier="tiny">
+                   <template id="passesRepeater" is="dom-repeat" items="{{passes}}" as="pass">
+                     <px-table-row title="[[pass.organizationName]]"
+                                   on-tap="selectItem"
+                                   body="[[pass.description]]"
+                                   modifier="tappable"
+                                   image="/images/[[_getPassType(pass)]].png"
+                                   label1="[[pass.lastUpdated]]"></px-table-row>
+                   </template>
+                 </px-table-view>
+                   </div>
+                 <div class="flex__item">
+                   <x-pass-details selected-item="{{selectedItem}}"></x-pass-details>
+                 </div>
+                </div>
+              </px-page>
+              <px-page id="Page1" title="Page 1">
+                <px-navbar pages-container="appPages"></px-navbar>
+                <section>
+                  <h2>page1</h2>
+                </section>
+              </px-page>
+              <px-page id="Page2" title="Page 2">
+                <px-navbar pages-container="appPages"></px-navbar>
+                <section>
+                  <h2>page2</h2>
+                </section>
+              </px-page>
+              <px-page id="Page3" title="Page 3">
+                <px-navbar pages-container="appPages"></px-navbar>
+                <section>
+                  <h2>page3</h2>
+                </section>
+              </px-page>
+
+            </px-pages>
+
+       <iron-pages id="pages" selected="{{routeData.page}}" attr-for-selected="data-route" fallback-selection="browse">
+         <div id="browse" data-route="passes">
+           <content></content>
+
+
+        </div>
+        <div data-route="details">
+          <h3>Pass Details</h3>
+        </div>
+        <div data-route="admin">
+
+        </div>
+       </iron-pages>
+  </px-drawer-layout>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-app',
+      properties: {
+        passes: {
+          type: Array,
+          value: function(){
+            return [];
+          }
+        },
+        selectedItem: {
+          type:Object,
+          notify:true,
+          observer:'_updateItem'
+        },
+        route: {
+          type: Object
+        },
+        selectedPass: {
+          type: Object
+        },
+        routeData: {
+          notify: true,
+          type: Object,
+          value: function(){
+            return {};
+          }
+        }
+      },
+      observers: [
+        '_handleRouteChange(route.*)'
+      ],
+      created: function() {
+        console.log(this.tagName, 'created', this);
+      },
+      attached: function() {
+        console.log(this.tagName, 'attached', this);
+      },
+      ready: function(){
+        if(!this.route.path){
+          this.set('route.path', '/');
+        }
+      },
+      _handleRouteChange: function(route){
+        console.log(this.tagName, '_handleRouteChange', route);
+      },
+      _updateItem: function(i) {
+        console.log(this.tagName, '_updateItem', i);
+      },
+      selectItem: function(e){
+        console.log(e);
+        var item = this.$.passesRepeater.itemForElement(e.target);
+        this.$.passSelector.select(item);
+      },
+
+      _getPassType: function(pass){
+        var type = 'generic';
+        switch(pass){
+          case pass.generic:
+            type = 'generic';
+          break;
+          case pass.eventTicket:
+            type = 'eventTicket';
+          break;
+          case pass.boardingPass:
+            type = 'boardingPass';
+          break;
+          case pass.coupon:
+            type = 'coupon';
+          break;
+        }
+        return pass.type || type;
+      }
+    });
+  </script>
+</dom-module>

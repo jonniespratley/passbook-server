@@ -21,7 +21,7 @@ module.exports = function(app) {
 			message: 'Device push token'
 		});
 	});
-
+	router.use(bodyParser.json());
 	router.get('/:device_id/registrations/:pass_type_id?', devicesController.get_device_passes);
 	router.post('/:device_id/registrations/:pass_type_id/:serial_number', bodyParser.json(), devicesController.post_device_registration);
 	router.delete('/:device_id/registrations/:pass_type_id/:serial_number', devicesController.delete_device_registration);
