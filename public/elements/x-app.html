@@ -77,6 +77,9 @@
             <div left>
               <button type="button" on-tap="back" class="navbar__button">Back</button>
             </div>
+            <div right>
+              <a class="navbar__button" href$="/download/{{selectedItem._id}}" target="_blank">Download</a>
+            </div>
           </px-navbar>
           <br>
           <div class="flex__item u-p" hidden$="{{!selectedItem}}">
