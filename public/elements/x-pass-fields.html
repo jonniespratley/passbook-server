@@ -12,12 +12,14 @@
       <px-table-view modifier="tiny">
         <template id="inputRepeater" is="dom-repeat" items="{{fields}}" as="field">
           <px-table-row label2="Field {{index}}">
-            <div class="flex flex--wrap" row-content>
+            <div class="flex flex--middle" row-content>
               <input is="iron-input" type="text" class="text-input u-mr-" placeholder="key" bind-value="{{field.key}}">
               <input is="iron-input" type="text" class="text-input u-mr-" placeholder="label" bind-value="{{field.label}}">
               <input is="iron-input" type="text" class="text-input u-mr-" placeholder="value" bind-value="{{field.value}}">
-              <px-button icon="fa:fa-times-circle" on-tap="removeField" hidden$="{{_checkIndex(index)}}"></px-button>
-              <px-button icon="fa:fa-plus-circle" on-tap="addField" hidden$="{{!_checkIndex(index)}}"></px-button>
+              <div class="flex flex--middle">
+                <px-button icon="fa:fa-times-circle" modifier="transparent icon tiny" on-tap="removeField" hidden$="{{_checkIndex(index)}}"></px-button>
+                <px-button icon="fa:fa-plus-circle" modifier="transparent icon tiny" on-tap="addField" hidden$="{{!_checkIndex(index)}}"></px-button>
+              </div>
             </div>
           </px-table-row>
         </template>

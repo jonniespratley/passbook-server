@@ -25,10 +25,7 @@
   <template>
     <form is="iron-form" id="passForm"
       content-type="application/json"
-
       action="/_admin/db/{{selectedItem._id}}?rev={{selectedItem._rev}}" method="PUT">
-
-
 
       <div class="">
         <h2>{{selectedItem.description}}</h2>
@@ -137,8 +134,10 @@
         </px-table-view>
       </div>
 
-      <button type="reset" class="btn">Reset</button>
-      <button type="submit" class="btn">Update</button>
+      <div class="flex u-mt u-mb u-p-">
+        <button type="reset" class="btn btn--full">Reset</button>
+        <button type="submit" class="btn btn--primary btn--full">Update</button>
+      </div>
     </form>
   </template>
   <script>
@@ -146,18 +145,15 @@
       is: 'x-pass-details',
       properties: {
         selectedItem: {
-          type: Object
+          type: Object,
+          value: function(){
+            return {};
+          }
         }
       },
       listeners:{
-        'passForm.iron-form-presubmit': '_handlePreSubmit'
-
-      },
-      created: function() {
-        console.log(this.tagName, 'created', this);
-      },
-      attached: function() {
-        console.log(this.tagName, 'attached', this);
+        'passForm.iron-form-presubmit': '_handlePreSubmit',
+        'passForm.iron-form-response': '_handleResponse'
       },
       _getFields: function(p, name){
         if(p && p.type){
@@ -166,8 +162,19 @@
         }
       },
       _handlePreSubmit: function(e){
+        if(this.selectedItem && this.selectedItem._rev){
+          e.target.request.url = '/_admin/db/'+this.selectedItem._id+'?rev='+this.selectedItem._rev;
+          e.target.request.method = 'PUT';
+        } else {
+          e.target.request.url = '/_admin/db';
+          e.target.request.method = 'POST';
+        }
         e.target.request.body = this.selectedItem;
         console.log('_handlePreSubmit', e);
+      },
+      _handleResponse: function(e){
+        console.log('handleResponse', e);
+        this.set('selectedItem._rev', e.detail.response.rev);
       }
     });
   </script>
