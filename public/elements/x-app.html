@@ -4,6 +4,7 @@
 <link rel="import" href="/iron-ajax/iron-ajax.html">
 <link rel="import" href="/iron-form/iron-form.html">
 <link rel="import" href="/iron-pages/iron-pages.html">
+<link rel="import" href="/paper-toast/paper-toast.html">
 <link rel="import" href="/px-layout/px-layout.html">
 <link rel="import" href="/px-table-view/px-table-view.html">
 <link rel="import" href="x-pass-details.html">
@@ -32,7 +33,9 @@
     </app-route>
 
 
+
     <iron-ajax id="ajaxPasses" url="/_admin/db?docType=pass" last-response="{{passes}}" auto></iron-ajax>
+    <paper-toast id="toast" text="Hello world!"></paper-toast>
     <px-drawer-layout id="layout" force-narrow>
    	  <px-drawer id="drawer" fixed>
          <div>
@@ -73,12 +76,17 @@
            </div>
         </div>
         <div data-route="details">
-          <px-navbar title="{{selectedItem.description}}">
+          <px-navbar
+            title="{{selectedItem._id}}"
+            subtitle="{{selectedItem._rev}}"
+            >
             <div left>
               <button type="button" on-tap="back" class="navbar__button">Back</button>
             </div>
-            <div right>
-              <a class="navbar__button" href$="/download/{{selectedItem._id}}" target="_blank">Download</a>
+            <div right class="flex">
+              <a class="navbar__button" href$="/download/{{selectedItem._id}}" target="_blank">
+              <px-icon icon="fa:fa-download"></px-icon></a>
+
             </div>
           </px-navbar>
           <br>

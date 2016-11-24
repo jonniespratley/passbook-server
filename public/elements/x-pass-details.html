@@ -1,4 +1,5 @@
 <link rel="import" href="/polymer/polymer.html" >
+<link rel="import" href="/google-map/google-map.html">
 <link rel="import" href="/app-route/app-location.html">
 <link rel="import" href="/app-route/app-route.html">
 <link rel="import" href="/iron-ajax/iron-ajax.html">
@@ -21,6 +22,9 @@
         min-width: 145px;
       }
     }
+    google-map {
+   height: 600px;
+ }
   </style>
   <template>
     <form is="iron-form" id="passForm"
@@ -54,11 +58,13 @@
           Fields to be displayed prominently on the front of the pass.
         </p>
         <x-pass-fields field-name="primaryFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
         <legend>Secondary Fields</legend>
         <p>
           Fields to be displayed on the front of the pass.
         </p>
         <x-pass-fields field-name="secondaryFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
         <legend>Auxiliary Fields</legend>
         <p>
           Additional fields to be displayed on the front of the pass.
@@ -81,10 +87,40 @@
           Information about locations.
         </p>
 
+        <template is="dom-repeat" items="{{selectedItem.locations}}" as="location">
+          <google-map latitude="{{location.latitude}}" longitude="{{location.longitude}}" fit-to-markers api-key="AIzaSyDzMUiUFvCGieEjUmOgjV0htNqkUYi526w">
+            <google-map-marker
+              latitude="{{location.latitude}}" longitude="{{location.longitude}}"
+              draggable="true"
+              title="{{location.relevantText}}"></google-map-marker>
+          </google-map>
+        </template>
+
         <legend>Barcodes</legend>
         <p>
           Information about a barcodes.
         </p>
+        <div class="">
+          <px-table-view modifier="tiny">
+            <px-table-row label2="Text">
+              <input is="iron-input"
+                type="text"
+                class="text-input"
+                name="barcode.altText"
+                bind-value="{{selectedItem.barcode.altText}}">
+            </px-table-row>
+            <px-table-row label2="Message">
+              <input is="iron-input"
+                type="text"
+                class="text-input"
+                name="barcode.message"
+                bind-value="{{selectedItem.barcode.message}}">
+            </px-table-row>
+
+          </px-table-view>
+        </div>
+
+
 
         <legend>Styles</legend>
         <p>
