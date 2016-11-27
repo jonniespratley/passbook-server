@@ -8,8 +8,9 @@
 <link rel="import" href="/px-layout/px-layout.html">
 <link rel="import" href="/px-table-view/px-table-view.html">
 <link rel="import" href="x-pass-details.html">
+<link rel="import" href="pb-pass.html">
 <link rel="import" href="/px-partials/px-partials.html">
-<link rel="import" href="/px-page/px-pages.html">
+
 <!--
 <script src="/jquery.qrcode/dist/jquery-qrcode.min.js"></script>
 
@@ -91,6 +92,7 @@
           </px-navbar>
           <br>
           <div class="flex__item u-p" hidden$="{{!selectedItem}}">
+            
             <x-pass-details selected-item="{{selectedItem}}"></x-pass-details>
           </div>
         </div>

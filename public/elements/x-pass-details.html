@@ -23,7 +23,7 @@
       }
     }
     google-map {
-   height: 600px;
+   height: 300px;
  }
   </style>
   <template>
@@ -87,6 +87,7 @@
           Information about locations.
         </p>
 
+      <div class="u-p">
         <template is="dom-repeat" items="{{selectedItem.locations}}" as="location">
           <google-map latitude="{{location.latitude}}" longitude="{{location.longitude}}" fit-to-markers api-key="AIzaSyDzMUiUFvCGieEjUmOgjV0htNqkUYi526w">
             <google-map-marker
@@ -95,6 +96,7 @@
               title="{{location.relevantText}}"></google-map-marker>
           </google-map>
         </template>
+      </div>
 
         <legend>Barcodes</legend>
         <p>

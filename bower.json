@@ -32,10 +32,11 @@
     "polymer": "^1.5.0",
     "px-table-view": "~1.0.0",
     "polymer-font-awesome": "0.1.9",
-    "px-theme": "1.1.2",
+    "px-theme": "^2.0.1",
     "px-typography-design": "~0.3.4",
     "px-defaults-design": "~0.3.0",
-    "px-functions-design": "~1.0.0"
+    "px-functions-design": "~1.0.0",
+    "px-iconography-design": "^0.3.1"
   },
   "devDependencies": {
     "px-demo-helpers": "~0.0.4",
