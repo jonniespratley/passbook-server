@@ -71,7 +71,10 @@ var config = {
     "port": 5001
   },
   "middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
-  "publicDir": "./public"
+  "publicDir": [
+    "./bower_components",
+    "./public"
+  ]
 };
 
 module.exports = config;

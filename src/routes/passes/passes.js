@@ -16,8 +16,9 @@ module.exports = function(program) {
       this.db = program.get('db');
     }
     save(p) {
+      p = new Pass(p);
       assert(p._id, 'pass must have _id');
-      return this.get(p._id).then((resp) =>{
+      return this.get(p._id).then((resp) => {
         log.info('Found existing doc', resp);
         p._id = resp._id;
         p._rev = resp._rev;
@@ -29,13 +30,13 @@ module.exports = function(program) {
       });
     }
     create(p) {
-      return this.db.post(p);
+      return this.db.post(new Pass(p));
     }
     update(p) {
-      return this.db.put(p);
+      return this.db.put(new Pass(p));
     }
     get(id) {
-      log.info('get',id);
+      log.info('get', id);
       assert(id, 'pass must have _id');
       return this.db.get(id);
     }
@@ -47,12 +48,12 @@ module.exports = function(program) {
     remove(p) {
       log.info('remove', p);
       assert(p._id, 'pass must have _id');
-      return this.db.get(p._id).then((resp) =>{
-        return this.db.remove(resp._id, resp._rev).catch((err) =>{
+      return this.db.get(p._id).then((resp) => {
+        return this.db.remove(resp._id, resp._rev).catch((err) => {
           log.error('remove', err);
           return err;
         });
-      }).catch((err) =>{
+      }).catch((err) => {
         log.error('remove', err);
         return err;
       });
@@ -95,7 +96,9 @@ module.exports = function(program) {
       }, params);
       return new Promise((resolve, reject) => {
         log.info('getPasses', params);
-        this.db.allDocs({include_docs: true}).then((resp) => {
+        this.db.allDocs({
+          include_docs: true
+        }).then((resp) => {
           _passes = resp.rows.map((row) => {
             return row.doc;
           });
@@ -117,13 +120,18 @@ module.exports = function(program) {
     findPassBySerial(serial) {
       logger('findPassBySerial', serial);
 
-      function map(doc){
-        if(doc.docType === 'pass' && doc.serialNumber === serial){
+      function map(doc) {
+        if (doc.docType === 'pass' && doc.serialNumber === serial) {
           console.log('found doc', doc);
           emit(doc.serialNumber);
         }
       }
-      return this.db.query({map: map}, {reduce: false, include_docs: true});
+      return this.db.query({
+        map: map
+      }, {
+        reduce: false,
+        include_docs: true
+      });
     }
     bulk(docs) {
       return this.db.bulkDocs(docs);

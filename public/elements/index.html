@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>passbook-server | browse</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <link rel="import" href="elements.html">
+
+  <link rel="import" href="/iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="/px-demo-helpers/px-demo-helpers.html">
+  <link rel="import" href="/px-partials/px-partials.html">
+  <link rel="import" href="/px-page/px-pages.html">
+</head>
+
+<body>
+  <div>
+  <h2>elemnts</h2>
+
+  <div class="flex">
+    <demo-snippet>
+<template id="">
+
+
+    <style is="custom-style">
+    :root {
+      --px-page: {
+        background: fuchsia;
+      }
+    }
+  </style>
+
+
+  <template id="app" is="dom-bind">
+    <div class>
+      <ul>
+        <li>Selected Page:<span>{{selectedPage.title}}</span>
+        </li>
+        <li>Selected Index:<span>{{selected}}</span>
+        </li>
+      </ul>
+
+    </div>
+    <div class="flex flex--middle flex--col">
+      <device-view device="phone" >
+        <px-pages id="appPages" debug selected="{{selected}}" selected-page="{{selectedPage}}">
+          <px-page id="Page0" title="Main" main>
+            <px-navbar pages-container="appPages">
+              <button class="navbar__button" drawer-toggle left>
+                <i class="fa fa-lg fa-bars"></i>
+              </button>
+            </px-navbar>
+            <px-table-view id="list1" modifier="small" table-data="[[items]]"></px-table-view>
+          </px-page>
+          <px-page id="Page1" title="Page 1">
+            <px-navbar pages-container="appPages"></px-navbar>
+            <section>
+              <h2>page1</h2>
+            </section>
+          </px-page>
+          <px-page id="Page2" title="Page 2">
+            <px-navbar pages-container="appPages"></px-navbar>
+            <section>
+              <h2>page2</h2>
+            </section>
+          </px-page>
+          <px-page id="Page3" title="Page 3">
+            <px-navbar pages-container="appPages"></px-navbar>
+            <section>
+              <h2>page3</h2>
+            </section>
+          </px-page>
+
+        </px-pages>
+      </device-view>
+      <div class="flex u-pt++">
+        <button class="btn" type="button" onclick="document.getElementById('appPages').prev()">Prev</button>
+        <button class="btn" type="button" onclick="document.getElementById('appPages').next()">Next</button>
+      </div>
+    </div>
+    <script type="text/javascript">
+      var app = document.getElementById('app');
+      var pages = document.getElementById('appPages');
+      pages.addEventListener('px-page-change', function (e) {
+        console.log('Page Changed', e);
+      });
+      function createDemoList(count) {
+        var _out = [],
+          li;
+        for (var i = 0; i < count; i++) {
+          li = {
+            title: 'Item ' + i,
+            modifier: 'tappable nav-right'
+          };
+          _out.push(li);
+        }
+        return _out;
+      }
+      app.set('items', createDemoList(50));
+    </script>
+  </template>
+</template>
+    </demo-snippet>
+  </div>
+  </div>
+  <script src="/scripts/jquery.min.js"></script>
+  <script src="/scripts/tether.min.js"></script>
+  <script src="/scripts/bootstrap.min.js"></script>
+  <script src="/pouchdb/dist/pouchdb.min.js"></script>
+</body>
+
+</html>

@@ -13,15 +13,24 @@ module.exports = (function(userConfig) {
   var config = program.get('config');
 
   Server.setExpressLocals('program', program);
-  Server.setExpressLocals('config', program.get('config'));
+  Server.setExpressLocals('config', config);
   Server.setExpressLocals('db', program.get('db'));
   Server.setExpressMiddleware(program.config.get('middleware'));
 
   var app = Server.getExpressApp();
-  app.use(express.static('public'));
+
   app.set('x-powered-by', false);
   app.set('views', path.resolve(__dirname, '../public/views'));
   app.set('view engine', 'pug');
+
+
+  var dirs = config.get('publicDir');
+  if (dirs && dirs.length) {
+    dirs.forEach((dir) => {
+      app.use(express.static(dir));
+    });
+  }
+
 
   function indexRoute(req, res) {
     let data = {
@@ -131,6 +140,7 @@ module.exports = (function(userConfig) {
         */
   });
 
+  // TODO: Extract
   var browseRouter = new require('express').Router();
 
   browseRouter.route('/_browse/:id?')
@@ -175,21 +185,13 @@ module.exports = (function(userConfig) {
 
   app.get('/_logs', function(req, res) {
     var logs = [];
-
-    program.get('db').allDocs({
+    program.get('db').find({
       docType: 'log'
     }).then((resp) => {
-      var doc;
-      for (var i = 0; i < resp.rows.length; i++) {
-        doc = resp.rows[i].doc;
-        if (doc.docType === 'log') {
-          logs.push(doc);
-        }
-      }
-      log.info('Got logs', logs);
+      log.info('Got logs', resp);
       res.render('logs', {
         title: config.name,
-        logs: logs
+        logs: resp
       });
     }).catch((err) => {
       console.log('err', err);
@@ -201,7 +203,7 @@ module.exports = (function(userConfig) {
     unknownMethod();
   });
 
-
+  require('express-routemap')(app);
 
   Server.getExpressApp().listen(PORT, (err) => {
     console.log('Listening on', PORT);

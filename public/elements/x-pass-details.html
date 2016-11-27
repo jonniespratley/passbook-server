@@ -1,0 +1,219 @@
+<link rel="import" href="/polymer/polymer.html" >
+<link rel="import" href="/google-map/google-map.html">
+<link rel="import" href="/app-route/app-location.html">
+<link rel="import" href="/app-route/app-route.html">
+<link rel="import" href="/iron-ajax/iron-ajax.html">
+<link rel="import" href="/iron-form/iron-form.html">
+<link rel="import" href="/iron-input/iron-input.html">
+<link rel="import" href="/iron-pages/iron-pages.html">
+<link rel="import" href="/px-table-view/px-table-view.html">
+<link rel="import" href="x-pass-fields.html">
+<dom-module id="x-pass-details">
+  <style include="px-layout-css">
+    :host {
+      @apply(--x-pass-details);
+    }
+    :host legend{
+      font-size: 1.2rem;
+    }
+
+    :host {
+      --px-table-row-label:{
+        min-width: 145px;
+      }
+    }
+    google-map {
+   height: 300px;
+ }
+  </style>
+  <template>
+    <form is="iron-form" id="passForm"
+      content-type="application/json"
+      action="/_admin/db/{{selectedItem._id}}?rev={{selectedItem._rev}}" method="PUT">
+
+      <div class="">
+        <h2>{{selectedItem.description}}</h2>
+
+        <px-table-view modifier="tiny">
+          <px-table-row label2="Organization">
+            <input is="iron-input" type="text" class="text-input" name="organizationName" bind-value="{{selectedItem.organizationName}}">
+          </px-table-row>
+          <px-table-row label2="Logo Text">
+            <input is="iron-input" type="text" class="text-input" bind-value="{{selectedItem.logoText}}">
+          </px-table-row>
+          <px-table-row label2="Description">
+            <input is="iron-input" type="text" class="text-input" bind-value="{{selectedItem.description}}">
+          </px-table-row>
+        </px-table-view>
+
+        <legend>Header Fields</legend>
+        <p>
+          Fields to be displayed in the header on the front of the pass.
+        </p>
+        <x-pass-fields field-name="headerFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
+
+        <legend>Primary Fields</legend>
+        <p>
+          Fields to be displayed prominently on the front of the pass.
+        </p>
+        <x-pass-fields field-name="primaryFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
+        <legend>Secondary Fields</legend>
+        <p>
+          Fields to be displayed on the front of the pass.
+        </p>
+        <x-pass-fields field-name="secondaryFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
+        <legend>Auxiliary Fields</legend>
+        <p>
+          Additional fields to be displayed on the front of the pass.
+        </p>
+        <x-pass-fields field-name="auxiliaryFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
+        <legend>Back Fields</legend>
+        <p>
+          Fields to be displayed on the back of the pass.
+        </p>
+        <x-pass-fields field-name="backFields" selected-item="{{selectedItem}}"></x-pass-fields>
+
+        <legend>Beacons</legend>
+        <p>
+          Information about beacons.
+        </p>
+
+        <legend>Locations</legend>
+        <p>
+          Information about locations.
+        </p>
+
+      <div class="u-p">
+        <template is="dom-repeat" items="{{selectedItem.locations}}" as="location">
+          <google-map latitude="{{location.latitude}}" longitude="{{location.longitude}}" fit-to-markers api-key="AIzaSyDzMUiUFvCGieEjUmOgjV0htNqkUYi526w">
+            <google-map-marker
+              latitude="{{location.latitude}}" longitude="{{location.longitude}}"
+              draggable="true"
+              title="{{location.relevantText}}"></google-map-marker>
+          </google-map>
+        </template>
+      </div>
+
+        <legend>Barcodes</legend>
+        <p>
+          Information about a barcodes.
+        </p>
+        <div class="">
+          <px-table-view modifier="tiny">
+            <px-table-row label2="Text">
+              <input is="iron-input"
+                type="text"
+                class="text-input"
+                name="barcode.altText"
+                bind-value="{{selectedItem.barcode.altText}}">
+            </px-table-row>
+            <px-table-row label2="Message">
+              <input is="iron-input"
+                type="text"
+                class="text-input"
+                name="barcode.message"
+                bind-value="{{selectedItem.barcode.message}}">
+            </px-table-row>
+
+          </px-table-view>
+        </div>
+
+
+
+        <legend>Styles</legend>
+        <p>
+          Visual style and appearance of the pass.
+        </p>
+        <px-table-view modifier="tiny">
+          <px-table-row label2="labelColor">
+            <input is="iron-input" type="color" class="text-input"
+              bind-value="{{selectedItem.labelColor}}">
+          </px-table-row>
+          <px-table-row label2="foregroundColor">
+            <input is="iron-input" type="color" class="text-input"
+              bind-value="{{selectedItem.foregroundColor}}">
+          </px-table-row>
+          <px-table-row label2="backgroundColor">
+            <input is="iron-input" type="color" class="text-input"
+              bind-value="{{selectedItem.backgroundColor}}">
+          </px-table-row>
+        </px-table-view>
+        <legend>Images</legend>
+        <p>
+          Assets that make up your passes appearance.
+        </p>
+
+        <legend>Identity</legend>
+        <p>
+          Information used to update passes using the web service.
+        </p>
+
+        <px-table-view modifier="tiny">
+          <px-table-row label2="Serial Number">
+            <input is="iron-input" type="text" class="text-input"
+              bind-value="{{selectedItem.serialNumber}}">
+          </px-table-row>
+          <px-table-row label2="webServiceURL">
+            <input is="iron-input" type="text" class="text-input"
+              bind-value="{{selectedItem.webServiceURL}}">
+          </px-table-row>
+          <px-table-row label2="teamIdentifier">
+            <input is="iron-input" type="text" class="text-input"
+              bind-value="{{selectedItem.teamIdentifier}}">
+          </px-table-row>
+          <px-table-row label2="passTypeIdentifier">
+            <input is="iron-input" type="text" class="text-input"
+              bind-value="{{selectedItem.passTypeIdentifier}}">
+          </px-table-row>
+        </px-table-view>
+      </div>
+
+      <div class="flex u-mt u-mb u-p-">
+        <button type="reset" class="btn btn--full">Reset</button>
+        <button type="submit" class="btn btn--primary btn--full">Update</button>
+      </div>
+    </form>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-pass-details',
+      properties: {
+        selectedItem: {
+          type: Object,
+          value: function(){
+            return {};
+          }
+        }
+      },
+      listeners:{
+        'passForm.iron-form-presubmit': '_handlePreSubmit',
+        'passForm.iron-form-response': '_handleResponse'
+      },
+      _getFields: function(p, name){
+        if(p && p.type){
+          console.log('get fields', p.type, name);
+          return p[p.type][name];
+        }
+      },
+      _handlePreSubmit: function(e){
+        if(this.selectedItem && this.selectedItem._rev){
+          e.target.request.url = '/_admin/db/'+this.selectedItem._id+'?rev='+this.selectedItem._rev;
+          e.target.request.method = 'PUT';
+        } else {
+          e.target.request.url = '/_admin/db';
+          e.target.request.method = 'POST';
+        }
+        e.target.request.body = this.selectedItem;
+        console.log('_handlePreSubmit', e);
+      },
+      _handleResponse: function(e){
+        console.log('handleResponse', e);
+        this.set('selectedItem._rev', e.detail.response.rev);
+      }
+    });
+  </script>
+</dom-module>

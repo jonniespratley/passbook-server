@@ -1,0 +1,181 @@
+<link rel="import" href="/polymer/polymer.html" >
+<link rel="import" href="/app-route/app-location.html">
+<link rel="import" href="/app-route/app-route.html">
+<link rel="import" href="/iron-ajax/iron-ajax.html">
+<link rel="import" href="/iron-form/iron-form.html">
+<link rel="import" href="/iron-pages/iron-pages.html">
+<link rel="import" href="/paper-toast/paper-toast.html">
+<link rel="import" href="/px-layout/px-layout.html">
+<link rel="import" href="/px-table-view/px-table-view.html">
+<link rel="import" href="x-pass-details.html">
+<link rel="import" href="pb-pass.html">
+<link rel="import" href="/px-partials/px-partials.html">
+
+<!--
+<script src="/jquery.qrcode/dist/jquery-qrcode.min.js"></script>
+
+-->
+<dom-module id="x-app">
+  <style include="px-layout-css">
+     :host {
+      display: block;
+    }
+    :host .has-navbar{
+
+    }
+  </style>
+  <template>
+    <app-location id="location" use-hash-as-path route="{{route}}"></app-location>
+    <app-route id="router"
+        route="{{route}}"
+        pattern="/:page/:id"
+        data="{{routeData}}"
+        tail="{{tail}}">
+    </app-route>
+
+
+
+    <iron-ajax id="ajaxPasses" url="/_admin/db?docType=pass" last-response="{{passes}}" auto></iron-ajax>
+    <paper-toast id="toast" text="Hello world!"></paper-toast>
+    <px-drawer-layout id="layout" force-narrow>
+   	  <px-drawer id="drawer" fixed>
+         <div>
+   				<div class="brand u-p flex flex--middle flex--center">Passbook Server</div>
+          <nav>
+   				<px-table-view row-modifier="tappable" modifier="tiny" selected="{{routeData.page}}" attr-for-selected="data-route">
+   					<px-table-row title="Passes" data-route="passes"></px-table-row>
+   					<px-table-row title="Admin" data-route="admin"></px-table-row>
+   					</px-table-view>
+   				</nav>
+         </div>
+       </px-drawer>
+
+
+       <iron-pages id="pages" selected="{{routeData.page}}" attr-for-selected="data-route" fallback-selection="browse">
+         <div id="browse" data-route="browse">
+<!--
+           <px-navbar >
+             <button class="navbar__button" drawer-toggle left>
+               <i class="fa fa-lg fa-bars"></i>
+             </button>
+           </px-navbar>
+         -->
+           <array-selector id="passSelector" items="{{passes}}" selected="{{selectedItem}}"></array-selector>
+           <div class="flex">
+             <div class="flex__item u-p"  hidden$="{{selectedItem}}">
+             <px-table-view id="passesTable" modifier="tiny">
+                  <template id="passesRepeater" is="dom-repeat" items="{{passes}}" as="pass">
+                    <px-table-row title="[[pass.organizationName]]"
+                                  on-tap="selectItem"
+                                  body="[[pass.description]]"
+                                  modifier="tappable"
+                                  image="/images/[[_getPassType(pass)]].png"
+                                  label1="[[pass.lastUpdated]]"></px-table-row>
+                  </template>
+                </px-table-view>
+              </div>
+           </div>
+        </div>
+        <div data-route="details">
+          <px-navbar
+            title="{{selectedItem._id}}"
+            subtitle="{{selectedItem._rev}}"
+            >
+            <div left>
+              <button type="button" on-tap="back" class="navbar__button">Back</button>
+            </div>
+            <div right class="flex">
+              <a class="navbar__button" href$="/download/{{selectedItem._id}}" target="_blank">
+              <px-icon icon="fa:fa-download"></px-icon></a>
+
+            </div>
+          </px-navbar>
+          <br>
+          <div class="flex__item u-p" hidden$="{{!selectedItem}}">
+            
+            <x-pass-details selected-item="{{selectedItem}}"></x-pass-details>
+          </div>
+        </div>
+        <div data-route="admin">
+
+        </div>
+       </iron-pages>
+  </px-drawer-layout>
+  </template>
+  <script>
+    Polymer({
+      is: 'x-app',
+      properties: {
+        passes: {
+          type: Array,
+          value: function(){
+            return [];
+          }
+        },
+        selectedItem: {
+          type:Object,
+          notify:true,
+          observer:'_updateItem'
+        },
+        route: {
+          type: Object
+        },
+        selectedPass: {
+          type: Object
+        },
+        routeData: {
+          notify: true,
+          type: Object,
+          value: function(){
+            return {};
+          }
+        }
+      },
+      observers: [
+        '_handleRouteChange(route.*)'
+      ],
+
+      ready: function(){
+        if(!this.route.path){
+          this.set('route.path', '/browse');
+        }
+      },
+      _handleRouteChange: function(route){
+
+      },
+      back: function(e){
+        this.set('selectedItem', null);
+        this.set('routeData.page', 'browse');
+      },
+      _updateItem: function(i) {
+        console.log(this.tagName, '_updateItem', i);
+      },
+      selectItem: function(e){
+        console.log(e);
+        var item = this.$.passesRepeater.itemForElement(e.target);
+        this.$.passSelector.select(item);
+        this.set('routeData.page', 'details');
+        this.set('routeData.id', item._id);
+      },
+
+      _getPassType: function(pass){
+        var type = 'generic';
+        switch(pass){
+          case pass.generic:
+            type = 'generic';
+          break;
+          case pass.eventTicket:
+            type = 'eventTicket';
+          break;
+          case pass.boardingPass:
+            type = 'boardingPass';
+          break;
+          case pass.coupon:
+            type = 'coupon';
+          break;
+        }
+        return pass.type || type;
+      }
+    });
+  </script>
+</dom-module>

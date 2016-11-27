@@ -1,0 +1,227 @@
+<link rel="import" href="../polymer/polymer.html">
+<dom-module id="pb-pass">
+  <style>
+     :host {
+      display: block;
+    }
+
+    .pass {
+      margin: 0 auto;
+      max-width: 316px;
+      max-height: 400px;
+      border-radius: 10px;
+      padding: .5rem;
+      color: white;
+      background-image: -webkit-linear-gradient(#999, gray);
+      background-image: linear-gradient(#999, gray);
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+
+    .pass__header {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .pass__header .pass__brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .pass__header .pass__logo {
+      margin-right: .5rem;
+    }
+
+    .pass__header .pass__logo img {
+      width: 29px;
+      height: 29px;
+    }
+
+    .pass__fields {
+      font-size: .9rem;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      font-size: .9rem;
+      white-space: nowrap;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .pass__body {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      font-size: .9rem;
+      -webkit-align-content: bottom;
+      -ms-flex-line-pack: bottom;
+      align-content: bottom;
+      -webkit-box-pack: justify;
+      -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+      -webkit-box-align: end;
+      -webkit-align-items: flex-end;
+      -ms-flex-align: end;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+    }
+
+    .pass__img {
+      padding: .3rem;
+      background: #fff;
+    }
+
+    .pass__img>img {
+      height: 80px;
+      width: 80px;
+    }
+
+    .pass__field {
+      margin: 0;
+      padding: 0;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+    }
+
+    .pass__field .label {
+      font-weight: bold;
+    }
+
+    .pass .qrcode {
+      padding: .7rem;
+      background: #fff;
+      border-radius: 5px;
+    }
+
+    .pass .qrcode-label {
+      font-size: .8rem;
+      color: #000;
+      text-align: center;
+    }
+
+    .pass--back .pass__fields {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      list-style-type: none;
+      background: #fff;
+      margin: 0;
+      padding: .5rem;
+    }
+
+    .pass--back .pass__field {
+      margin-left: 1rem;
+      border-bottom: 1px solid #ccc;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      color: #666;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      -ms-flex: 1;
+      flex: 1;
+      margin-bottom: .5rem;
+    }
+
+    .pass--back .pass__field .label {
+      font-weight: bold;
+      margin-bottom: .5rem;
+    }
+  </style>
+  <template>
+
+  <div class="flex u-m">
+    <!--font of pass-->
+    <div class="pass pass--front pass--generic flex flex--col">
+      <!--header-->
+      <div class="pass__header">
+        <div class="pass__logo u-mr-"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/49212/logo@2x.png"/></div>
+        <div class="pass__brand">Github</div>
+      </div>
+      <!--body-->
+      <div class="pass__body">
+        <div class="pass__title delta">Jonnie Spratley</div>
+        <div class="pass__img"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/49212/avatar.png"/></div>
+      </div>
+      <!--fields-->
+      <ul class="pass__fields">
+        <li class="pass__field">
+          <div class="label">Member Since</div>
+          <div class="value">2013</div>
+        </li>
+        <li class="pass__field">
+          <div class="label">Level</div>
+          <div class="value">Senior Software Engineer		</div>
+        </li>
+      </ul>
+      <!--footer-->
+      <div class="pass__footer flex flex--bottom flex--justify u-mt">
+        <div class="left"><i class="fa fa-upload"></i></div>
+        <div class="middle">
+          <div class="qrcode"><img src="//placehold.it/125"/>
+            <div class="qrcode-label">Staff ID 0000001</div>
+          </div>
+        </div>
+        <div class="right"><i class="fa fa-info-circle"></i></div>
+      </div>
+    </div>
+    <!--back of pass-->
+    <div class="pass pass--back">
+      <ul class="pass__fields">
+        <li class="pass__field">
+          <div class="label">Phone #</div>
+          <div class="value">555-555-5555</div>
+        </li>
+        <li class="pass__field">
+          <div class="label">Email</div>
+          <div class="value">jonnie.spratley@email.com</div>
+        </li>
+        <li class="pass__field">
+          <div class="label">Team</div>
+          <div class="value">Calvus</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  </template>
+  <script type="text/javascript">
+    Polymer({
+      is: "pb-pass",
+      created: function() {
+        console.log(this.tagName, 'created', this);
+      }
+    });
+  </script>
+</dom-module>

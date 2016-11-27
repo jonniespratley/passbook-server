@@ -19,19 +19,20 @@ module.exports = function(app) {
   });
 
   adminRouter.get('/', adminController.index);
+  adminRouter.post('/passes', bodyParser.json(), adminController.postPass);
   adminRouter.route('/db/:id?')
     .get(adminController.get)
     .put(bodyParser.json(), adminController.put)
     .post(bodyParser.json(), adminController.post)
     .delete(adminController.del);
 
-    adminRouter.get('/sync?', function(req, res) {
-      program.sync(req.query).then((resp) =>{
-        res.status(200).send(resp);
-      }, (err)=>{
-        res.status(400).send(err);
-      });
+  adminRouter.get('/sync?', function(req, res) {
+    program.sync(req.query).then((resp) => {
+      res.status(200).send(resp);
+    }, (err) => {
+      res.status(400).send(err);
     });
+  });
 
 
   expressListRoutes({

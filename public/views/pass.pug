@@ -15,7 +15,12 @@ mixin passFields(passType, fieldType, pass)
 
 
 
+
 block content
+  -
+    //pass = {}
+    list = ["Uno", "Dos", "Tres",
+            "Cuatro", "Cinco", "Seis"]
   .row
     .col-sm-12
       ol.breadcrumb
@@ -35,11 +40,32 @@ block content
 
     .col-sm-4
       dl
-        dt Pass Type
-        dd=pass.type
+
         dt Pass Type ID
         dd=pass.passTypeIdentifier
         dt Team Identifier
         dd=pass.teamIdentifier
+        dt Serial Number
+        dd=pass.serialNumber
+        dt Pass Type
+        dd=pass.type
+        dt Last Updated
+        dd=pass.lastUpdated
       a(href='/download/'+pass._id, target='_blank', title='Add to Apple Wallet')
         img(src='/images/Add_to_Apple_Wallet.svg', title='Add to Apple Wallet')
+
+
+  template#app(is='dom-bind')
+    pb-pass
+
+
+
+block scripts
+  script.
+    document.addEventListener('WebComponentsReady', function(){
+      var app = document.querySelector('#app');
+      app.pass = {
+        title: 'Test Pass'
+      };
+      console.log('WebComponentsReady');
+    });

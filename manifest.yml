@@ -2,7 +2,7 @@
 applications:
   - name: passbook-server
     buildpack: https://github.com/cloudfoundry/heroku-buildpack-nodejs.git
-    memory: 1GB
+    memory: 256GB
     stack: cflinuxfs2
     path: .
     command: npm start

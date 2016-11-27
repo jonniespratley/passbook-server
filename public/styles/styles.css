@@ -4,3 +4,7 @@
 .capitalize{
   text-transform: capitalize;
 }
+html, body{
+  padding: 0;
+  margin: 0;
+}
