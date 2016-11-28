@@ -28,7 +28,7 @@ block content
           a(href="/_browse") Browse
         li.breadcrumb-item.active=pass.logoText
   .row
-    .col-sm-8
+    .col-sm-7
       h2=pass.logoText
       p=pass.description
       dl
@@ -38,9 +38,8 @@ block content
         +passFields(pass.type, 'secondaryFields', pass)
         +passFields(pass.type, 'backFields', pass)
 
-    .col-sm-4
+    .col-sm-5
       dl
-
         dt Pass Type ID
         dd=pass.passTypeIdentifier
         dt Team Identifier

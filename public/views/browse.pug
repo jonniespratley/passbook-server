@@ -4,8 +4,8 @@ mixin card(pass)
 	.col-md-4.col-sm-6
 		.card
 			.card-block
-				img(src='/images/' + pass.type + '.png')
-				h6.card-title=pass.organizationName
+				img(src='/images/' + pass.type + '.png').mr-2.float-sm-left
+				h4.card-title=pass.organizationName
 				p.card-text=pass.description
 				a(href='/_browse/'+pass._id) View
 

@@ -1,4 +1,6 @@
 extends ./includes/layout.pug
 block content
+  script(src='/webcomponentsjs/webcomponents-lite.min.js')
+  link(rel='import', href='/elements/elements.html')
   div
     x-app#app

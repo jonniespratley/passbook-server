@@ -3,16 +3,15 @@ doctype html
 html
   head
     title passbook-server | browse
-    //-link(rel='stylesheet', href='/styles/bootstrap.min.css')
+    link(rel='stylesheet', href='/styles/bootstrap.min.css')
 
     link(rel='stylesheet', href='/styles/styles.css')
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
 
-    script(src='/webcomponentsjs/webcomponents-lite.min.js')
-    link(rel='import', href='/elements/elements.html')
   body(unresolved)
-    block content
-      div
+    .container-fluid
+      block content
+
     script(src='/scripts/jquery.min.js')
     script(src='/scripts/tether.min.js')
     script(src='/scripts/bootstrap.min.js')
