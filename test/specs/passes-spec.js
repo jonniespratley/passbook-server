@@ -103,9 +103,9 @@ describe('Passes', function () {
     });
 
     it('get(id) - should resolve pass by id', function (done) {
-      Passes.get('pass-io-passbookmanager-test-mock-coupon').then(function (resp) {
+      Passes.get(p._id).then(function (resp) {
         assert(resp);
-        assert(resp._id === 'pass-io-passbookmanager-test-mock-coupon');
+
         done();
       }, function (err) {
         assert.fail(err);
