@@ -11,6 +11,13 @@ const config = {
 };
 
 
+gulp.task('clean-bower', function () {
+    return gulp.src([
+      './bower_components'
+    ], {read: false})
+        .pipe(clean());
+});
+
 gulp.task('clean', function () {
     return gulp.src([
       './temp',

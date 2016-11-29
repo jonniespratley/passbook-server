@@ -7,15 +7,22 @@ html
 
     link(rel='stylesheet', href='/styles/styles.css')
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
-
+    block styles
+      //-styles
   body(unresolved)
+
+    //- Navbar
+    nav.navbar.navbar-dark.navbar-full.bg-inverse.mb-1
+      a.navbar-brand(href='/_browse') passbook-server
+
+    //- Content
     .container-fluid
       block content
 
     script(src='/scripts/jquery.min.js')
     script(src='/scripts/tether.min.js')
     script(src='/scripts/bootstrap.min.js')
-    script(src='/pouchdb/dist/pouchdb.min.js')
+    script(src='/scripts/pouchdb.min.js')
 
     block scripts
       //-scrit

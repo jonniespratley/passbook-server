@@ -203,10 +203,11 @@ module.exports = (function(userConfig) {
     unknownMethod();
   });
 
-  require('express-routemap')(app);
+
 
   Server.getExpressApp().listen(PORT, (err) => {
     console.log('Listening on', PORT);
+    require('express-routemap')(app);
   });
   //  program.set('server', Server);
   return program;
