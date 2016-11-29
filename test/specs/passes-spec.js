@@ -1,16 +1,21 @@
-var path = require('path');
-var assert = require('assert');
-var p;
+'use strict';
+const path = require('path');
+const assert = require('assert');
+const Chance = require('chance');
 
-var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
+const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 const program = mocks.program();
 const config = mocks.config;
+
 var Passes = program.require('routes/passes/passes')(program);
-var Pass = program.require('routes/passes/pass');
-var instance;
-var mocks = require('../helpers/mocks');
-const Chance = require('chance');
+const Pass = program.require('routes/passes/pass');
+
+
+
 var chance = new Chance();
+var p;
+var instance;
+
 describe('Passes', function () {
   var mockPassRev = null;
   var mockPassId = null;
@@ -18,12 +23,16 @@ describe('Passes', function () {
     type: 'generic'
   });
 
+  var p = new Pass({
+    type: 'generic',
+    _id: 'test-pass-' + Date.now()
+  });
+
   var mockPasses = [
     new Pass({
       description: 'Example Generic',
       type: 'generic'
     }),
-
     new Pass({
       description: 'Example Boarding Pass',
       type: 'boardingPass'
@@ -31,17 +40,16 @@ describe('Passes', function () {
   ];
 
   before(function (done) {
-
     Passes.bulk(mockPasses).then(function (resp) {
       done();
     }).catch((err) => {
       console.log(err);
       done();
     });
-
   });
 
   it('should be defined', function (done) {
+    Passes = program.require('routes/passes/passes')(program);
     assert(Passes);
     done();
   });
@@ -59,14 +67,12 @@ describe('Passes', function () {
   it('create() - should create pass', function (done) {
     Passes.create(mockPass).then(function (resp) {
       mockPassRev = resp.rev;
-      console.log(resp);
       assert(resp.rev, 'returns rev');
       assert(resp.id, 'returns id');
       mockPass._id = resp.id;
       mockPass._rev = resp.rev;
       done();
     }, function (err) {
-      console.log(err);
       assert.fail(err);
       done();
     });
@@ -77,24 +83,16 @@ describe('Passes', function () {
       assert(resp);
       done();
     }, function (err) {
-      console.log(err);
       assert.fail(err);
       done();
     });
   });
 
-  var p = new Pass({
-    type: 'generic',
-    _id: 'test-pass-' + Date.now()
-  });
   describe('Finding', function () {
     it('findById() - should pass by id', function (done) {
-
       Passes.create(p).then(function (resp) {
-        console.log('created', resp);
         Passes.findById(resp.id).then(function (resp) {
           p = resp;
-
           assert(resp);
           done();
         }, function (err) {
@@ -102,7 +100,17 @@ describe('Passes', function () {
           done();
         });
       });
+    });
 
+    it('get(id) - should resolve pass by id', function (done) {
+      Passes.get(p._id).then(function (resp) {
+        assert(resp);
+
+        done();
+      }, function (err) {
+        assert.fail(err);
+        done();
+      });
     });
 
     it('findOne(params) - should resolve pass that meets params', function (done) {
@@ -110,10 +118,7 @@ describe('Passes', function () {
         //_id: 'mock-generic'
         serialNumber: mockPass.serialNumber
       }).then(function (resp) {
-        console.log(resp);
         assert(resp);
-
-
         done();
       }, function (err) {
         assert.fail(err);
@@ -134,7 +139,7 @@ describe('Passes', function () {
       });
     });
 
-    it('findBySerial(num) - should return pass by serial number', function (done) {
+    it('findPassBySerial(num) - should return pass by serial number', function (done) {
       this.slow(5000);
       Passes.findPassBySerial(p.serialNumber).then(function (resp) {
         assert(resp);

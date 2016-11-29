@@ -9,6 +9,7 @@ var bin;
 
 /*global before, describe, it*/
 describe('passbook-server bin', function() {
+  this.timeout(15000);
   function getCmd(cmd) {
     var out = `node ${bin} ${cmd}`;
     //console.log('$', out);
