@@ -30,21 +30,25 @@ var instance = null;
 class Program {
 	constructor(config) {
 		log.heading = pkg.name;
+   // logger('constructor', config);
 
 		if (config instanceof Configuration) {
 			this.config = config;
 		} else {
 			this.config = new Configuration(config);
 		}
-		log.info('Program.constructor');
-		log.info('config', this.config);
-		var dbPath = path.resolve(this.config.get('database.path'), this.config.get('database.name'));
+
+
+
+		var dbPath = this.config.get('database.dataPath');
+    console.log('database path', this.config.get('database.dataPath'));
 		try {
 			fs.ensureDirSync(dbPath);
 		} catch (e) {
-			log.error(e);
-			log.error('Trying to create another directory');
+
+      logger('Trying to create another directory');
 			dbPath = path.resolve(__dirname, '../db/', this.config.get('database.name'));
+
 			fs.ensureDirSync(dbPath);
 		} finally {
 			db = config.adapter || new PouchDbAdapter(dbPath);
@@ -67,12 +71,11 @@ class Program {
 		this.set('Device', Device);
 		this.set('Pass', Pass);
 		this.set('Passes', Passes);
-		this.set('passes', Passes(this));
+		//this.set('passes', Passes(this));
 
 		this.log = log;
 		this.server = null;
 
-		instance = this;
 	}
 
 	sync(params) {
@@ -83,20 +86,20 @@ class Program {
 			}, params);
 			var localUrl = params.to;
 			var remoteUrl = params.from;
-			log.info('sync', params);
+    logger('sync', params);
 
 
 			var sync = PouchDB.sync(localUrl, remoteUrl, {})
 				.on('change', function(info) {
-					log.info('change', info.direction, info.change);
+          logger('change', info.direction, info.change);
 				}).on('complete', function(info) {
 					//log.info('complete', info);
 					resolve(info);
 				}).on('uptodate', function(info) {
-					log.info('uptodate', info);
+          logger('uptodate', info);
 					resolve(info);
 				}).on('error', function(err) {
-					log.error('error', err);
+          logger('error', err);
 					reject(err);
 				});
 		});
@@ -123,17 +126,18 @@ class Program {
 
 	static getInstance(c) {
 		if (instance) {
-			log.info('getInstance', 'returning existing instance');
+      logger('getInstance', 'returning existing instance');
 			return instance;
 		} else {
-			log.info('getInstance', 'creating new instance');
-			return new Program(c);
+      logger('getInstance', 'creating new instance', c);
+      instance = new Program(c);
+      return instance;
 		}
 	}
 
 }
 
-
+exports.Program = Program;
 module.exports = function(c) {
 	return Program.getInstance(c);
 };
