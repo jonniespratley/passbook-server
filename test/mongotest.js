@@ -24,8 +24,17 @@ class MongoDbAdapter{
   constructor(name, config){
     this.name = name;
     this.config = config;
-    this.db = mongojs(config.url);
+    var db = mongojs(config.url);
+    this.db = db;
     this.collection = this.db.collection(name);
+    db.on('error', function (err) {
+      console.log('database error', err)
+    })
+
+    db.on('connect', function () {
+      console.log('database connected')
+    })
+
   }
 
   allDocs(params){
@@ -42,6 +51,7 @@ class MongoDbAdapter{
       });
     });
   }
+
   get(params){
     return new Promise((resolve, reject) =>{
       this.collection.findOne(params, (err, docs)=>{
@@ -85,8 +95,8 @@ class MongoDbAdapter{
 
 
 var db = new MongoDbAdapter('passes', {url: endpoint});
-
 var doc;
+
 glob(__dirname + '/temp/file-db/*.json', (err, files)=>{
   console.log('Glob', err, files);
   files.forEach((file) =>{
@@ -97,5 +107,4 @@ glob(__dirname + '/temp/file-db/*.json', (err, files)=>{
       });
     }
   });
-
 });

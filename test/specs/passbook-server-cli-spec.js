@@ -35,7 +35,7 @@ describe('passbook-server bin', function() {
     });
   });
 
-  xit('should reject on exit', function(done) {
+  it('should reject on exit', function(done) {
 
     // Using double quotes here is intentional. Windows shell supports double quotes only.
     pshell('node -e "process.exit(1)"').then(res => {

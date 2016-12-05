@@ -32,7 +32,7 @@ describe('Configuration', function(){
     done();
   });
 
-  xit('index(obj, is, value) - should set value on object by string', function(done){
+  it('index(obj, is, value) - should set value on object by string', function(done){
     assert(config.index(config.defaults, 'webServiceURL'));
     console.log(config.index(config.defaults, 'webServiceURL'));
     done();

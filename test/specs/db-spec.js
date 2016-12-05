@@ -85,7 +85,6 @@ describe('db adapters', function() {
         })
       ];
 
-
       db.bulkDocs(docs).then(function(resp) {
         var _done = _.after(resp.length, function() {
           testDoc = testDocs[0];
