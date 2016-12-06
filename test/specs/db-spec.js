@@ -98,6 +98,7 @@ describe('db adapters', function() {
       });
     });
 
+
     it('put(obj) - should create file with id', function(done) {
       db.put({
         _id: 'test-file',
