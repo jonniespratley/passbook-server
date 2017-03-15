@@ -19,7 +19,7 @@ const BASE_URL = 'https://passbook-server.run.aws-usw02-pr.ice.predix.io';
 const REMOTE_BASE_URL = 'https://passbook-server.run.aws-usw02-pr.ice.predix.io';
 
 const passbook = require('passbook-cli');
-const db = {
+var dbconfig = {
   name: 'passbook-server',
   username: process.env.PASSBOOK_SERVER_DB_USERNAME || 'admin',
   password: process.env.PASSBOOK_SERVER_DB_PASSWORD || 'fred'
@@ -27,10 +27,10 @@ const db = {
 
 
 
-const localUrl = `http://${db.username}:${db.password}@localhost:4987/${db.name}`;
-const remoteUrl = `https://${db.username}:${db.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/${db.name}`;
+const localUrl = `http://${dbconfig.username}:${dbconfig.password}@localhost:4987/${dbconfig.name}`;
+const remoteUrl = `https://${dbconfig.username}:${dbconfig.password}@pouchdb.run.aws-usw02-pr.ice.predix.io/${dbconfig.name}`;
 const localDb = new PouchDB(localUrl);
-const remoteDb = new PouchDB(remoteUrl);
+const db = new PouchDB(remoteUrl);
 PouchDB.debug('');
 
 const baseRequest = request.defaults({
@@ -453,13 +453,6 @@ localDb.query({
 
 */
 
-
-
-
-
-
-
-
 // TODO: Create sample passes
 //
 function createSamplePasses(count){
@@ -471,9 +464,8 @@ function createSamplePasses(count){
     docs.length = count;
 
     var _done = _.after(docs.length , () =>{
-      localDb.bulkDocs(passes).then(resolve, reject);
+      db.bulkDocs(passes).then(resolve, reject);
     });
-
 
     _.forEach(docs, (doc) =>{
       i++;
@@ -481,7 +473,6 @@ function createSamplePasses(count){
         type: 'generic',
         description: 'Pass ' + i,
         serialNumber: '0000-0000-0000-' + i,
-
         "foregroundColor": "rgb(255, 255, 255)",
         "backgroundColor": "rgb(20, 89, 188)",
         "organizationName": "GE Digital",
@@ -542,7 +533,9 @@ function createSamplePasses(count){
       });
 
       passes.push(p);
+      console.log('\n=====================================================');
       console.log('Create doc', p);
+      console.log('=====================================================');
       _done();
 
     });
@@ -552,6 +545,8 @@ function createSamplePasses(count){
 
 createSamplePasses(10).then((res) =>{
   console.log('Created', res);
+}).catch(err => {
+  console.log('error', err);
 });
 
 
