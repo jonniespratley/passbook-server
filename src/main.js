@@ -5,6 +5,13 @@ const fs = require('fs-extra');
 const log = require('npmlog');
 
 
+/**
+ * @module src/main
+ * @description Main module bootstraps and starts the server.
+ *
+ * @param  {type} function(userConfig description
+ * @return {type}                     description
+ */
 module.exports = (function(userConfig) {
   const Server = require('./server');
   const PORT = process.env.PORT || 5353;

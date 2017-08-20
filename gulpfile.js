@@ -1,5 +1,6 @@
 'use strict';
-const gulp = require('gulp');
+////const gulp = require('gulp');
+var gulp = require('gulp-help')(require('gulp'));
 const gulpSequence = require('gulp-sequence');
 const clean = require('gulp-clean');
 

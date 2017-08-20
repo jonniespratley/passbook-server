@@ -24,7 +24,6 @@ class PouchDBAdapter {
     instance = this;
   }
 
-
   static getInstance(name, options) {
     if (instance) {
       return instance;
@@ -35,12 +34,12 @@ class PouchDBAdapter {
 
   getAdapter(name, options) {
     logger('getAdapter', name, options);
-      if (!db) {
-        db = new PouchDB(name, options);
-      }
-      return db;
+    if (!db) {
+      db = new PouchDB(name, options);
     }
-    /**
+    return db;
+  }
+  /**
      * Find first document in store.
      * @param {Object} params Parameters to query with
      * @returns {*}
@@ -51,154 +50,164 @@ class PouchDBAdapter {
       return _(resp).first();
     });
   }
-    /**
+  /**
      * Query documents in store.
      * @param {Object} params Parameters to query with
      * @returns {Promise}
      */
   find(params) {
-      let self = this;
-      logger('find', params);
-      return new Promise(function(resolve, reject) {
-        let _out, _docs = [];
+    let self = this;
+    logger('find', params);
+    return new Promise(function(resolve, reject) {
+      let _out,
+        _docs = [];
 
-        self.allDocs({include_docs: true}).then(function(resp) {
-          _docs = _.map(resp.rows, function(row) {
-            return row.doc;
-          });
-
-          if (params) {
-            _out = _.filter(_docs, params);
-          } else {
-            _out = _docs;
-          }
-
-          if (_out && _out.length > 0) {
-            logger('find.success', _out.length);
-            resolve(_out);
-          } else {
-            /*TODO - Never reject, just return empty */
-            reject({
-              error: 'No match found',
-              params: params
-            });
-          }
-
+      self.allDocs({include_docs: true}).then(function(resp) {
+        _docs = _.map(resp.rows, function(row) {
+          return row.doc;
         });
+
+        if (params) {
+          _out = _.filter(_docs, params);
+        } else {
+          _out = _docs;
+        }
+
+        if (_out && _out.length > 0) {
+          logger('find.success', _out.length);
+          resolve(_out);
+        } else {
+          /*TODO - Never reject, just return empty */
+          reject({error: 'No match found', params: params});
+        }
+
       });
-    }
-    /**
+    });
+  }
+  /**
      * Fetch all docs from store.
      * @param {Object} params Parameters to query with
      * @returns {Promise}
      */
   allDocs(params) {
-      return new Promise((resolve, reject) => {
-        let _docs = [],
-          _obj;
-        logger('allDocs', params);
-        db.allDocs(_.extend({include_docs: true}, params), (err, res) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(res);
-        });
+    return new Promise((resolve, reject) => {
+      let _docs = [],
+        _obj;
+      logger('allDocs', params);
+      db.allDocs(_.extend({
+        include_docs: true
+      }, params), (err, res) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(res);
       });
-    }
-    /**
+    });
+  }
+  /**
      * Update doc in store.
      * @param {Object} doc Document object to store
      * @param {String} id The id of the document
      * @returns {Promise}
      */
   put(doc) {
-      assert(doc._id, 'document must have _id');
-      //assert(doc._rev, 'document must have _rev');
-      return new Promise((resolve, reject) => {
-        logger('put', doc._id);
-        this.db.put(doc).then((res) => {
-          doc._id = doc.id;
-          doc._rev = doc.rev;
-          logger('put.success', res);
-          resolve(res);
-        }).catch(reject);
-      });
-    }
-    /**
+    assert(doc._id, 'document must have _id');
+    //assert(doc._rev, 'document must have _rev');
+    return new Promise((resolve, reject) => {
+      logger('put', doc._id);
+      this.db.put(doc).then((res) => {
+        doc._id = doc.id;
+        doc._rev = doc.rev;
+        logger('put.success', res);
+        resolve(res);
+      }).catch(reject);
+    });
+  }
+  /**
      * Create doc in store.
+     * @example
+     * pouchdb.post(tempDoc).then((resp) => {
+         assert(resp.ok, 'returns ok');
+         assert(resp.id, 'returns id');
+         assert(resp.rev, 'returns rev');
+         tempDoc._id = resp.id;
+         tempDoc._rev = resp.rev;
+         done();
+       }).catch(done);
+       
      * @param {Object} doc Document object to store
      * @param {String} prefix Prefix to prepend to generated id
      * @returns {Promise}
      */
   post(doc, prefix) {
-      doc._id = this.getUUID(prefix);
-      return new Promise((resolve, reject) => {
-          logger('post', doc);
-        this.db.post(doc).then((resp) => {
-          logger('post.success', resp);
-          doc._id = resp.id;
-          doc._rev = resp.rev;
-          resolve(resp);
-        }).catch((err) => {
-          logger('post.error', err);
-          reject(err);
-        })
+    doc._id = this.getUUID(prefix);
+    return new Promise((resolve, reject) => {
+      logger('post', doc);
+      this.db.post(doc).then((resp) => {
+        logger('post.success', resp);
+        doc._id = resp.id;
+        doc._rev = resp.rev;
+        resolve(resp);
+      }).catch((err) => {
+        logger('post.error', err);
+        reject(err);
+      })
 
-      });
-    }
-    /**
+    });
+  }
+  /**
      * Remove document from store by id
      * @param id
      * @returns {Promise}
      */
   remove(id, rev) {
-      logger('remove', id, rev);
-      return db.remove(id, rev);
-    }
-    /**
+    logger('remove', id, rev);
+    return db.remove(id, rev);
+  }
+  /**
      * Get document in store by id.
      * @param id
      * @returns {Promise}
      */
   get(id) {
-      return new Promise((resolve, reject) => {
-        logger('get', id);
-        this.db.get(id).then((res) => {
-          logger('get.success', res);
-          resolve(res);
-        }).catch((err) => {
-          logger('get.error', err);
-          reject(err);
-        });
+    return new Promise((resolve, reject) => {
+      logger('get', id);
+      this.db.get(id).then((res) => {
+        logger('get.success', res);
+        resolve(res);
+      }).catch((err) => {
+        logger('get.error', err);
+        reject(err);
       });
-    }
-    /**
+    });
+  }
+  /**
      * Save array of documents in store.
      * @param {Array} docs Array of documents
      * @returns {Promise}
      */
   saveAll(docs) {
-      let self = this;
-      return new Promise((resolve, reject) => {
-        logger('saveAll', docs.length);
-        let saves = [];
-        let _done = _.after(docs.length, () => {
-          logger('saveAll.success');
-          resolve(saves);
-        });
+    let self = this;
+    return new Promise((resolve, reject) => {
+      logger('saveAll', docs.length);
+      let saves = [];
+      let _done = _.after(docs.length, () => {
+        logger('saveAll.success');
+        resolve(saves);
+      });
 
-        _.forEach(docs, (doc) => {
-          doc._id = doc._id || self.getUUID();
-          self.put(doc).then((resp) => {
-            saves.push(resp);
-            _done();
-          }).catch((err) => {
-            _done(err);
-          });
+      _.forEach(docs, (doc) => {
+        doc._id = doc._id || self.getUUID();
+        self.put(doc).then((resp) => {
+          saves.push(resp);
+          _done();
+        }).catch((err) => {
+          _done(err);
         });
       });
-    }
-    /**
+    });
+  }
+  /**
      * Save array of documents in store.
      * @param {Array} docs Array of documents
      * @returns {Promise}
@@ -260,6 +269,5 @@ class PouchDBAdapter {
     return `${_prefix}-${uuid}`;
   }
 }
-
 
 module.exports = PouchDBAdapter;
