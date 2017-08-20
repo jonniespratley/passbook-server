@@ -14,9 +14,8 @@ require('autocmdr/lib/config')(program);
 
 const userHome = require('user-home');
 const config = program.config.get();
-config.dataPath = path.resolve(userHome, `./${pkg.name}/${config.dataPath}`);
 
-fs.ensureDirSync(config.dataPath);
+
 
 var app = require(path.resolve(__dirname, '../src/program'));
 

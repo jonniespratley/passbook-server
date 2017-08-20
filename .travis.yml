@@ -1,9 +1,19 @@
 language: node_js
 node_js:
-  - '6'
+- '6'
 services:
-  - couchdb
+- couchdb
 before_script:
-  - curl -X PUT localhost:5984/passbook-server
+- curl -X PUT localhost:5984/passbook-server
 env:
-  - PASSBOOK_SERVER_DATABASE_URL=http://localhost:5984/passbook-server
+- PASSBOOK_SERVER_DATABASE_URL=http://localhost:5984/passbook-server
+deploy:
+  provider: cloudfoundry
+  api: https://api.system.aws-usw02-pr.ice.predix.io
+  username: jonnie.spratley@ge.com
+  password:
+    secure: AKnrIRQTSZvEIcMda0S/Bef7Wn+89Setofs3qJ5Ec4djTJECU3nO+8mohWIkqEf6VBn5/P+asmaTqMsMkPDQ5X0u7nHGvCa+oZcLeFvuRZro7QMuDPq0bhuBA3+j3uxbpVp+dmZNmMagswsadp+r/pTP9E2KT5METx1VyQ4yApw=
+  organization: jonnie.spratley@ge.com
+  space: Development
+  on:
+    repo: jonniespratley/passbook-server

@@ -18,14 +18,14 @@ module.exports = function(program) {
       var params = args.params;
       program.log.info('Passes', params);
 
-      program.global.app().get('db').allDocs().then((resp) => {
+      program.global.app().get('db').allDocs(params).then((resp) => {
         docs = resp.rows.map((row) => {
           return row.doc;
         });
         ids = docs.map((doc) => {
           return doc._id;
         });
-        program.log.info('Passes');
+
 
         console.log(yaml.dump(ids));
       });
