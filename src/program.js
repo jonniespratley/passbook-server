@@ -24,7 +24,8 @@ var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));
 var Device = require(path.resolve(__dirname, 'routes/devices/device.js'));
 var db;
 /**
- * @class
+ * @class Program
+ * @description The main program that starts server.
  */
 var instance = null;
 class Program {

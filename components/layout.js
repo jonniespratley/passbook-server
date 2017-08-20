@@ -15,16 +15,16 @@ export default ({ children, title = 'This is the default title' }, nav = []) => 
         <ul className="navbar-nav">
           {
             ['About', 'Browse'].map((item) => {
-              <li className="nav-item"><Link href='/' className="nav-link"><a>{item}</a></Link></li>
+              <li className="nav-item"><Link href='/'><a>{item}</a></Link></li>
             })
           }
-          <li className="nav-item"><Link href='/about'><a className="nav-link">About</a></Link></li>
         </ul>
-
       </nav>
     </header>
 
-    { children }
+    <div className="container-fluid">
+      { children }
+    </div>
 
     <footer className="p-2">
       {'passbook-server v1.0.0'}

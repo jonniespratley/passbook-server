@@ -26,12 +26,19 @@ block content
       ol.breadcrumb
         li.breadcrumb-item
           a(href="/_browse") Browse
-        li.breadcrumb-item.active=pass.logoText
+        li.breadcrumb-item.active=pass._id
   .row
     .col-sm-7
       h2=pass.logoText
       p=pass.description
+      .p-3
+        a(href='/download/'+pass._id, target='_blank', title='Add to Apple Wallet')
+          img.img-responsive(src='/images/Add_to_Apple_Wallet.svg', title='Add to Apple Wallet')
       dl
+        dt _id
+        dd=pass._id
+        dt _rev
+        dd=pass._rev
         +passFields(pass.type, 'headerFields', pass)
         +passFields(pass.type, 'primaryFields', pass)
         +passFields(pass.type, 'auxiliaryFields', pass)
@@ -40,6 +47,7 @@ block content
 
     .col-sm-5
       dl
+        
         dt Pass Type ID
         dd=pass.passTypeIdentifier
         dt Team Identifier
@@ -50,8 +58,7 @@ block content
         dd=pass.type
         dt Last Updated
         dd=pass.lastUpdated
-      a(href='/download/'+pass._id, target='_blank', title='Add to Apple Wallet')
-        img(src='/images/Add_to_Apple_Wallet.svg', title='Add to Apple Wallet')
+      
 
 
   template#app(is='dom-bind')

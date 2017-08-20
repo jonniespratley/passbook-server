@@ -499,7 +499,7 @@ function createSamplePasses(count) {
 	});
 }
 
-createSamplePasses(1).then((res) => {
+createSamplePasses(10).then((res) => {
 	console.log('Created', res);
 }).catch(err => {
 	console.log('error', err);
