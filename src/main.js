@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs-extra');
 const log = require('npmlog');
 
-
 /**
  * @module src/main
  * @description Main module bootstraps and starts the server.
@@ -12,7 +11,7 @@ const log = require('npmlog');
  * @param  {type} function(userConfig description
  * @return {type}                     description
  */
-module.exports = (function(userConfig) {
+module.exports = (function(userConfig, autoStart) {
   const Server = require('./server');
   const PORT = process.env.PORT || 5353;
   const program = require('./program')(userConfig || require('../config'));
@@ -27,9 +26,9 @@ module.exports = (function(userConfig) {
   var app = Server.getExpressApp();
 
   app.set('x-powered-by', false);
-  app.set('views', path.resolve(__dirname, '../static/views'));
-  app.set('view engine', 'pug');
 
+  //app.set('views', path.resolve(__dirname, '../static/views'));
+  //app.set('view engine', 'pug');
 
   const dirs = config.get('publicDir');
   if (dirs && dirs.length) {
@@ -37,7 +36,6 @@ module.exports = (function(userConfig) {
       app.use(express.static(dir));
     });
   }
-
 
   function indexRoute(req, res) {
     let data = {
@@ -68,7 +66,6 @@ module.exports = (function(userConfig) {
   app.get('/', indexRoute);
   app.get('/api/v1', indexRoute);
 
-
   app.get('/404', function(req, res) {
     res.status(404).render('404', {
       title: '404',
@@ -85,17 +82,13 @@ module.exports = (function(userConfig) {
 
   //
 
-
-// TODO: Load middleware
+  // TODO: Load middleware
   app.locals.program = program;
   require('./routes/download')(app);
   require('./routes/browse')(app);
 
-
   app.get('/_logs', function(req, res) {
-    program.get('db').find({
-      docType: 'log'
-    }).then((resp) => {
+    program.get('db').find({docType: 'log'}).then((resp) => {
       log.info('Got logs', resp);
       res.render('logs', {
         title: config.name,
@@ -107,19 +100,23 @@ module.exports = (function(userConfig) {
     });
   });
 
+  if (autoStart) {
 
-
-
-  Server.getExpressApp().listen(PORT, (err) => {
-    if(err){
-      throw err;
-    }
-    console.log('Listening on', PORT);
-    require('express-routemap')(app);
-    require('express-list-routes')({
-      prefix: '/api/v1'
-    }, 'API:', app);
-  });
+    Server.getExpressApp().listen(PORT, (err) => {
+      if (err) {
+        throw err;
+      }
+      console.log('Listening on', PORT);
+      require('express-list-routes')({
+        prefix: '/api/v1'
+      }, 'API:', app);
+    });
+  }
   //  program.set('server', Server);
-  return program;
+  //  Server.getExpressApp()
+  return {
+    program: program,
+    Server: Server,
+    app: app
+  };
 })();
