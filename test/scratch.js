@@ -93,6 +93,7 @@ PassbookUtils.cleanDocs = (rows) => {
 }
 
 PassbookUtils.syncDbs = (url1, url2) => {
+	log.info('syncDbs', url1, url2);
 	var sync = PouchDB.sync(url1, url2, {live: true}).on('change', (info) => {
 		log.info('change', info);
 	}).on('complete', (info) => {
@@ -498,11 +499,13 @@ function createSamplePasses(count) {
 	});
 }
 
-createSamplePasses(500).then((res) => {
+createSamplePasses(1).then((res) => {
 	console.log('Created', res);
 }).catch(err => {
 	console.log('error', err);
 });
+
+PassbookUtils.syncDbs(LOCAL_DB_URL, REMOTE_DB_URL);
 
 var p = new Pass({serialNumber: '12345'});
 assert(p._id === 'pass-io-passbookmanager-test-12345', 'serial number matches')
