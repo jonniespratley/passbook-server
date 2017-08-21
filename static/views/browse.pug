@@ -1,6 +1,15 @@
 extends ./includes/layout.pug
 
 //- Mixins
+mixin listItem(pass)
+  a.list-group-item.list-group-item-action(href='/_browse/' + pass._id)
+    .flex-column.align-items-start 
+      .d-flex.w-100.justify-content-between
+        h5.mb-1=pass.organizationName
+        small=pass.lastUpdated
+      p.mb-1=pass.description
+      
+    
 mixin card(pass)
   .col-xl-3.col-lg-4.col-md-6.col-sm-6
     .card
@@ -8,6 +17,7 @@ mixin card(pass)
         img(src='/images/' + pass.type + '.png').mr-2.float-xs-left
         h4.card-title=pass.organizationName
         p.card-text=pass.description
+        p.card-date=pass.lastUpdated
         a(href='/_browse/'+pass._id) View
 
 block styles
@@ -19,10 +29,10 @@ block styles
 
 //- Content
 block content
-  .jumbotron.jumbotron-fluid
+  //-.jumbotron.jumbotron-fluid
     .container
       h1.display-3 Browse
       p.lead Here is all the available passes.
-  .row.passes
+  .list-group
     each pass in passes
-      +card(pass)
+      +listItem(pass)

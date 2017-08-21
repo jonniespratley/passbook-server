@@ -3,7 +3,7 @@ doctype html
 html
   head
     title passbook-server | browse
-    link(rel='stylesheet', href='/styles/bootstrap.min.css')
+    link(rel='stylesheet', href='/styles/bootstrap4.min.css')
 
     link(rel='stylesheet', href='/styles/styles.css')
     meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
@@ -12,14 +12,14 @@ html
   body(unresolved)
 
     //- Navbar
-    nav.navbar.navbar-dark.navbar-full.bg-inverse.mb-1
+    nav.navbar.navbar-light.bg-light.mb-2
       a.navbar-brand(href='/_browse') passbook-server
 
     //- Content
     .container-fluid
       block content
 
-    script(src='/scripts/jquery.min.js')
+    script(src='../../scripts/jquery.min.js')
     script(src='/scripts/tether.min.js')
     script(src='/scripts/bootstrap.min.js')
     script(src='/scripts/pouchdb.min.js')

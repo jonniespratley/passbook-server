@@ -1,10 +1,10 @@
 'use strict';
+/* global describe, before, it*/
 var assert = require('assert'),
   path = require('path'),
   fs = require('fs-extra'),
   request = require('supertest'),
-  express = require('express'),
-  os = require('os');
+  express = require('express');
 
 
 //Test vars
@@ -28,30 +28,61 @@ var mockIdentifer = mocks.mockIdentifer;
 var config = mocks.config;
 var Pass = mocks.Pass;
 var Device = mocks.Device;
+app = express();
 
+app.set('views', path.resolve(__dirname, '../../static/views'));
+app.set('view engine', 'pug');
 
 describe('passbook-server routes', function () {
+
   before(function (done) {
+
     program = mocks.program();
     db = program.get('db');
-    app = express();
+
     app.locals.program = program;
     app.locals.db = program.db;
 
     program.require('routes').Logs(app);
     program.require('routes').Passes(app);
     program.require('routes').Devices(app);
+    program.require('routes/download')(app);
+    program.require('routes/browse')(app);
+
+
 
     console.log('Inserting passes');
     //Fetch passes from database
     db.bulkDocs(mocks.mockPasses).then((resp) =>{
-      console.log('Inserted passes', resp);
+      //console.log('Inserted passes', resp);
       db.find({docType: 'pass'}).then((resp) =>{
-        console.log('Got passes', resp);
+      //  console.log('Got passes', resp);
         mockPass = resp[0];
         done();
       }).catch(done);
     }).catch(done);
+  });
+
+
+
+
+
+  describe('Public API', function(){
+    it('GET - 200 - /_browse', function (done) {
+      request(app)
+        .get('/_browse')
+        //.set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
+        //.expect('Content-Type', /json/)
+        .expect(200, done);
+    });
+    //http://localhost:5353/download/pass-io-passbookmanager-test-mock-eventticket
+    it(`GET - 200 - /download/${mockPass._id}`, function (done) {
+      request(app)
+        .get(`/download/${mockPass._id}`)
+        //.set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
+        //.expect('Content-Type', /json/)
+        .expect(200, done);
+    });
   });
 
   describe('Web Service API', function () {

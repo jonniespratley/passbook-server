@@ -26,6 +26,7 @@ const GITHUB_CLIENT_SECRET = GITHUB_DEV_CLIENT_SECRET;
 const GITHUB_CALLBACK_URL = '/auth/provider/callback';
 
 var config = {
+  tempDir: path.resolve(__dirname, './temp'),
   "name": "passbook-server",
   "debug": true,
   "baseUrl": "/api",
@@ -73,7 +74,7 @@ var config = {
   "middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
   "publicDir": [
     "./bower_components",
-    "./public"
+    "./static"
   ]
 };
 

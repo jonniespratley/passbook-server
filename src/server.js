@@ -12,7 +12,8 @@ const log = require('npmlog');
 
 
 /**
- * Server class provides methods for managing express server.
+ * @description Server class provides methods for managing express server.
+ * @class Server
  */
 class Server {
 	constructor(app) {
