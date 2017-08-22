@@ -9,8 +9,11 @@ export default class extends React.Component {
   }
   render () {
     return (
-      <div>
-      Hello World {this.props.userAgent}
+      <div className='card'>
+        <div className='card-header'>
+          <h4>Hello Card</h4>
+        </div>
+        <pre>props = {JSON.stringify(this.props)}</pre>
       </div>
     )
   }
