@@ -12,7 +12,9 @@ app.prepare().then(() => {
   const Main = require('./src/main.js');
   //const server = express();
   const server = Main.app;
-
+  server.get('/', (req, res) => {
+    return app.render(req, res, '/?loaded=true', req.query);
+  });
   server.get('/a', (req, res) => {
     return app.render(req, res, '/b', req.query);
   });
