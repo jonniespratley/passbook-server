@@ -70,6 +70,7 @@
     "user-home": "^2.0.0"
   },
   "devDependencies": {
+    "bower": "^1.8.0",
     "chai": "^1.10.0",
     "gulp": "^3.8.10",
     "gulp-clean": "^0.3.2",

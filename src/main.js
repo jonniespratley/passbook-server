@@ -29,8 +29,8 @@ module.exports = (function(userConfig, autoStart) {
 
   app.set('x-powered-by', false);
 
-  //app.set('views', path.resolve(__dirname, '../static/views'));
-  //app.set('view engine', 'pug');
+  app.set('views', path.resolve(__dirname, '../static/views'));
+  app.set('view engine', 'pug');
 
   const dirs = config.get('publicDir');
 
