@@ -122,25 +122,22 @@ class Db {
      * @returns {Promise} Promise that resolves or rejects
      */
   put(doc, id) {
-      assert(doc._id, 'document must have _id');
       return new Promise(function(resolve, reject) {
+        assert(doc._id, 'document must have _id');
         logger('put', doc._id);
-        _.defer(function() {
-          doc._rev = '0-0000';
-          db.save(doc._id || id, doc, function(err) {
-            if (err) {
-              logger('put.error', err);
-              reject(err);
-            } else {
-              logger('put.success', doc._id);
-              resolve({
-                ok: true,
-                id: doc._id,
-                rev: doc._rev
-              });
-            }
-
-          });
+        doc._rev = '0-0000';
+        db.save(doc._id || id, doc, function(err) {
+          if (err) {
+            logger('put.error', err);
+            reject(err);
+          } else {
+            logger('put.success', doc._id);
+            resolve({
+              ok: true,
+              id: doc._id,
+              rev: doc._rev
+            });
+          }
         });
       });
     }
@@ -151,13 +148,13 @@ class Db {
      * @returns {Promise}
      */
   post(doc, prefix) {
-      return new Promise(function(resolve, reject) {
+      return new Promise((resolve, reject) => {
         doc._id = this.getUUID(prefix);
         doc._rev = 0;
         doc._rev++;
         logger('post', doc);
-        _.defer(function() {
-          db.save(doc, function(err) {
+        _.defer(() => {
+          db.save(doc, (err) => {
             if (err) {
               logger('post.error', err);
               reject(err);

@@ -41,6 +41,15 @@ describe('file system', function() {
     done();
   });
 
+  it('getAttachment - should be defined', function(done) {
+    assert(db.getAttachment);
+    done();
+  });
+  it('putAttachment - should be defined', function(done) {
+    assert(db.putAttachment);
+    done();
+  });
+
   it('should have allDocs, get, remove, put methods', function(done) {
     assert(db.allDocs, 'should have allDocs');
     assert(db.remove);
@@ -157,9 +166,9 @@ describe('file system', function() {
     });
   });
 
-  xit('findOne(params) - should find first object by params and resolve promise', function(done) {
+  it('findOne(params) - should find first object by params and resolve promise', function(done) {
     db.findOne({
-      type: 'test'
+      docType: 'log'
     }).then(function(resp) {
       assert(resp);
       //assert(resp.deviceLibraryIdentifier === mockDevice.deviceLibraryIdentifier);
@@ -174,7 +183,6 @@ describe('file system', function() {
     db.find({
       docType: 'file'
     }).then(function(resp) {
-      console.log(resp);
       assert(resp);
       assert(resp.length);
       done();
@@ -184,7 +192,7 @@ describe('file system', function() {
     });
   });
 
-  xit('findOne(params) - should not find item by non-matching params and reject promise', function(done) {
+  it('findOne(params) - should not find item by non-matching params and reject promise', function(done) {
     db.findOne({
       someKey: 'someValue'
     }).then(function(row) {
