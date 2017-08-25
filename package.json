@@ -6,6 +6,9 @@
   "bin": {
     "passbook-server": "./bin/passbook-server"
   },
+  "engines": {
+    "node": "^8.0.x"
+  },
   "scripts": {
     "docs": "./node_modules/.bin/esdoc -c esdoc.json",
     "serve": "node ./bin/passbook-server serve --debug",
@@ -14,7 +17,7 @@
     "poststart": "next build",
     "dev": "next",
     "build": "next build",
-    "start": "node server",
+    "start": "next build && node server",
     "test": "gulp test"
   },
   "author": {
