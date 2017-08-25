@@ -29,8 +29,8 @@ module.exports = (function(userConfig, autoStart) {
 
   app.set('x-powered-by', false);
 
-  //app.set('views', path.resolve(__dirname, '../static/views'));
-  //app.set('view engine', 'pug');
+  app.set('views', path.resolve(__dirname, '../static/views'));
+  app.set('view engine', 'pug');
 
   const dirs = config.get('publicDir');
 
@@ -90,7 +90,7 @@ module.exports = (function(userConfig, autoStart) {
   // TODO: Load middleware
   app.locals.program = program;
   require('./routes/download')(app);
-  require('./routes/browse')(app);
+  require('./routes/_browse')(app);
 
   app.get('/_logs', function(req, res) {
     program.get('db').find({docType: 'log'}).then((resp) => {

@@ -6,14 +6,17 @@ applications:
     stack: cflinuxfs2
     instances: 1
     path: .
-    exec: npm build && npm start
+    run: npm start
     services:
+      - my_redis_instance
+      - my_blog_instance
+      - my_logstash_instance
     #  - my_logstash_instance
       #- my_predix_mobile_instance
       - my_uaa_instance # change this to your redis service instance name
       #- my_viewsvc_instance # change this to your view service instance name
     env:
-      NODE_ENV: 'production'
+      NODE_ENV: production
       DEBUG: 'passbook-server:*'
       PASSBOOK_SERVER_DATABASE_URL: https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server
       UAA_SERVER_URL: https://69687fd0-c926-4e4f-8563-5c88042db69c.predix-uaa.run.aws-usw02-pr.ice.predix.io
