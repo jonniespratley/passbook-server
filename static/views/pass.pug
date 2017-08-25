@@ -15,6 +15,7 @@ mixin passFields(passType, fieldType, pass)
 
 
 
+include ./includes/pass.pug
 
 block content
   .container-fluid
@@ -25,25 +26,26 @@ block content
             a(href="/_browse") Browse
           li.breadcrumb-item.active=pass._id
     .row
-      .col-sm-7
+      .col-12
+        +PassCard(pass)
+        .d-flex.justify-content-center
+          a(href='/_download/'+pass._id, target='_blank', title='Add to Apple Wallet')
+            img.pass-img.img-responsive(src='/images/Add_to_Apple_Wallet.svg', title='Add to Apple Wallet')
+    .row.d-none.d-lg-block
+      .col-12
         h2=pass.logoText
         p=pass.description
         dl
-          dt _id
-          dd=pass._id
-          dt _rev
-          dd=pass._rev
           +passFields(pass.type, 'headerFields', pass)
           +passFields(pass.type, 'primaryFields', pass)
           +passFields(pass.type, 'auxiliaryFields', pass)
           +passFields(pass.type, 'secondaryFields', pass)
           +passFields(pass.type, 'backFields', pass)
-
-      .col-sm-5
-        .d-flex
-          a(href='/_download/'+pass._id, target='_blank', title='Add to Apple Wallet')
-            img.img-responsive(src='/images/Add_to_Apple_Wallet.svg', title='Add to Apple Wallet')
         dl
+          dt _id
+          dd=pass._id
+          dt _rev
+          dd=pass._rev
           dt Pass Type ID
           dd=pass.passTypeIdentifier
           dt Team Identifier
@@ -54,17 +56,3 @@ block content
           dd=pass.type
           dt Last Updated
           dd=pass.lastUpdated
-
-    template#app(is='dom-bind')
-      pb-pass
-
-
-block scripts
-  script.
-    document.addEventListener('WebComponentsReady', function(){
-      var app = document.querySelector('#app');
-      app.pass = {
-        title: 'Test Pass'
-      };
-      console.log('WebComponentsReady');
-    });

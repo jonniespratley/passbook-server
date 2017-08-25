@@ -1,3 +1,55 @@
-.pass
-  h4=pass.description
-  p=pass.passTypeIdentifier
+//- passField - take a field object and output the label and value.
+mixin PassCardField(field, type)
+  .pass__field
+    .label=field.label
+    .value=field.value
+
+//- passFields - take a pass and fieldType and output each label and field.
+mixin PassCardFields(passType, fieldType, pass)
+  if pass[passType][fieldType]
+    .pass__fields(class=`pass__fields--${fieldType}`)
+      each field in pass[passType][fieldType]
+        +PassCardField(field, fieldType)
+
+mixin PassCard(pass)
+  .p-2.d-flex.flex-wrap
+    //-font of pass
+    .pass.pass--front.d-flex.flex-column(class=`pass--${pass.type}`, style={color: `${pass.labelColor}`, background: `linear-gradient(${pass.backgroundColor}, ${pass.foregroundColor})`})
+
+      //-header
+      .pass__header.d-flex.justify-content-end
+        .pass__logo
+          img(src=`/static/images/logo@2x.png`, alt='Pass Logo')
+        .pass__brand=pass.logoText
+        .pass__header-fields.ml-auto
+          +PassCardFields(pass.type, 'headerFields', pass)
+
+      //-body
+      .pass__body
+        .pass__title.delta=pass.description
+        if pass.type === 'membershipCard'
+          .pass__img
+            img(src='/static/images/thumbnail@2x.png')
+
+      .d-flex.flex-column
+        //-fields
+        +PassCardFields(pass.type, 'primaryFields', pass)
+        +PassCardFields(pass.type, 'auxiliaryFields', pass)
+
+      //-QRCode
+      .pass__meta.d-flex.mt-4.justify-content-center
+        .pass__qrcode.p-2
+          img.mb-1(src='//placehold.it/125')
+          .pass__qrcode-label=pass.barcode.message
+
+      //-footer
+      .pass__footer.p-2
+        a(href='#').left.ml-1
+          i.fa.fa-upload
+        a(href='#').right.mr-1
+          i.fa.fa-info-circle
+
+    //-back of pass
+    .pass.pass--back(style={color: `${pass.labelColor}`, background: `linear-gradient(${pass.backgroundColor}, ${pass.foregroundColor})`})
+      ul.pass__fields
+        +PassCardFields(pass.type, 'backFields', pass)
