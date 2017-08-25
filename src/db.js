@@ -72,6 +72,7 @@ class Db {
         }).catch(reject);
       });
     }
+    
     /**
      * Fetch all docs from store.
      * @param {Object} params Parameters to query with

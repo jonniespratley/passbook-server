@@ -8,8 +8,8 @@ const program = require('commander');
 
 
 
-require('autocmdr/lib/logger')(program);
-require('autocmdr/lib/config')(program);
+require('jps-autocmdr/lib/logger')(program);
+require('jps-autocmdr/lib/config')(program);
 
 
 const userHome = require('user-home');
@@ -26,12 +26,12 @@ program.global = {
   }
 };
 
-require('autocmdr/lib/loader')(program);
+require('jps-autocmdr/lib/loader')(program);
 
-require('autocmdr/lib/completion')(program);
-require('autocmdr/lib/package')(program);
+require('jps-autocmdr/lib/completion')(program);
+require('jps-autocmdr/lib/package')(program);
 
-require('autocmdr/lib/help')(program);
+require('jps-autocmdr/lib/help')(program);
 
 program
   .parse(process.argv);
