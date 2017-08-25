@@ -3,7 +3,7 @@
 
 const express = require('express');
 const next = require('next');
-const port = parseInt(process.env.PORT, 10) || 3001;
+const port = process.env.PORT || 3001;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({dev});
 const handle = app.getRequestHandler();
@@ -11,7 +11,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const Main = require('./src/main.js');
   //const server = express();
-  const server = Main.app;
+  const server = Main.Server.getExpressApp();
   server.get('/', (req, res) => {
     return app.render(req, res, '/?loaded=true', req.query);
   });

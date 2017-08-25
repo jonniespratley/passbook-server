@@ -7,17 +7,18 @@ const http = require('http');
 const path = require('path');
 const pkg = require(path.resolve(__dirname, '../package.json'));
 const defaultConfig = require(path.resolve(__dirname, '../config.js'));
-const DB = require('./db');
+
 const Configuration = require('./configuration');
 const utils = require('./utils');
 const logger = utils.getLogger('program');
 const log = require('npmlog');
 const passbook = require('passbook-cli');
 
+const DB = require('./db');
 
 const PouchDB = require('pouchdb');
 const PouchDbAdapter = require('./db-pouchdb');
-const CouchDB = require('./db-couchdb');
+//const CouchDB = require('./db-couchdb');
 
 var Pass = require(path.resolve(__dirname, 'routes/passes/pass.js'));
 var Passes = require(path.resolve(__dirname, 'routes/passes/passes.js'));

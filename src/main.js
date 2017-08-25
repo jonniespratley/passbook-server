@@ -2,7 +2,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs-extra');
-const log = require('npmlog');
+
+  const Server = require('./server');
 
 /**
  * @module src/main
@@ -12,9 +13,10 @@ const log = require('npmlog');
  * @return {type}                     description
  */
 module.exports = (function(userConfig, autoStart) {
-  const Server = require('./server');
+
   const PORT = process.env.PORT || 5353;
   const program = require('./program')(userConfig || require('../config'));
+  const log = program.getLogger('main');
 
   const config = program.get('config');
 
@@ -31,8 +33,12 @@ module.exports = (function(userConfig, autoStart) {
   //app.set('view engine', 'pug');
 
   const dirs = config.get('publicDir');
+
+  app.use(express.static(path.join(__dirname, '../static')));
+
   if (dirs && dirs.length) {
     dirs.forEach((dir) => {
+      log('static dirs', dir);
       app.use(express.static(dir));
     });
   }
@@ -89,13 +95,13 @@ module.exports = (function(userConfig, autoStart) {
 
   app.get('/_logs', function(req, res) {
     program.get('db').find({docType: 'log'}).then((resp) => {
-      log.info('Got logs', resp);
+      log('Got logs', resp);
       res.render('logs', {
         title: config.name,
         logs: resp
       });
     }).catch((err) => {
-      console.log('err', err);
+      log('err', err);
       res.render('500', err);
     });
   });
@@ -106,7 +112,7 @@ module.exports = (function(userConfig, autoStart) {
       if (err) {
         throw err;
       }
-      console.log('Listening on', PORT);
+      log('Listening on', PORT);
       require('express-list-routes')({
         prefix: '/api/v1'
       }, 'API:', app);
