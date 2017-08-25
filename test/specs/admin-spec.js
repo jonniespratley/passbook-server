@@ -19,18 +19,15 @@ describe('Admin Module', function() {
     docType: 'test'
   };
   before(function(done) {
-    program = mocks.program();
+    program = mocks.main().program;
     app = express();
     app.locals.program = program;
-    app.locals.db = program.db;
+    app.locals.db = program.get('db');
     instance = new Admin(app);
 
-    program.db.bulkDocs([
-      {docType: 'test'},
-      {docType: 'test'}
-    ]).then((res)=>{
+    program.db.bulkDocs(mocks.getMockPasses(5)).then((res)=>{
       done();
-    });
+    }).catch(done);
 
   });
 

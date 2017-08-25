@@ -24,6 +24,13 @@ class PouchDBAdapter {
     instance = this;
   }
 
+  /**
+   * @static getInstance - Gets the instance of the database adapter.
+   *
+   * @param  {type} name    description
+   * @param  {type} options description
+   * @return {type}         description
+   */
   static getInstance(name, options) {
     if (instance) {
       return instance;
@@ -32,6 +39,14 @@ class PouchDBAdapter {
     }
   }
 
+
+  /**
+   * @description getAdapter - Returns adapter or creates new istance.
+   *
+   * @param  {type} name    description
+   * @param  {type} options description
+   * @return {type}         description
+   */
   getAdapter(name, options) {
     logger('getAdapter', name, options);
     if (!db) {
@@ -40,7 +55,7 @@ class PouchDBAdapter {
     return db;
   }
   /**
-     * Find first document in store.
+     * @description Find first document in store.
      * @param {Object} params Parameters to query with
      * @returns {*}
      */
@@ -51,7 +66,7 @@ class PouchDBAdapter {
     });
   }
   /**
-     * Query documents in store.
+     * @description Query documents in store.
      * @param {Object} params Parameters to query with
      * @returns {Promise}
      */
@@ -85,7 +100,7 @@ class PouchDBAdapter {
     });
   }
   /**
-     * Fetch all docs from store.
+     * @description Fetch all docs from store.
      * @param {Object} params Parameters to query with
      * @returns {Promise}
      */
@@ -105,7 +120,7 @@ class PouchDBAdapter {
     });
   }
   /**
-     * Update doc in store.
+     * @description Update doc in store.
      * @param {Object} doc Document object to store
      * @param {String} id The id of the document
      * @returns {Promise}
@@ -124,7 +139,7 @@ class PouchDBAdapter {
     });
   }
   /**
-     * Create doc in store.
+     * @description Create doc in store.
      * @example
      * pouchdb.post(tempDoc).then((resp) => {
          assert(resp.ok, 'returns ok');
@@ -134,7 +149,7 @@ class PouchDBAdapter {
          tempDoc._rev = resp.rev;
          done();
        }).catch(done);
-       
+
      * @param {Object} doc Document object to store
      * @param {String} prefix Prefix to prepend to generated id
      * @returns {Promise}
@@ -151,12 +166,12 @@ class PouchDBAdapter {
       }).catch((err) => {
         logger('post.error', err);
         reject(err);
-      })
+      });
 
     });
   }
   /**
-     * Remove document from store by id
+     * @description Remove document from store by id
      * @param id
      * @returns {Promise}
      */
@@ -165,7 +180,7 @@ class PouchDBAdapter {
     return db.remove(id, rev);
   }
   /**
-     * Get document in store by id.
+     * @description Get document in store by id.
      * @param id
      * @returns {Promise}
      */
@@ -182,7 +197,7 @@ class PouchDBAdapter {
     });
   }
   /**
-     * Save array of documents in store.
+     * @description Save array of documents in store.
      * @param {Array} docs Array of documents
      * @returns {Promise}
      */
@@ -208,7 +223,7 @@ class PouchDBAdapter {
     });
   }
   /**
-     * Save array of documents in store.
+     * @description Save array of documents in store.
      * @param {Array} docs Array of documents
      * @returns {Promise}
      */
@@ -217,6 +232,17 @@ class PouchDBAdapter {
     return this.db.bulkDocs(docs);
   }
 
+
+  /**
+   * @description putAttachment - Trys to save an attachement to the store.
+   *
+   * @param  {type} id           description
+   * @param  {type} attachmentId description
+   * @param  {type} rev          description
+   * @param  {type} attachment   description
+   * @param  {type} contentType  description
+   * @return {type}              description
+   */
   putAttachment(id, attachmentId, rev, attachment, contentType) {
     log.info('putAttachment', id, attachmentId);
     return new Promise((resolve, reject) => {
@@ -229,6 +255,14 @@ class PouchDBAdapter {
     });
   }
 
+
+  /**
+   * getAttachment - Returns attachment from store.
+   *
+   * @param  {type} id           description
+   * @param  {type} attachmentId description
+   * @return {type}              description
+   */
   getAttachment(id, attachmentId) {
     log.info('getAttachment', id, attachmentId);
     return new Promise((resolve, reject) => {
@@ -241,6 +275,15 @@ class PouchDBAdapter {
     });
   }
 
+
+  /**
+   * removeAttachment - Removes attachment from store.
+   *
+   * @param  {type} id           description
+   * @param  {type} attachmentId description
+   * @param  {type} rev          description
+   * @return {type}              description
+   */
   removeAttachment(id, attachmentId, rev) {
     return new Promise((resolve, reject) => {
       this.db.removeAttachment(id, attachmentId, rev, (err, res) => {
@@ -252,10 +295,25 @@ class PouchDBAdapter {
     });
   }
 
+
+  /**
+   * query - Provide a function to perform query.
+   *
+   * @param  {type} fun     description
+   * @param  {type} options description
+   * @return {type}         description
+   */
   query(fun, options) {
     return this.db.query(fun, options);
   }
 
+
+  /**
+   * findOne - Gets the first object found.
+   *
+   * @param  {type} params description
+   * @return {type}        description
+   */
   findOne(params) {
     return this.find(params).then((resp) => {
       //log.info('findOne', _.filter(resp, params));
@@ -263,9 +321,16 @@ class PouchDBAdapter {
     });
   }
 
+
+  /**
+   * getUUID - Returns a new UUID.
+   *
+   * @param  {type} prefix description
+   * @return {type}        description
+   */
   getUUID(prefix) {
     let _prefix = prefix || 'doc';
-    let uuid = require('node-uuid').v4();
+    let uuid = new require('chance')().guid();
     return `${_prefix}-${uuid}`;
   }
 }

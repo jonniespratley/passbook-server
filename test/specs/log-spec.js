@@ -7,16 +7,9 @@ const Log = require(path.resolve(__dirname, '../../src/routes/logs/log.js'));
 
 var p;
 
-
-
-
-describe('Log', function() {
-
-});
-
-describe('Index', function() {
-  it('Program - should be defined', (done) =>{
-    assert(PassbookServer.Program);
+describe('Log', function () {
+  it('should be defined', function (done) {
+    assert(Log);
     done();
   });
 });

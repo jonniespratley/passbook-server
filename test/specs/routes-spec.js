@@ -1,5 +1,5 @@
 'use strict';
-/* global describe, before, it*/
+/* global describe, before, after, it*/
 var assert = require('assert'),
   path = require('path'),
   fs = require('fs-extra'),
@@ -11,7 +11,7 @@ var assert = require('assert'),
 var testPassName = 'Test_Pass_';
 var testPassDir = path.resolve(__dirname, '../../.tmp/');
 
-var app = express();
+
 
 
 // TODO: Program
@@ -20,52 +20,72 @@ var mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 
 //Test Instances
 // var passes;
-var program, db;
+var program, db, app;
 var mockDevice = mocks.mockDevice;
 var mockPass = mocks.mockPass;
 var mockIdentifer = mocks.mockIdentifer;
 
-var config = mocks.config;
-var Pass = mocks.Pass;
-var Device = mocks.Device;
-app = express();
+const config = mocks.config;
+const Pass = mocks.Pass;
+const Device = mocks.Device;
 
-app.set('views', path.resolve(__dirname, '../../static/views'));
-app.set('view engine', 'pug');
+var passes = mocks.getMockPasses(5);
+const fixtures = {
+  setup(){
+    return new Promise((resolve, reject) =>{
+      app = mocks.main().app;
+      program = mocks.main().program;
+      db = program.get('db');
+      app.locals.program = program;
+      app.locals.db = program.db;
+
+      program.require('routes').Logs(app);
+      program.require('routes').Passes(app);
+      program.require('routes').Devices(app);
+      program.require('routes/download')(app);
+      program.require('routes/browse')(app);
+
+      db.bulkDocs(passes).then((resp) =>{
+        console.log('Inserted', resp);
+        db.find({docType: 'pass'}).then((r) =>{
+          passes = r;
+          mockPass = r[0];
+          resolve(mockPass);
+        }).catch((err)=>{
+          reject(new Error(err));
+        });
+      }).catch((err)=>{
+        reject(new Error(err));
+      });
+    });
+  },
+  teardown(){
+    return new Promise((resolve, reject) =>{
+      var all = [];
+      for (var i = 0; i < passes.length; i++) {
+        let id = passes[i]._id;
+        let rev = passes[i]._rev;
+        console.log('Removing pass', id, rev);
+        all.push(db.remove(id, rev));
+      }
+      Promise.all(all).then(resolve, reject);
+    });
+  }
+};
+
+
 
 describe('passbook-server routes', function () {
 
   before(function (done) {
-
-    program = mocks.program();
-    db = program.get('db');
-
-    app.locals.program = program;
-    app.locals.db = program.db;
-
-    program.require('routes').Logs(app);
-    program.require('routes').Passes(app);
-    program.require('routes').Devices(app);
-    program.require('routes/download')(app);
-    program.require('routes/browse')(app);
-
-
-
-    console.log('Inserting passes');
-    //Fetch passes from database
-    db.bulkDocs(mocks.mockPasses).then((resp) =>{
-      //console.log('Inserted passes', resp);
-      db.find({docType: 'pass'}).then((resp) =>{
-      //  console.log('Got passes', resp);
-        mockPass = resp[0];
-        done();
-      }).catch(done);
-    }).catch(done);
+    fixtures.setup().then(() => {
+      done();
+    });
   });
-
-
-
-
+  after(function (done) {
+    //.teardown().then(done).catch(done);
+    done();
+  });
 
   describe('Public API', function(){
     it('GET - 200 - /_browse', function (done) {
@@ -76,10 +96,10 @@ describe('passbook-server routes', function () {
         .expect(200, done);
     });
     //http://localhost:5353/download/pass-io-passbookmanager-test-mock-eventticket
-    it(`GET - 200 - /download/${mockPass._id}`, function (done) {
+    it(`GET - 200 - /_download/${mockPass._id}`, function (done) {
       request(app)
-        .get(`/download/${mockPass._id}`)
-        //.set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
+        .get(`/_download/${mockPass._id}`)
+        .set('Authorization', `ApplePass ${mockPass.authenticationToken}`)
         //.expect('Content-Type', /json/)
         .expect(200, done);
     });

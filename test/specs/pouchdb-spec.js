@@ -11,23 +11,24 @@ var config = mocks.config;
 var mockDevice = mocks.mockDevice;
 var mockPass = mocks.mockPass;
 
-var pouchdb, testDocs = [];
+var pouchdb,
+  testDocs = [];
 var testDocId = 'test-pouchdb-doc-' + Date.now();
 
-
-/* global describe, before, it, xit */
-const dataPath = path.resolve(__dirname, '../temp/', 'passbook-server');
-var dbPath = dataPath;
+/* global describe, before, it, after, xit */
+const dataPath = path.resolve(__dirname, '../temp/', 'pouchdb-server');
+//var dbPath = dataPath;
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb'));
-const PouchDB = require('pouchdb');
+//const PouchDB = require('pouchdb');
 var tempDoc = {
   name: 'jonnie',
   docType: 'test'
-}
+};
 
 describe('db adapters', function() {
 
   before(function(done) {
+    mocks.log('dataPath', dataPath);
     fs.ensureDirSync(dataPath);
     //fs.mkdirSync('../temp');
     //pouchdb = new PouchDB(dataPath);
@@ -37,24 +38,24 @@ describe('db adapters', function() {
   });
 
   after(function(done) {
-    //fs.mkdirSync('../temp');
-    //console.log('CLean', testDocs);
-    //fs.removeSync(dbPath);
-
+    //fs.mkdirSync(dataPath);
+    mocks.log('Clean', dataPath);
+    fs.removeSync(dataPath);
     //pouchdb.destroy();
     done();
   });
 
-  describe('PouchDb', function() {
+  describe('PouchDBAdapter', function() {
 
-    testDocs = [{
-      docType: 'test',
-      name: 'test-doc-1'
-    }, {
-      docType: 'test',
-      name: 'test-doc-2'
-    }];
-
+    testDocs = [
+      {
+        docType: 'test',
+        name: 'test-doc-1'
+      }, {
+        docType: 'test',
+        name: 'test-doc-2'
+      }
+    ];
 
     it('should be defined', function(done) {
       assert(pouchdb);
@@ -65,7 +66,6 @@ describe('db adapters', function() {
       assert(pouchdb === PouchDBAdapter.getInstance(dataPath));
       done();
     });
-
 
     it('should have allDocs, get, remove, put methods', function(done) {
       assert(pouchdb.allDocs, 'should have allDocs');
@@ -81,7 +81,7 @@ describe('db adapters', function() {
       done();
     });
 
-    context('Documents', function(){
+    describe('Documents', function() {
       it('post(doc) - should create doc with generated id', (done) => {
         pouchdb.post(tempDoc).then((resp) => {
           assert(resp.ok, 'returns ok');
@@ -120,9 +120,7 @@ describe('db adapters', function() {
       });
 
       it('findOne(params) - should return first matching doc', function(done) {
-        pouchdb.findOne({
-          docType: 'test'
-        }).then(function(resp) {
+        pouchdb.findOne({docType: 'test'}).then(function(resp) {
           assert(resp);
           assert(resp._id, 'returns _id');
           assert(resp._rev, 'returns _rev');
@@ -130,10 +128,9 @@ describe('db adapters', function() {
           done();
         }).catch(done);
       });
+
       it('findBy(params) - should return first matching doc', function(done) {
-        pouchdb.findBy({
-          docType: 'test'
-        }).then(function(resp) {
+        pouchdb.findBy({docType: 'test'}).then(function(resp) {
           assert(resp);
           assert(resp._id, 'returns _id');
           assert(resp._rev, 'returns _rev');
@@ -151,8 +148,10 @@ describe('db adapters', function() {
 
       it('saveAll(docs) - should save all documents by getting latest revision', function(done) {
         pouchdb.saveAll([
-          tempDoc,
-          {_id: 'test-doc', title: 'SHould be updated'}
+          tempDoc, {
+            _id: 'test-doc',
+            title: 'SHould be updated'
+          }
         ]).then(function(resp) {
           assert(resp);
           done();
@@ -172,9 +171,7 @@ describe('db adapters', function() {
       });
 
       it('allDocs() - should resolve array of docs', function(done) {
-        pouchdb.allDocs({
-          include_docs: true
-        }).then(function(resp) {
+        pouchdb.allDocs({include_docs: true}).then(function(resp) {
           assert(resp.rows);
           done();
         }).catch(done);
@@ -182,7 +179,7 @@ describe('db adapters', function() {
 
     });
 
-    context('Attachments', function() {
+    describe('Attachments', function() {
       var testDocAttachment = {
         name: 'test-doc-attachment'
       };
@@ -192,15 +189,14 @@ describe('db adapters', function() {
           testDocAttachment._rev = resp.rev;
           done();
         });
-      })
+      });
       it('putAttachment() - should save attachment', function(done) {
         var attachment = new Buffer(['Is there life on Mars?'], 'utf8');
-        pouchdb.putAttachment(testDocAttachment._id, 'text', testDocAttachment._rev, attachment,
-          'text/plain').then(function(res) {
+        pouchdb.putAttachment(testDocAttachment._id, 'text', testDocAttachment._rev, attachment, 'text/plain').then(function(res) {
           testDocAttachment._rev = res.rev;
           assert(res);
           assert.ok(res.rev);
-          //  console.log('attachment resp', res);
+          mocks.log('attachment resp', res);
           done();
         }).catch(done);
       });
@@ -213,15 +209,13 @@ describe('db adapters', function() {
       });
 
       it('removeAttachment() - should remove attachment', function(done) {
-        pouchdb.removeAttachment(testDocAttachment._id, 'text', testDocAttachment._rev).then(function(
-          res) {
+        pouchdb.removeAttachment(testDocAttachment._id, 'text', testDocAttachment._rev).then(function(res) {
 
           assert(res);
           done();
         }).catch(done);
       });
     });
-
 
     it('query() - should resolve array of docs', function(done) {
       function map(doc, emit) {
@@ -237,11 +231,10 @@ describe('db adapters', function() {
       }).then(function(resp) {
         assert(resp.rows);
 
-        console.log('query resp', resp);
+        mocks.log('query resp', resp);
         done();
       }).catch(done);
     });
-
 
     it('bulkDocs(docs) - should resolve bulk remove docs', function(done) {
       for (var i = 0; i < testDocs.length; i++) {
@@ -255,9 +248,6 @@ describe('db adapters', function() {
       }).catch(done);
     });
 
-
-
-
     var PassbookViews = {
       passes: (doc) => {
         if (doc.docType === 'pass') {
@@ -265,8 +255,6 @@ describe('db adapters', function() {
         }
       }
     };
-
-
 
     xit('query() - should resolve array of passes', function(done) {
       pouchdb.query({
@@ -276,11 +264,10 @@ describe('db adapters', function() {
         include_docs: true
       }).then((resp) => {
         assert(resp.rows);
-        console.log('query resp', resp);
+        mocks.log('query resp', resp);
         done();
       }).catch(done);
     });
-
 
     describe('Sync', function() {
       this.timeout(10000);
@@ -289,25 +276,24 @@ describe('db adapters', function() {
           username: program.config.get('database.username'),
           password: program.config.get('database.password')
         };
-        var repl = pouchdb.getAdapter().replicate.to(program.config.get('database.url'))
-          .on('change', function(info) {
-            assert(info);
-            console.log('change', info);
-            // handle change
-          }).on('complete', function(info) {
-            console.log('complete', info);
-            assert(info, 'sync complete');
-            done();
-            // handle complete
-          }).on('uptodate', function(info) {
-            console.log('uptodate', info);
-            // handle up-to-date
-          }).on('error', function(err) {
-            assert.fail(err, 'sync fails');
-            program.log.info('error', info);
-            // handle error
-            done();
-          });
+        var repl = pouchdb.getAdapter().replicate.to(program.config.get('database.url')).on('change', function(info) {
+          assert(info);
+          mocks.log('change', info);
+          // handle change
+        }).on('complete', function(info) {
+          mocks.log('complete', info);
+          assert(info, 'sync complete');
+          done();
+          // handle complete
+        }).on('uptodate', function(info) {
+          mocks.log('uptodate', info);
+          // handle up-to-date
+        }).on('error', function(err) {
+          assert.fail(err, 'sync fails');
+          mocks.log('error', info);
+          // handle error
+          done();
+        });
       });
     });
   });

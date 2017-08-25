@@ -2,8 +2,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');
-
+const chance = new require('chance')();
 const PouchDBAdapter = require(path.resolve(__dirname, '../../src/db-pouchdb.js'));
+const Main = require(path.resolve(__dirname, '../../src/main.js'));
 const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
 const Configuration = require(path.resolve(__dirname, '../../src/configuration.js'))
   //var config = require(path.resolve(__dirname, '../../config.js'));
@@ -12,20 +13,24 @@ const Passes = require(path.resolve(__dirname, '../../src/routes/passes/passes.j
 const Device = require(path.resolve(__dirname, '../../src/routes/devices/device.js'));
 
 var config = require('../test-config.js');
-
 var _program;
+
+
+
+var _instance = null;
+exports.main = function(){
+  if(_instance){
+    return _instance;
+  } else {
+    _instance = new Main(config);
+  }
+  return _instance;
+};
 exports.program = function(adapterType) {
 
   let _config = {
     config: config
   };
-
-
-
-
-
-
-
   if(_program){
     return _program;
   } else {
@@ -38,6 +43,13 @@ exports.program = function(adapterType) {
       passphrase: 'fred'
     };
   }
+
+
+  var log = _program.getLogger('mocks');
+  log('mocks.js', config);
+  log('guid', chance.guid());
+
+  exports.log = log;
   return _program;
 };
 
@@ -53,7 +65,7 @@ exports.mockPasses = [
   new Pass({
     //_id: 'mock-generic',
     description: 'Example Generic',
-    serialNumber: '0123456789876543210',
+    serialNumber: 'mock-generic',
     type: 'generic'
   }),
 
@@ -94,6 +106,22 @@ exports.mockDevice = new Device({
   "authorization": exports.mockPass.authenticationToken
 });
 
+exports.getMockPasses = function(count){
+  var _out = [];
+  for (var i = 0; i < count; i++) {
+    _out.push(new Pass( {
+      type: 'generic',
+      description: 'Pass ' + i,
+      serialNumber: chance.guid(),
+      "foregroundColor": "rgb(20, 89, 108)",
+      "backgroundColor": "rgb(20, 89, 188)",
+      "organizationName": "GE Digital",
+      "description": "ID Card",
+      "logoText": "GE Digital"
+    }));
+  }
+  return _out;
+};
 
 function createSamplePasses(count){
   return new Promise((resolve, reject) =>{
@@ -112,8 +140,8 @@ function createSamplePasses(count){
       p = new Pass( {
         type: 'generic',
         description: 'Pass ' + i,
-        //serialNumber: chan,
-        "foregroundColor": "rgb(255, 255, 255)",
+        serialNumber: chance.guid(),
+        "foregroundColor": "rgb(20, 89, 108)",
         "backgroundColor": "rgb(20, 89, 188)",
         "organizationName": "GE Digital",
         "description": "ID Card",
@@ -123,7 +151,7 @@ function createSamplePasses(count){
       _program.db.get(p._id).then((existingDoc) =>{
         p._rev = existingDoc._rev;
         _program.db.put(p).then((resp)=>{
-          console.log('create resp', resp);
+        log('create resp', resp);
           p._rev = resp.rev;
           p._id = resp.id;
           passes.push(p);
@@ -134,13 +162,13 @@ function createSamplePasses(count){
         });
       }).catch((err) =>{
         _program.db.put(p).then((resp)=>{
-          console.log('create resp', resp);
+          log('create resp', resp);
           p._rev = resp.rev;
           p._id = resp.id;
           passes.push(p);
           _done();
         }).catch((err) =>{
-          console.log('error', err);
+          log('error', err);
           _done();
         });
       });
