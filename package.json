@@ -1,6 +1,6 @@
 {
   "name": "passbook-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Passbook API server",
   "private": true,
   "bin": {
@@ -11,7 +11,7 @@
     "serve": "node ./bin/passbook-server serve --debug",
     "watch": "export DEBUG=passbook-server:* &&  nodemon -w src/ src/main",
     "run": "node src/main",
-    "poststart": "open http://localhost:3000",
+    "poststart": "next build",
     "dev": "next",
     "build": "next build",
     "start": "node server",
@@ -31,7 +31,7 @@
   "dependencies": {
     "apn": "^2.1.1",
     "async": "^2.0.1",
-    "autocmdr": "~0.0.4",
+    "jps-autocmdr": "~0.0.8",
     "body-parser": "^1.10.2",
     "chalk": "^0.5.1",
     "chance": "^1.0.4",
@@ -55,7 +55,7 @@
     "node-uuid": "^1.4.7",
     "node-yaml": "^3.0.2",
     "npmlog": "^4.0.0",
-    "passbook-cli": "*",
+    "passbook-cli": "0.0.4",
     "pouchdb": "^6.0.5",
     "pshell": "^1.0.2",
     "pug": "*",

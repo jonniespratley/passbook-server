@@ -1,5 +1,5 @@
-/node_modules/
-npm-debug.log
+node_modules
+*.log
 temp
 .idea
 //data
@@ -7,3 +7,6 @@ temp
 db.sqlite
 /pouchdb/
 /pouchdb-mrview-temp/
+.git
+coverage
+mochawesome-reports

@@ -2,10 +2,11 @@
 applications:
   - name: passbook-server
     buildpack: https://github.com/cloudfoundry/heroku-buildpack-nodejs.git
-    memory: 256MB
+    memory: 1GB
     stack: cflinuxfs2
+    instances: 1
     path: .
-    command: npm start
+    exec: npm build && npm start
     services:
     #  - my_logstash_instance
       #- my_predix_mobile_instance
