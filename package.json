@@ -15,7 +15,7 @@
     "watch": "export DEBUG=passbook-server:* &&  nodemon -w src/ src/main",
     "run": "node src/main",
     "poststart": "next build",
-    "postinstall": "bower install --force",
+    "bower": "bower install --force",
     "dev": "next",
     "build": "next build",
     "start": "next build && node server",
