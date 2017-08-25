@@ -2,14 +2,14 @@ extends ./includes/layout.pug
 
 //- Mixins
 mixin listItem(pass)
-  a.list-group-item.list-group-item-action(href='/_browse/' + pass._id)
-    .flex-column.align-items-start 
+  a.list-group-item.list-group-item-action(href='/_browse/' + pass._id, data-pass-type-identifier=`${pass.passTypeIdentifier}`, data-serial-number=`${pass.serialNumber}`)
+    .flex-column.align-items-start
       .d-flex.w-100.justify-content-between
         h5.mb-1=pass.organizationName
         small=pass.lastUpdated
       p.mb-1=pass.description
-      
-    
+
+
 mixin card(pass)
   .col-xl-3.col-lg-4.col-md-6.col-sm-6
     .card
@@ -33,6 +33,6 @@ block content
     .container
       h1.display-3 Browse
       p.lead Here is all the available passes.
-  .list-group
+  .list-group.list-group-flush
     each pass in passes
       +listItem(pass)

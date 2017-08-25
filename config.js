@@ -25,56 +25,71 @@ const GITHUB_CLIENT_ID = GITHUB_DEV_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = GITHUB_DEV_CLIENT_SECRET;
 const GITHUB_CALLBACK_URL = '/auth/provider/callback';
 
+const PASSBOOK_SERVER_P12 = process.env.PASSBOOK_SERVER_P12 || path.resolve(__dirname, './node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test.p12');
+const PASSBOOK_SERVER_CERT = process.env.PASSBOOK_SERVER_CERT || path.resolve(__dirname, './node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-cert.pem');
+const PASSBOOK_SERVER_KEY = process.env.PASSBOOK_SERVER_KEY || path.resolve(__dirname, './node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-key.pem');
+const PASSBOOK_SERVER_KEY_PASSPHRASE = process.env.PASSBOOK_SERVER_KEY_PASSPHRASE || 'test';
+
+const certs = {
+  p12: PASSBOOK_SERVER_P12,
+  cert: PASSBOOK_SERVER_CERT,
+  key: PASSBOOK_SERVER_KEY,
+  passphrase: PASSBOOK_SERVER_KEY_PASSPHRASE
+};
+
+
 var config = {
   tempDir: path.resolve(__dirname, './temp'),
-  "name": "passbook-server",
-  "debug": true,
-  "baseUrl": "/api",
-  "message": "passbook-server api",
-  "version": "v1",
-  "teamIdentifier": APPLE_TEAM_IDENTIFIER,
-  "passTypeIdentifier": APPLE_PASS_TYPE_IDENTIFIER,
-  "webServiceURL": APPLE_WEB_SERVICE_URL,
-  "session": {
-    "user": {
-      "username": "jonniespratley"
+  certs: certs,
+  db: db,
+  name: 'passbook-server',
+  debug: true,
+  baseUrl: '/api',
+  message: 'passbook-server api',
+  version: 'v1',
+  'teamIdentifier': APPLE_TEAM_IDENTIFIER,
+  'passTypeIdentifier': APPLE_PASS_TYPE_IDENTIFIER,
+  'webServiceURL': APPLE_WEB_SERVICE_URL,
+  'session': {
+    'user': {
+      'username': 'jonniespratley'
     }
   },
-  "database": {
-    "name": "passbook-server",
-    "username": "admin",
-    "password": "fred",
-    //"url": `https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server`,
-    "url": process.env.PASSBOOK_SERVER_DATABASE_URL || "http://admin:fred@localhost:4987/passbook-server",
-    "path": path.resolve(require('user-home'), './.passbook-server/db')
+  'database': {
+    'name': 'passbook-server',
+    'username': 'admin',
+    'password': 'fred',
+    //'url': `https://admin:fred@pouchdb.run.aws-usw02-pr.ice.predix.io/passbook-server`,
+    'url': process.env.PASSBOOK_SERVER_DATABASE_URL || 'http://admin:fred@localhost:4987/passbook-server',
+    'path': path.resolve(require('user-home'), './.passbook-server/db')
   },
-  "passport": {
-    "development": {
-      "github": {
-        "clientID": GITHUB_DEV_CLIENT_ID,
-        "clientSecret": GITHUB_DEV_CLIENT_SECRET,
-        "callbackURL": GITHUB_DEV_CALLBACK_URL
+  'passport': {
+    'development': {
+      'github': {
+        'clientID': GITHUB_DEV_CLIENT_ID,
+        'clientSecret': GITHUB_DEV_CLIENT_SECRET,
+        'callbackURL': GITHUB_DEV_CALLBACK_URL
       }
     },
-    "production": {
-      "github": {
-        "clientID": GITHUB_PRODUCTION_CLIENT_ID,
-        "clientSecret": GITHUB_PRODUCTION_CLIENT_SECRET,
-        "callbackURL": GITHUB_PRODUCTION_CALLBACK_URL
+    'production': {
+      'github': {
+        'clientID': GITHUB_PRODUCTION_CLIENT_ID,
+        'clientSecret': GITHUB_PRODUCTION_CLIENT_SECRET,
+        'callbackURL': GITHUB_PRODUCTION_CALLBACK_URL
       }
     }
   },
-  "security": {
-    "salt": "a58e325c6df628d07a18b673a3420986"
+  'security': {
+    'salt': 'a58e325c6df628d07a18b673a3420986'
   },
-  "server": {
-    "host": "127.0.0.1",
-    "port": 5001
+  'server': {
+    'host': '127.0.0.1',
+    'port': process.env.PORT || 5353
   },
-  "middleware": ["./routes/admin", "./routes/logs", "./routes/devices", "./routes/passes"],
-  "publicDir": [
-    "./bower_components",
-    "./static"
+  'middleware': ['./routes/admin', './routes/logs', './routes/devices', './routes/passes'],
+  'publicDir': [
+    './bower_components',
+    './static'
   ]
 };
 

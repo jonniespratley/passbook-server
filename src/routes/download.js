@@ -8,20 +8,12 @@ module.exports = function(app) {
   const log = program.getLogger('download-router');
   const config = program.get('config').defaults;
 
-  log('exports');
-
   var DownloadRouter = new express.Router();
 
   // Download will create the pass assets and pkpass and send the .pkpass
-  DownloadRouter.get('/download/:id',(req, res) => {
+  DownloadRouter.get('/_download/:id',(req, res) => {
     log(req.url, 'start download', config);
-    var certs = {
-      p12: path.resolve(__dirname, '../../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test.p12'),
-      cert: path.resolve(__dirname, '../../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-cert.pem'),
-      key: path.resolve(__dirname, '../../node_modules/passbook-cli/src/certificates/pass.io.passbookmanager.test-key.pem'),
-      passphrase: 'test'
-    };
-
+    var certs = config.certs;
     log('Certs', certs);
 
     try {
@@ -48,7 +40,6 @@ module.exports = function(app) {
         output: path.resolve(config.tempDir, './passes'),
         pass: doc
       }).then((out) => {
-
         log('Created .raw', out);
         program.get('passbook').createPkPass(out, certs.cert, certs.key, certs.passphrase).then((pkpass) => {
           log('Created .pkpass', pkpass);
@@ -56,11 +47,11 @@ module.exports = function(app) {
           res.download(pkpass);
         }).catch((err) => {
           log('error', err);
-          res.send(err);
+          res.status(404).json(err);
         });
       }).catch((err) => {
         log('error', err);
-        res.send(err);
+        res.status(404).json(err);
       });
 
     });
