@@ -24,24 +24,25 @@ describe('Admin Module', function() {
     app.locals.program = program;
     app.locals.db = program.get('db');
     instance = new Admin(app);
-
-    program.db.bulkDocs(mocks.getMockPasses(5)).then((res)=>{
+    program.db.bulkDocs(mocks.getMockPasses(2).concat(testDoc)).then((res)=>{
+      console.log('admin-module', res);
       done();
     }).catch(done);
 
   });
 
-
   xit('GET - /_admin - should index', function(done) {
     request(app)
       .get(`/_admin`)
-      //.set('Accept', 'text/html')
-      //.expect('Content-Type', /html/)
+      .set('Accept', 'text/html')
+      .expect('Content-Type', /html/)
       .expect(200, done);
   });
+
   it('GET - /_admin/db - should return all docs', function(done) {
     request(app)
-      .get(`/_admin/db`)
+      .get(`/_admin/db?docType=test`)
+      .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res)=>{
@@ -50,9 +51,10 @@ describe('Admin Module', function() {
       });
   });
 
-  it('GET - /_admin/db - should return all docs by params', function(done) {
+  it('GET - /_admin/db?docType=test - should return all docs by params', function(done) {
     request(app)
       .get(`/_admin/db?docType=test`)
+      .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200, done);
   });
@@ -60,12 +62,14 @@ describe('Admin Module', function() {
   it('GET - /_admin/db/:id - should return 1 doc', function(done) {
     request(app)
       .get(`/_admin/db/${testDoc._id}`)
+      .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200, done);
   });
   it('GET - /_admin/db/unknown - should return 404', function(done) {
     request(app)
       .get(`/_admin/db/unknown`)
+      .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(404, done);
   });
@@ -93,7 +97,7 @@ describe('Admin Module', function() {
         assert(res.body.ok, 'returns ok');
         testDoc._id = res.body.id;
         testDoc._rev = res.body.rev;
-        console.log(res.body);
+        //console.log(res.body);
         done();
       });
   });
