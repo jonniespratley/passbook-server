@@ -86,7 +86,6 @@ module.exports = (function(userConfig, autoStart) {
     });
   });
 
-  //
 
   // TODO: Load middleware
   app.locals.program = program;
