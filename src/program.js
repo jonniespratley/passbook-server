@@ -15,7 +15,7 @@ const passbook = require('passbook-cli');
 
 const DB = require('./db');
 
-//const PouchDB = require('pouchdb');
+const PouchDB = require('pouchdb');
 const PouchDbAdapter = require('./db-pouchdb');
 //const CouchDB = require('./db-couchdb');
 
@@ -88,7 +88,7 @@ class Program {
 			var localUrl = params.to;
 			var remoteUrl = params.from;
 			logger('sync', params);
-			var sync = PouchDbAdapter.sync(localUrl, remoteUrl, {}).on('change', function(info) {
+			var sync = PouchDB.sync(localUrl, remoteUrl, {}).on('change', function(info) {
 				logger('change', info.direction, info.change);
 			}).on('complete', function(info) {
 				//log.info('complete', info);

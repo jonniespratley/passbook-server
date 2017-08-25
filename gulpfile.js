@@ -34,10 +34,14 @@ gulp.task('clean', function () {
 //JS Docs
 const jsdoc = require('gulp-jsdoc3');
 gulp.task('docs', function(cb) {
-  gulp.src(['README.md', './src/**/*.js'], {
+  gulp.src(['README.md',
+  './components/**/*.js',
+  './pages/**/*.js',
+  './src/**/*.js'
+], {
       read: false
     })
-    .pipe(jsdoc(cb));
+    .pipe(jsdoc(cb))
 });
 
 

@@ -10,6 +10,10 @@ let instance = null;
 let db = null;
 /**
  * @class Db
+ * @example
+ *  const db = new DB('test-db');
+ * db.put({name: 'test'});
+ *
  * Simple file store adapter
  */
 class Db {
@@ -72,7 +76,7 @@ class Db {
         }).catch(reject);
       });
     }
-    
+
     /**
      * Fetch all docs from store.
      * @param {Object} params Parameters to query with
@@ -103,10 +107,19 @@ class Db {
       });
     }
     /**
-     * Update document in store.
-     * @param {Object} doc Document object to store
-     * @param {String} id The id of the document
-     * @returns {Promise}
+     * @description Update a document in store.
+     * @example
+        db.put({
+         _id: 'test-file',
+         name: 'test',
+         docType: 'file'
+       }).then(function(resp) {
+         assert(resp);
+         done();
+       }).catch(done);
+     * @param {Object} doc Document object to save
+     * @param {String} [id] The id of the document or if doc._id it uses that
+     * @returns {Promise} Promise that resolves or rejects
      */
   put(doc, id) {
       assert(doc._id, 'document must have _id');
@@ -134,15 +147,14 @@ class Db {
     /**
      * Create document in store.
      * @param {Object} doc Document object to store
-     * @param {String} prefix Prefix to prepend to generated id
+     * @param {String} [prefix] Prefix to prepend to generated id
      * @returns {Promise}
      */
   post(doc, prefix) {
-      doc._id = this.getUUID(prefix);
-      doc._rev = 0;
-      doc._rev++;
       return new Promise(function(resolve, reject) {
-
+        doc._id = this.getUUID(prefix);
+        doc._rev = 0;
+        doc._rev++;
         logger('post', doc);
         _.defer(function() {
           db.save(doc, function(err) {
