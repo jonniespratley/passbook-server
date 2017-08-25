@@ -1,11 +1,13 @@
+'use strict';
 module.exports = function() {
+  process.env.NODE_ENV = 'development';
   return {
     files: [
-      'lib/**/*.js'
+      'src/**/*.js'
     ],
 
     tests: [
-      'test/**/*Spec.js'
+      'test/specs/**/*-spec.js'
     ],
 
     env: {

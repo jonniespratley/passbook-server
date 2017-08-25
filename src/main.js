@@ -12,7 +12,7 @@ const fs = require('fs-extra');
  * @param  {type} function(userConfig description
  * @return {type}                     description
  */
-module.exports = (function(userConfig, autoStart) {
+module.exports = function(userConfig, autoStart) {
 
   const PORT = process.env.PORT || 5353;
   const program = require('./program')(userConfig || require('../config'));
@@ -36,11 +36,11 @@ module.exports = (function(userConfig, autoStart) {
 
   app.use(express.static(path.join(__dirname, '../static')));
 
-  if (dirs && dirs.length) {
-    dirs.forEach((dir) => {
-      log('static dirs', dir);
-      app.use(express.static(dir));
-    });
+  if (dirs && dirs.length > 0) {
+    for (var i = 0; i < dirs.length; i++) {
+      log('static dirs', dirs[i]);
+      app.use(express.static(dirs[i]));
+    }
   }
 
   function indexRoute(req, res) {
@@ -80,7 +80,7 @@ module.exports = (function(userConfig, autoStart) {
   });
 
   app.get('/500', function(req, res) {
-    res.render('500', {
+    res.status(500).render('500', {
       title: '500',
       message: 'The fatal error!'
     });
@@ -124,4 +124,4 @@ module.exports = (function(userConfig, autoStart) {
     Server: Server,
     app: app
   };
-})();
+};

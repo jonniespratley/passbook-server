@@ -3,15 +3,12 @@
 const assert = require('assert');
 const path = require('path');
 const _ = require('lodash');
-
-var testId = 'test-doc';
 const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 const DB = require(path.resolve(__dirname, '../../src/db.js'));
+
+var testId = 'test-doc';
 var Pass = mocks.Pass;
-var Device = mocks.Device;
 var testDocs = [];
-var mockDevice = mocks.mockDevice;
-var mockPass = mocks.mockPass;
 var db, testDoc;
 
 function cleanTestDocs(done) {
@@ -23,10 +20,7 @@ function cleanTestDocs(done) {
     console.log('remove', testDocs[i]._id);
     let id = testDocs[i]._id || testDocs[i].id;
     let rev = testDocs[i]._rev || testDocs[i].rev;
-    db.remove(id, rev).then(function(res) {
-      console.log('removed', res);
-      _done();
-    });
+    db.remove(id, rev).then(_done);
   }
 }
 /* global describe, before, after, it, xit */

@@ -1,22 +1,21 @@
 'use strict';
+/*global describe, it, before*/
 const assert = require('assert');
 const _ = require('lodash');
 const path = require('path');
-
-const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
-const program = mocks.program();
-
-const config = mocks.config;
-
-const endpoint = process.env.PASSBOOK_SERVER_DATABASE_URL || 'http://localhost:4987/default';
 const nock = require('nock');
 
-
+const mocks = require(path.resolve(__dirname, '../helpers/mocks'));
 const CouchDB = require(path.resolve(__dirname, '../../src/db-couchdb.js'));
+
+const endpoint = process.env.PASSBOOK_SERVER_DATABASE_URL || 'http://localhost:4987/default';
 const testDoc = {
   _id: 'test-doc',
   name: 'test'
 };
+const program = mocks.program();
+const config = mocks.config;
+
 var testRandomId = Date.now();
 var db;
 var mockDevice = mocks.mockDevice;
@@ -32,8 +31,6 @@ var mockServer = function() {
   .get(`/${testDoc._id}`)
     .query(true)
     .reply(200, testDoc)
-
-
 
   //put
   .put(`/${mockPass._id}`)
@@ -62,6 +59,12 @@ var mockServer = function() {
     })
     //remove
     .delete(`/test-doc?rev=2-0000`)
+    .query(true)
+    .reply(200, {
+      id: testDoc._id
+    })
+    //remove
+    .delete(`/${testDoc._id}?rev=2-0000`)
     .query(true)
     .reply(200, {
       id: testDoc._id
@@ -99,6 +102,7 @@ describe('CouchDB Adapter', function() {
     db = new CouchDB(endpoint);
     done();
   });
+
   it('should be defined', function(done) {
     assert(db);
     done();
@@ -209,16 +213,21 @@ describe('CouchDB Adapter', function() {
   });
 
   xit('db.remove - should remove doc with id', function(done) {
-    //testDoc._rev = '2-0000';
+    testDoc._rev = '2-0000';
+    nock(endpoint)
+      .get(`/${testDoc._id}`)
+      .query(true)
+      .reply(200, testDoc);
+
     var s = nock(endpoint)
-      .delete(`/test-doc?rev=2-0000`)
+      .delete(`/${testDoc._id}?rev=${testDoc._rev}`)
       .query(true)
       .reply(200, {
         id: testDoc._id
-      })
+      });
+      console.log(s.pendingMocks());
 
-
-    db.remove(testDoc).then(function(resp) {
+    db.remove(testDoc._id).then(function(resp) {
       assert(resp);
       done();
     }).catch(function(err) {

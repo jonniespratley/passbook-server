@@ -7,8 +7,11 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const Main = require('./src/main.js');
+
+  const MainApp = new Main();
   //const server = express();
-  const server = Main.Server.getExpressApp();
+
+  const server = MainApp.Server.getExpressApp();
   server.get('/', (req, res) => {
     return app.render(req, res, '/?loaded=true', req.query);
   });
